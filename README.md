@@ -11,9 +11,11 @@ This repository contains the codebase, documentation, and resources for our grou
 To get started with the project:
 
 1. **Clone the repository**
-    ```bash
-    git clone https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8.git
-    ```
+   
+   ```bash
+   git clone https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8.git
+   ```
+
 2. **Install prerequisites**  
    (Add installation instructions for dependencies/tools here.)
 
@@ -23,7 +25,11 @@ To get started with the project:
 ## Team Members
 
 - Ludvig Hygrell
-- [Add other team members here]
+- Viktor F. Kristiansson
+- William Jaarma
+- Elena Favero
+- Anton Kruse
+- Arvin Allahbakhsh
 
 ## Project Structure
 
@@ -41,10 +47,6 @@ We use GitHub Issues and Pull Requests to manage work and track progress.
 
 Feel free to open issues or submit pull requests.  
 See `CONTRIBUTING.md` for guidelines (add this file if relevant).
-
-## License
-
-[Specify license here, e.g., MIT, Apache 2.0, etc.]
 
 ---
 
