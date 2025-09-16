@@ -1,8 +1,9 @@
-# Ignore the .vscode dir for simplicity:
-.vscode/
 
-# Ignore automated file generation:
-.class
+# Ignore all hidden
+.*
+
+# Ignore java output
+target
 
 # Ignore tmp:
-tmp.java
+tmp*

@@ -4,12 +4,21 @@
   <!-- Maven version -->
   <modelVersion>4.0.0</modelVersion>
 
+<<<<<<< HEAD
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.3.1</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
+=======
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+>>>>>>> origin/main
 
   <!-- Project setup -->
   <groupId>se.benesphere.chalmers</groupId>
@@ -18,6 +27,7 @@
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
+<<<<<<< HEAD
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
@@ -31,6 +41,21 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+=======
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+>>>>>>> origin/main
     </dependency>   
 
   </dependencies>
@@ -44,11 +69,19 @@
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
+<<<<<<< HEAD
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
       <plugin>
+=======
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    <plugin>
+>>>>>>> origin/main
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.6</version>
@@ -70,6 +103,7 @@
 
   <!-- Additional project info -->
   <name>BeneSphere</name>
+<<<<<<< HEAD
   <description>BeneSphere groups and grades charity groups to make it easier for people wanting to make a difference.</description>
   <url>https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-development---Group-8</url>
   <inceptionYear>2025</inceptionYear>
@@ -160,3 +194,23 @@
     </developer>
   </developers>
 </project>
+=======
+  <description>
+  </description>
+  <url></url>
+  <inceptionYear></inceptionYear>
+  <licenses></licenses>
+  <organization>Chalmers</organization>
+  <developers>
+    <developer>
+        Viktor F. Kristiansson
+    </developer>
+    <developer>
+        William Jaarma
+    </developer>
+    <developer>
+        Ludvig Hygrell
+    </developer>
+  </developers>
+</project>
+>>>>>>> origin/main
