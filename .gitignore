@@ -1,2 +1,8 @@
 # Ignore the .vscode dir for simplicity:
 .vscode/
+
+# Ignore automated file generation:
+.class
+
+# Ignore tmp:
+tmp.java
