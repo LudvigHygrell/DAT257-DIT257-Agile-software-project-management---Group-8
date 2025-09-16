@@ -4,13 +4,35 @@
   <!-- Maven version -->
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
   <!-- Project setup -->
   <groupId>se.benesphere.chalmers</groupId>
   <artifactId>app.benesphere</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <dependencies>
-    <!-- Add project dependencies here... -->
+    <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>   
+
   </dependencies>
   <properties>
     <maven.compiler.source>1.7</maven.compiler.source>
@@ -22,7 +44,11 @@
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
-      <plugin>
+        <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                </plugin>
+    <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.6</version>
