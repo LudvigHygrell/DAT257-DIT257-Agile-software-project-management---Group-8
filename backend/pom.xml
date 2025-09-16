@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.1</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.1</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
 
   <!-- Project setup -->
   <groupId>se.benesphere.chalmers</groupId>
@@ -18,20 +18,20 @@
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>   
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>   
 
   </dependencies>
   <properties>
@@ -44,11 +44,11 @@
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
-        <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                </plugin>
-    <plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.6</version>
@@ -70,11 +70,93 @@
 
   <!-- Additional project info -->
   <name>BeneSphere</name>
-  <description>
-  </description>
-  <url></url>
-  <inceptionYear></inceptionYear>
-  <licenses></licenses>
-  <organization></organization>
-  <developers></developers>
+  <description>BeneSphere groups and grades charity groups to make it easier for people wanting to make a difference.</description>
+  <url>https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-development---Group-8</url>
+  <inceptionYear>2025</inceptionYear>
+  <licenses>
+    <license>
+      <name>MIT-2.0</name>
+      <url>https://mit-license.org</url>
+      <distribution>manual</distribution>
+      <comments>This project is open source and under the MIT license.</comments>
+    </license>
+  </licenses>
+  <organization>
+    <name>Chalmers Institute of Technology</name>
+    <url>https://chalmers.se</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>JaarmaCo</id>
+      <name>William Jaarma</name>
+      <email>jaarma@chalmers.se</email>
+      <url>https://github.com/JaarmaCo</url>
+      <organization>Chalmers Institute of Technology</organization>
+      <organizationUrl>https://chalmers.se</organizationUrl>
+      <roles>
+        <role>backend developer</role>
+      </roles>
+      <timezone>Stockholm/Sweden</timezone>
+    </developer>
+    <developer>
+      <id>LVFK04</id>
+      <name>Viktor Fazlagic Kristiansson</name>
+      <email>spoof1@imaginary-website.net</email>
+      <url>https://github.com/LVFK04</url>
+      <organization>Chalmers Institute of Technology</organization>
+      <organizationUrl>https://chalmers.se</organizationUrl>
+      <roles>
+        <role>backend developer</role>
+      </roles>
+      <timezone>Stockholm/Sweden</timezone>
+    </developer>
+    <developer>
+      <id>LudvigHygrell</id>
+      <name>Ludvig Hygrell</name>
+      <email>spoof2@imaginary-website.net</email>
+      <url>https://github.com/LudvigHygrell</url>
+      <organization>Chalmers Institute of Technology</organization>
+      <organizationUrl>https://chalmers.se</organizationUrl>
+      <roles>
+        <role>backend developer</role>
+      </roles>
+      <timezone>Stockholm/Sweden</timezone>
+    </developer>
+    <developer>
+      <id>elena</id>
+      <name>Elena Favero</name>
+      <email>spoof3@imaginary-website.net</email>
+      <url>https://github.com/placeholder1</url>
+      <organization>Chalmers Institute of Technology</organization>
+      <organizationUrl>https://chalmers.se</organizationUrl>
+      <roles>
+        <role>frontend developer</role>
+      </roles>
+      <timezone>Stockholm/Sweden</timezone>
+    </developer>
+    <developer>
+      <id>arvin</id>
+      <name>Arvin Allahbakhsh</name>
+      <email>spoof3@imaginary-website.net</email>
+      <url>https://github.com/placeholder2</url>
+      <organization>Chalmers Institute of Technology</organization>
+      <organizationUrl>https://chalmers.se</organizationUrl>
+      <roles>
+        <role>frontend developer</role>
+      </roles>
+      <timezone>Stockholm/Sweden</timezone>
+    </developer>
+    <developer>
+      <id>anton</id>
+      <name>Anton Kruse</name>
+      <email>spoof4@imaginary-website.net</email>
+      <url>https://github.com/placeholder3</url>
+      <organization>Chalmers Institute of Technology</organization>
+      <organizationUrl>https://chalmers.se</organizationUrl>
+      <roles>
+        <role>frontend developer</role>
+      </roles>
+      <timezone>Stockholm/Sweden</timezone>
+    </developer>
+  </developers>
 </project>
