@@ -55,6 +55,13 @@
 ### Login (GET)
 
 `/api/users/login`
+```json
+{
+    "username" : string,
+    "email" : string,
+    "password" : string
+}
+```
 
 ### Change password (PUT)
 
