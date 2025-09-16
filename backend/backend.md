@@ -143,7 +143,7 @@
 }
 ```
 
-## Get charity (GET)
+### Get charity (GET)
 
 `/api/charities/get`
 
