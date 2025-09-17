@@ -44,7 +44,9 @@ public class UserController {
     }
 
     /**
-     * 
+     * This method returns a ResponseEntity with the HTTP code 200 OK if everything went alright. In the response body you'll find all necessary 
+     * such as JWT information. If the response HTTP code is 409 it means that the Username or Email set already was in use. You can also get a 
+     * code, meaning that you 
      * @param json
      * @return
      */
@@ -98,4 +100,14 @@ public class UserController {
         return ResponseEntity.ok("Password changed successfully");
         
     }
+   @DeleteMapping("/delete_user")
+   public ResponseEntity<String> delete_password (@RequestBody JsonNode json) {
+	return null;
+   }
+
+   @PutMapping("/change_email")
+   public ResponseEntity<String> change_email(@RequestBody JsonNode json) {
+	return null;
+   }
+   
 }
