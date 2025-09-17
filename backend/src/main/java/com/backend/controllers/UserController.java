@@ -1,5 +1,10 @@
 package com.backend.controllers;
 
+import com.backend.database.UserRepository;
+import com.backend.database.UserAdapter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +18,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.backend.database.UserAdapter;
 
 /**
- * The UserController class handles user-related API endpoints such as login and registration. This class contains methods to process incoming requests, validate input data, and interact with the UserAdapter for database operations.
+ * The UserController class handles user-related API endpoints such as login and registration.
+ * This class contains methods to process incoming requests, validate input data, and interact
+ * with the UserAdapter for database operations.
  * @author LVFK04
  * @version 1.0
  * @since 2025-09-16
@@ -22,22 +29,25 @@ import com.backend.database.UserAdapter;
 @RequestMapping("/api/users")
 public class UserController {
 
+    @Autowired
+    private UserAdapter userAdapter;
+
     /**
      * 
      * @param json
      * @return
      */
     @GetMapping("/login")
-    public ResponseEntity<String> login (@RequestBody JsonNode json) {
-        if(!json.has("username")) 
+    public ResponseEntity<String> login(@RequestBody JsonNode json) {
+        if (!json.has("username"))
             return ResponseEntity.badRequest().body("Missing username");
-        if(!json.has("password"))
+        if (!json.has("password"))
             return ResponseEntity.badRequest().body("Missing password");
 
         String username = json.get("username").asText();
         String password = json.get("password").asText();
 
-        if(UserAdapter.login(username, password)) 
+        if (userAdapter.login(username, password))
             return ResponseEntity.ok("Login successful");
         
         return ResponseEntity.status(401).body("Invalid username or password");
@@ -51,26 +61,27 @@ public class UserController {
      * @return
      */
     @PostMapping("/register")
-    public ResponseEntity<String> register (@RequestBody JsonNode json) {
-        if(!json.has("username")) 
+    public ResponseEntity<String> register(@RequestBody JsonNode json) {
+
+        if (!json.has("username"))
             return ResponseEntity.badRequest().body("Missing username");
-        if(!json.has("email"))
+        if (!json.has("email"))
             return ResponseEntity.badRequest().body("Missing email");
-        if(!json.has("password"))
+        if (!json.has("password"))
             return ResponseEntity.badRequest().body("Missing password");
 
         String username = json.get("username").asText();
         String email = json.get("email").asText();
         String password = json.get("password").asText();
 
-        if(UserAdapter.is_username()) 
+        if (userAdapter.isUsername(username))
             return ResponseEntity.status(409).body("Username already exists");
         
-        if(UserAdapter.is_email())
+        if (userAdapter.isEmail(email))
             return ResponseEntity.status(409).body("Email already exists");
 
         try {
-            UserAdapter.register(username, email, password);
+            userAdapter.register(username, email, password);
             return ResponseEntity.ok("User registered successfully");
         } catch(Exception e) {
             e.printStackTrace();
@@ -80,25 +91,29 @@ public class UserController {
     }
 
     @PutMapping("/change_password")
-    public ResponseEntity<String> change_password (@RequestBody JsonNode json) {
-        if(!json.has("username"))
+    public ResponseEntity<String> changePassword(@RequestBody JsonNode json) {
+        if (!json.has("username"))
             return ResponseEntity.badRequest().body("Missing username");
-        if(!json.has("old"))
+        if (!json.has("old"))
             return ResponseEntity.badRequest().body("Missing old password");
-        if(!json.has("new"))
+        if (!json.has("new"))
             return ResponseEntity.badRequest().body("Missing new password");
 
         String username = json.get("username").asText();
         String old_password = json.get("old").asText();
         String new_password = json.get("new").asText();
-        if(old_password.equals(new_password))
+        if (old_password.equals(new_password))
             return ResponseEntity.badRequest().body("New password must be different from old password");
 
-        if(!UserAdapter.login(username, old_password))
+        if (!userAdapter.login(username, old_password))
             return ResponseEntity.status(401).body("Invalid username or password");
-        UserAdapter.change_password(username, new_password);
-        return ResponseEntity.ok("Password changed successfully");
-        
+        try {
+            userAdapter.changePassword(username, new_password);
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return ResponseEntity.status(500).body("Error changing password");
     }
    @DeleteMapping("/delete_user")
    public ResponseEntity<String> delete_password (@RequestBody JsonNode json) {
