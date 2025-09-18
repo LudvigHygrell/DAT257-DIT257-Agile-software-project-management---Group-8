@@ -1,5 +1,5 @@
 import './styles/App.css';
-import Header from './components/Header.jsx';
+import Navbar from './components/Navbar.jsx';
 import CharityList from './components/CharityList.jsx';
 import TopCharities from './components/TopCharities.jsx';
 
@@ -32,7 +32,7 @@ function App() {
 
     return (
     <div>
-      <Header />
+      <Navbar />
       
       <div className="main-content" style={{ display: "flex", gap: "1rem", padding: "1rem" }}>
         {/* left column */}
