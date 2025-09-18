@@ -236,7 +236,8 @@
 ```json
 {
     "comment" : string,
-    "charity" : string
+    "charity" : string,
+    "user" : string
 }
 ```
 
