@@ -57,12 +57,12 @@ CREATE TABLE IF NOT EXISTS Comments(
         REFERENCES Charities(orgId),
     comment JSON
         NOT NULL,
-    insertTime TIMESTAMP
-        NOT NULL
-        DEFAULT CURRENT_TIMESTAMP,
     commentUser TEXT
         NOT NULL
         REFERENCES Users(username),
+    insertTime TIMESTAMP
+        NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(commentId, charity)
 );
 
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS CommentBlame(
         REFERENCES Users(username),
     reason TEXT -- TODO
         NOT NULL,
-    PRIMARY KEY(comment, charity)
+    PRIMARY KEY(comment, charity, reporter)
 );
 
 CREATE TABLE IF NOT EXISTS CharityBlame(
