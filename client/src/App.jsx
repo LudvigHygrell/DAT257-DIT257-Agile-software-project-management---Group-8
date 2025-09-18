@@ -7,13 +7,6 @@ import TopCharities from './components/TopCharities.jsx';
 
 
 function App() {
-  // State to hold the search request from the Searchbar component
-  // const [searchRequest, setSearchRequest] = useState("");
-  
-  // Effect to log the search request whenever it changes
-  // const handleSearch = (value) => {setSearchRequest(value); console.log("Search request updated to:", value);};
-
-  // <Searchbar placeholder="Search for charity..." userInput={handleSearch} />
 
   // fake data
   const fake_charities = [
@@ -44,13 +37,13 @@ function App() {
       <Header />
 
       <div className="main-content" style={{ display: "flex", gap: "1rem", padding: "1rem" }}>
-        {/* left column: 1/3 */}
-        <div className="left-panel" style={{ flex: 1 }}>
+        {/* left column */}
+        <div className="panel" style={{ flex: 1 }}>
           <TopCharities charities={fake_charities} />
         </div>
 
-        {/* right column : 2/3 */}
-        <div className="right-panel" style={{ flex: 2 }}>
+        {/* right column */}
+        <div className="panel" style={{ flex: 2 }}>
           <CharityList charities={fake_charities} />
         </div>
       </div>

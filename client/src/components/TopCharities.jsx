@@ -3,8 +3,8 @@ function TopCharities({ charities }) {
   const topCharities = charities.slice(0, 3);
 
   return (
-    <div className="left-panel">
-      <h2>🏆 Top 3 Charities</h2>
+    <div className="panel">
+      <h2> Top 3 Charities</h2>
       {topCharities.map((c, index) => (
         <div key={index} className="charity-card">
           <h3>{c.name}</h3>

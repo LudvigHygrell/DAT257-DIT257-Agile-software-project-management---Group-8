@@ -3,12 +3,12 @@ import '../styles/CharityList.css';
 
 function CharityList({ charities }) {
   return (
-    <div className="right-panel">
+    <div className="panel">
       <h2>All Charities</h2>
       <div className="charity-list">
         {charities.map((c, index) => (
           <div key={index} className="charity-card">
-            {/* parte sinistra: logo + info */}
+            {/* left part: logo + info */}
             <div className="charity-info">
               <img
                 src={`https://via.placeholder.com/50?text=${c.name.charAt(0)}`}
@@ -21,7 +21,7 @@ function CharityList({ charities }) {
               </div>
             </div>
 
-            {/* parte destra: punteggio + bottone */}
+            {/* right part: points + botton */}
             <div className="charity-actions">
               <span className="charity-score">{c.score}</span>
               <button className="show-more-btn">Show More</button>
