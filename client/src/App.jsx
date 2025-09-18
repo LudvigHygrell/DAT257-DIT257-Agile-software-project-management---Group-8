@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './styles/App.css';
-import Header from './components/Header.jsx';
+import Navbar from './components/Navbar.jsx';
 import Searchbar from './components/Searchbar.jsx';
 
 function App() {
@@ -11,8 +11,8 @@ function App() {
   const handleSearch = (value) => {setSearchRequest(value); console.log("Search request updated to:", value);};
 
   return (
-    <div>
-      <Header />
+    <div style = {{ paddingTop: '80px' }}>
+      <Navbar />
       <Searchbar placeholder="Search for charity..." userInput={handleSearch} />
       <h1>Hello Test!</h1>
     </div>
