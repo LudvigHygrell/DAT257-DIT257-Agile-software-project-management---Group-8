@@ -22,9 +22,9 @@
     user -> users.username
     charity -> charities.orgId
 
-- commentScores(<u>comment</u>, <u>user</u>, upDown)
+- commentScores(<u>comment</u>, <u>charity</u>, <u>user</u>, upDown)
   
-    comment -> comments.commentId
+    comment, charity -> comments.commentId, comments.charity
     user -> users.username
     upDown - bool    
 
@@ -36,11 +36,11 @@
 - searchedCharities(<u>username</u>, <u>charity</u>, timestamp)
   
    username -> users.username
-  charity -> charities.orgId
+   charity -> charities.orgId
 
-- commentBlame(<u>comment</u>, <u>reporter</u>, reason)
+- commentBlame(<u>comment</u>, <u>charity</u>, <u>reporter</u>, reason)
   
-    comment -> comments.commentId
+    comment, charity -> comments.commentId, comments.charity
     reporter -> users.username
 
 - charityBlame(<u>charity</u>, <u>reporter</u>, reason)
@@ -55,6 +55,13 @@
 ### Login (GET)
 
 `/api/users/login`
+```json
+{
+    "username" : string,
+    "email" : string,
+    "password" : string
+}
+```
 
 ### Change password (PUT)
 
@@ -143,7 +150,7 @@
 }
 ```
 
-## Get charity (GET)
+### Get charity (GET)
 
 `/api/charities/get`
 
