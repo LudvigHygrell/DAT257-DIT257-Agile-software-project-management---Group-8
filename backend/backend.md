@@ -55,7 +55,7 @@
 ### Login (GET)
 
 `/api/users/login`
-```json
+```
 {
     "username" : string,
     "email" : string,
@@ -67,7 +67,7 @@
 
 `/api/users/change_password`
 
-```json
+```
 {
     "username" : string,
     "old" : string,
@@ -79,7 +79,7 @@
 
 `/api/users/reset_password`
 
-```json
+```
 {
     "email" : string,
     "new_password" : string,
@@ -91,7 +91,7 @@
 
 `/api/users/change_email`
 
-```json
+```
 {
     "username" : string,
     "email" : string,
@@ -104,7 +104,7 @@
 
 `/api/users/get_activity`
 
-```json
+```
 {
     "username" : string,
     "type" : ["comments" AND/OR "likes"],
@@ -116,7 +116,7 @@
 
 `/api/users/create`
 
-```json
+```
 {
     "username" : string,
     "password" : string,
@@ -129,7 +129,7 @@
 
 `/api/users/remove`
 
-```json
+```
 {
     "username" : string
 }
@@ -143,7 +143,7 @@
 
 `/api/charities/list`
 
-```json
+```
 {
     "filters" : [],
     "order_by" : string
@@ -154,7 +154,7 @@
 
 `/api/charities/get`
 
-```json
+```
 {
     "identity" : string (orgId)
 }
@@ -165,7 +165,7 @@
 
 `/api/charities/vote`
 
-```json
+```
 {
     "charity" : string,
     "up" : boolean,
@@ -176,7 +176,7 @@
 
 `/api/charities/edit_vote`
 
-```json
+```
 {
     "charity": string,
     "up": boolean
@@ -187,7 +187,7 @@
 
 `/api/charities/delete_vote`
 
-```json
+```
 {
     "user": string,
     "charity": string
@@ -198,7 +198,7 @@
 
 `/api/charities/pause`
 
-```json
+```
 {
     "charity_id" : string
 }
@@ -208,7 +208,7 @@
 
 `/api/charities/resume`
 
-```json
+```
 {
     "charity_id" : string
 }
@@ -218,7 +218,7 @@
 
 `/api/charities/get_paused`
 
-```json
+```
 {
     "filters" : [],
     "order_by" : string
@@ -233,10 +233,16 @@
 
 `/api/comments/add`
 
-```json
+```
 {
+<<<<<<< Updated upstream
     "comment" : string,
     "charity" : string
+=======
+    "comment" : { "message": string },
+    "charity" : string,
+    "user" : string
+>>>>>>> Stashed changes
 }
 ```
 
@@ -244,7 +250,7 @@
 
 `/api/comments/remove`
 
-```json
+```
 {
     "comment_id" : string,
     "charity" : string
@@ -255,11 +261,10 @@
 
 `/api/comments/blame`
 
-```json
+```
 {
     "comment_id" : string,
     "reason" : string,
-    "comment": string OR null,
-    "blame_victim" : string
+    "comment": { "message": string }, OR null
 }
 ```

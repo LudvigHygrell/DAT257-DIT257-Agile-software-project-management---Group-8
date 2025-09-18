@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import com.backend.database.UserAdapter;
-
 /**
  * The UserController class handles user-related API endpoints such as login and registration.
  * This class contains methods to process incoming requests, validate input data, and interact
@@ -32,11 +30,6 @@ public class UserController {
     @Autowired
     private UserAdapter userAdapter;
 
-    /**
-     * 
-     * @param json
-     * @return
-     */
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody JsonNode json) {
         if (!json.has("username"))
@@ -53,11 +46,6 @@ public class UserController {
         return ResponseEntity.status(401).body("Invalid username or password");
     }
 
-    /**
-     * 
-     * @param json
-     * @return
-     */
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody JsonNode json) {
 
