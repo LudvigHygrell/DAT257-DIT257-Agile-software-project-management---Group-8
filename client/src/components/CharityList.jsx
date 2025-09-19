@@ -1,6 +1,6 @@
 import '../styles/CharityList.css';
 import { useState } from 'react';
-
+import { Link } from 'react-router-dom';
 
 function CharityList({ charities }) {
   
@@ -22,12 +22,12 @@ function CharityList({ charities }) {
       />
       <div className="charity-list">
         {filteredCharities.length > 0 ? (    // Only show chairty list if there are charities
-          filteredCharities.map((c, index) => (
-          <div key={index} className="charity-card">
+          filteredCharities.map((c) => (
+          <div key={c.orgId} className="charity-card">
             {/* left part: logo + info */}
             <div className="charity-info">
               <img
-                src={`https://via.placeholder.com/50?text=${c.name.charAt(0)}`}
+                src={c.logo ? `/${c.logo}` : `https://via.placeholder.com/50?text=${c.name.charAt(0)}`}
                 alt={`${c.name} logo`}
                 className="charity-logo"
               />
@@ -40,7 +40,9 @@ function CharityList({ charities }) {
             {/* right part: points + botton */}
             <div className="charity-actions">
               <span className="charity-score">{c.score}</span>
-              <button className="show-more-btn">Show More</button>
+              <Link to={`/${c.orgId}`} className="show-more-btn">
+                  Show More
+              </Link>
             </div>
           </div>
         ))
