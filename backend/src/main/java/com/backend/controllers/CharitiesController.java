@@ -25,13 +25,9 @@ public class CharitiesController {
         if(!json.has("order_by")) {
             return ResponseEntity.badRequest().body("Missing sorting order");
         }
-        ObjectMapper mapper = new ObjectMapper();
-        String[] filters = mapper.readValue(json.get("filters").toString(), String[].class); //TODO tags not implemented in database yet
+        //TODO tags not implemented in database yet
         String order_by = json.get("order_by").asText();
-        if(charitiesAdapter.list(filters, order_by)) {
-            return ResponseEntity.ok("Charities list successfully retrieved");
-        }
-        return ResponseEntity.status(500).body("Error retrieving list");
+        return ResponseEntity.badRequest().body("Not implemented");
     }
     /**
      *

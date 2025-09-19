@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface CharityRepository extends JpaRepository<Charity, String>{
 
     /**
-     * Returns a charity given its organization ID.
+     * Returns a charity given its organization ID. //TODO This might be unnecessary
      *
      * @param orgId the organization ID of the charity.
      * @return the charity, or null if it could not be found.
