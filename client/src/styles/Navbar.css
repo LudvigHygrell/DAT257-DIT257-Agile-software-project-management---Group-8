@@ -1,112 +1,62 @@
+/* Main navigation bar container that stays at top of screen */
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-color: #50ccfd;
-    color: #000000;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border-radius: 20px;
-    margin: 10px 20px;
-    width: calc(100% - 40px);
-    max-width: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
+    display: flex;                              /* flexible layout display, auto rows and columns */
+    justify-content: space-between;             /* push content to opposite ends */
+    align-items: center;                        /* center items vertically within box */
+    padding: 1rem 2rem;                         /* Space inside navbar (top/bottom), (left/right) */
+    background-color: #fffff3;                /* background color */
+    color: #000000;                           /* text-color*/
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);    /* Subtle shadow color below navbar */
+    border-radius: 10px;                        /* Rounded corners */
+    margin: 10px 16px;                          /* Space around navbar */
+    width: calc(100% - 34px);                   /* Full width minus left/right margins */
+    max-width: none;                            /* No maximum width limit */
+    position: fixed;                            /* Stay in same position when scrolling */
+    top: 0;                                     /* Stick to top of screen */
+    left: 0;                                    /* Align to left edge */
+    right: 0;                                   /* Stretch to right edge */
 }
 
+/* Container for logo and title on left side of navbar */
 .logo-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex;                   /* Use flexible box layout */
+    align-items: center;             /* Center logo and title vertically */
+    gap: 10px;                       /* Space between title and logo image */
 }
 
+/* Styling for the logo image */
 .logo-image{
-    height: 40px;
-    width: auto;
+    height: 40px;                    /* Fixed height (width adjusts automatically) */
+    width: auto;                     /* Width adjusts to maintain image proportions */
 }
 
+/* Styling for the "BeneSphere" title text */
 .title {
-    font-weight: bold;
-    color: #ffffff;
-    font-size: 2rem;
-    margin: 0;
+    font-weight: bold;                  /* text-bold */
+    color: #28a745;                   /* text color */
+    font-size: 2.5rem;                  /* text-size */
+    margin: 0;                       /* Remove default heading margins */
+    transition: background-color 0.2s;  /* Smooth color change on hover */
 }
 
+.title:hover {
+    color: #218838;                  /* different color on hover */
+    cursor: pointer;                 /* Show hand cursor when hovering */
+}
+
+/* Styling for the "Login" button on right side of navbar */
 .login-button {
-    background-color: #1272bc;
-    border: 1px solid #ffffff;
-    color: #ffffff;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
+    background-color: #28a745;       /* background-color */
+    border: 1px solid #ffffff;       /* border color around button */
+    color: #ffffff;                  /* text color */
+    padding: 0.5rem 1rem;           /* Space inside button (top/bottom), (left/right) */
+    border-radius: 10px;            /* rounded corners */
+    cursor: pointer;                /* Show hand cursor when hovering */
+    font-size: 1rem;                /* text-size */
+    font-weight: bold;              /* text-bold */
 }
 
-.popup-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.popup-content {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    position: relative;
-    min-width: 300px;
-    color: #333;
-}
-
-.input-field {
-    width: 100%;
-    padding: 0.7rem;
-    margin: 0.5rem 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-    box-sizing: border-box;
-}
-
-.submit-button {
-    width: 100%;
-    padding: 0.7rem;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 1rem;
-}
-
-.link-section {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
-}
-
-.link {
-    color: #28a745;
-    text-decoration: none;
-    font-size: 0.9rem;
-}
-
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background-color: transparent;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #666;
+.login-button:hover {
+    background-color: #218838;      /* color difference on hover */
+    border-color: #ffffff;          /* Keep border color on hover */
 }

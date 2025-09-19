@@ -1,0 +1,106 @@
+/* Dark overlay that covers the entire screen when modal is open */
+.popup-overlay {
+    position: fixed;                            /* Stay in place if page scrolls */
+    top: 0;                                     /* Cover from top edge */
+    left: 0;                                    /* Cover from left edge */
+    right: 0;                                   /* Cover to right edge */
+    bottom: 0;                                  /* Cover to bottom edge */
+    background-color: rgba(0, 0, 0, 0.5);     /* Background color */
+    display: flex;                              /* Use flexible box layout, auto rows or columns */
+    align-items: center;                        /* Center content vertically */
+    justify-content: center;                    /* Center content horizontally */
+    z-index: 1000;                              /* Appear above all other elements */
+}
+
+/* Login content box in the center of the overlay */
+.popup-content {
+    background-color: white;                      /* background color */
+    padding: 2rem;                                  /* Space inside the box (32px) */
+    border-radius: 10px;                            /* Rounded corners */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);      /* drop shadow for depth */
+    position: relative;                             /* allow positioning of child elements */
+    min-width: 300px;                               /* minimum width to prevent too narrow box */
+    color: #333;                                  /* text color */
+}
+
+/* Style for the "Login" title inside the modal */
+.popup-content h2 {
+    margin-top: 0;              /* Remove default top margin */
+    margin-bottom: 1.5rem;      /* Space below title */
+    text-align: center;         /* Center the title text */
+    color: #333;              /* Text color */
+}
+
+/* Style for email and password input fields */
+.input-field {
+    width: 100%;                /* Take full width of container */
+    padding: 0.7rem;            /* Space inside the input */
+    margin: 0.5rem 0;           /* Space above and below */
+    border: 1px solid #ddd;   /* Border-edge color*/
+    border-radius: 5px;         /* Round corners */
+    font-size: 1rem;            /* Text-size */
+    box-sizing: border-box;     /* Include padding in width calculation */
+}
+
+/* Style when user clicks/focuses on input field */
+.input-field:focus {
+    outline: none;                                    /* Remove default browser focus outline */
+    border-color: #28a745;                          /* Change border to brand blue color */
+    box-shadow: 0 0 0 1px #00fc04;                  /* glow effect */
+}
+
+/* Style for the "Sign In" submit button */
+.submit-button {
+    width: 100%;                        /* Container width */
+    padding: 0.7rem;                    /* Space inside button */
+    background-color: #28a745;        /* Background color */
+    color: white;                     /* Text color */
+    border: none;                       /* Remove default button border */
+    border-radius: 5px;                 /* Rounded corners */
+    font-size: 1rem;                    /* Text size */
+    cursor: pointer;                    /* Show hand cursor when hovering */
+    margin-top: 1rem;                   /* Space above button */
+    transition: background-color 0.2s;  /* Smooth color change on hover */
+}
+
+/* Button color change when mouse hovers over it */
+.submit-button:hover {
+    background-color: #218838; /* color when hovering */
+}
+
+/* Container for "Register" and "Forgot Password?" links */
+.link-section {
+    display: flex;            /* flexible auto box layout */
+    justify-content: space-between; /* Push links to opposite ends */
+    margin-top: 1rem;         /* Space above links */
+}
+
+/* Style for "Register" and "Forgot Password?" links */
+.link {
+    color: #28a745;           /* text-color */
+    text-decoration: none;    /* Remove default underline */
+    font-size: 0.9rem;        /* text-size */
+}
+
+/* Link appearance when mouse hovers over them */
+.link:hover {
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* X button positioned in top-right corner of Login modal */
+.close-button {
+    position: absolute;         /* Position relative to popup-content */
+    top: 10px;                  /* margin from top edge */
+    right: 15px;                /* margin from right edge */
+    background-color: transparent; /* No background color */
+    border: none;            /* Remove default button border */
+    font-size: 1.5rem;       /* text-size */
+    cursor: pointer;         /* Show hand cursor when hovering */
+    color: #666;             /* text-color */
+    transition: color 0.2s;  /* Smooth color change on hover */
+}
+
+/* X button color change when mouse hovers over it */
+.close-button:hover {
+    color: #333;             /* text-color */
+}

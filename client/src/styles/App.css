@@ -1,112 +1,47 @@
 
+/* Reset default browser styles and set up full-height layout */
 html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden; 
-  width: 100%;
-  font-family: sans-serif;
+  height: 100%;              /* Take full height of browser window */
+  margin: 0;                 /* Remove default browser margins */
+  padding: 0;                /* Remove default browser padding */
+  overflow: hidden;          /* Prevent page scrolling (components handle their own scrolling) */
+  width: 100%;               /* Take full width of browser window */
+  font-family: sans-serif;   /* Use system default sans-serif font */
 }
 
-/* Header */
-header {
-  height: 90px; 
-  background-color: #282c34;
-  color: white;
-  display: flex;
-  align-items: center;
-  font-size: 1.5rem;
-  flex-shrink: 0; 
+/* Main app container */
+.app-container {
+  padding-top: 85px;        /* Push content down to avoid navbar overlap (navbar height + margins) */
+  padding-bottom: 20px;     /* Add space at bottom so content doesn't touch edge */
 }
 
 
+
+/* Main content area with two-column layout */
 .main-content {
-  display: flex;
-  height: calc(100% - 80px); 
-  gap: 1rem;
+  display: flex;               /* Use flexible box layout for side-by-side */
+  height: calc(100% - 80px);   /* Full height minus space for other elements */
+  gap: 1rem;                   /* Space between left and right columns */
 }
 
 
 .left-panel {
   flex: 1;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
   border-right: 2px solid #ddd;
   overflow: hidden; 
 }
 
 
+/* Individual panel styling (used by both left and right columns) */
 .panel {
-  flex: 2;
-  padding: 20px;
-  overflow-y: auto; 
-  background-color: #fff;
+  flex: 2;                     /* Take 2 parts of available space (right column is larger) */
+  padding: 20px;               /* Space inside each panel */
+  overflow-y: auto;            /* Allow vertical scrolling if content is too tall */
+  background-color: #ffffff;      /* background-color */
 }
 
-/* Carta charity */
-.charity-card {
-  background: white;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
-}
-
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-
-.container {
-  display: flex;
-  height: calc(100vh - 60px); 
-}
-
-.left-panel {
-  flex: 1; 
-  padding: 20px;
-  background-color: #f5f5f5;
-  border-right: 2px solid #ddd;
-}
-
-.panel {
-  flex: 2; 
-  padding: 20px;
-  overflow-y: auto; 
-}
 
 
 
