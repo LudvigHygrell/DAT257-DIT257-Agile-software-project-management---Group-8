@@ -1,6 +1,8 @@
 function TopCharities({ charities }) {
     
-  const topCharities = charities.slice(0, 3);
+  const topCharities = [...charities]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
 
   return (
     <div className="panel">
