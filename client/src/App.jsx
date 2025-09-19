@@ -1,10 +1,27 @@
+// Import React's useState hook for managing component state
+import { useState } from 'react';
+// Import CSS file for styling this main App component
 import './styles/App.css';
+// Import all the components used in this app
 import Navbar from './components/Navbar.jsx';
 import CharityList from './components/CharityList.jsx';
 import TopCharities from './components/TopCharities.jsx';
+import LoginModal from './components/LoginModal.jsx';
 
-
+// Main App component that contains all other components
 function App() {
+  // State to control whether login modal is visible or hidden
+  const [showLogin, setShowLogin] = useState(false);
+
+  // Function to show the login modal (called by Navbar)
+  const handleLoginClick = () => {
+    setShowLogin(true);
+  };
+
+  // Function to hide the login modal (called by LoginModal)
+  const closeLogin = () => {
+    setShowLogin(false);
+  };
 
   // fake data
   const fake_charities = [
@@ -31,20 +48,26 @@ function App() {
   ];
 
     return (
-    <div>
-      <Navbar />
-      
+    // Main container with padding to account for fixed navbar
+    <div className="app-container">
+      {/* Navigation bar at top - receives function to show login modal */}
+      <Navbar onLoginClick={handleLoginClick} />
+
+      {/* Main content area with two-column layout */}
       <div className="main-content" style={{ display: "flex", gap: "1rem", padding: "1rem" }}>
-        {/* left column */}
+        {/* Left column: Shows top-rated charities (1/3 width) */}
         <div className="panel" style={{ flex: 1 }}>
           <TopCharities charities={fake_charities} />
         </div>
 
-        {/* right column */}
+        {/* Right column: Shows searchable charity list (2/3 width) */}
         <div className="panel" style={{ flex: 2 }}>
           <CharityList charities={fake_charities} />
         </div>
       </div>
+
+      {/* Login modal - only visible when showLogin is true */}
+      <LoginModal isVisible={showLogin} onClose={closeLogin} />
     </div>
   );
 

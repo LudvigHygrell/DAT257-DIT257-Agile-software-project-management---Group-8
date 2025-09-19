@@ -1,50 +1,21 @@
 import { useState } from 'react';
-import logo from '../assets/sample_logo.png';
 import '../styles/Navbar.css';
+import logo from '../assets/sample_logo.png';
 
-function Navbar() {
-    const [showLogin, setShowLogin] = useState(false);
-
-    const handleLoginClick = () => {
-        setShowLogin(true);
-    };
-
-    const closeLogin = () => {
-        setShowLogin(false);
-    };
-
+// onLoginClick: function to call when user clicks the login button
+function Navbar({ onLoginClick }) {
     return (
-            <nav className="navbar">
-                <div className="logo-section">
-                    <h1 className="title">BeneSphere</h1>
-                    <img src={logo} alt="BeneSphere Logo" className="logo-image" />
-                </div>
-                <button className="login-button" onClick={handleLoginClick}>Login</button>
-            
-
-            {showLogin && (
-                <div className="popup-overlay" onClick={closeLogin}>
-                    <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-                        <h2>Login</h2>
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            className="input-field"
-                        />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            className="input-field"
-                        />
-                        <button className="submit-button">Sign In</button>
-                        <div className="link-section">
-                            <a href="#" className="link">Register</a>
-                            <a href="#" className="link">Forgot Password?</a>
-                        </div>
-                        <button className="close-button" onClick={closeLogin}>X</button>
-                    </div>
-                </div>
-            )}
+        // Main navigation container with CSS class for styling
+        <nav className="navbar">
+            {/* Left side: Logo section containing title and image */}
+            <div className="logo-section">
+                {/* Main website title */}
+                <h1 className="title">BeneSphere</h1>
+                {/* Logo image  */}
+                <img src={logo} className="logo-image" />
+            </div>
+            {/* Right side: Login button that calls parent's function when clicked */}
+            <button className="login-button" onClick={onLoginClick}>Login</button>
         </nav>
     );
 }
