@@ -12,6 +12,11 @@ tmp*
 
 node_modules
 
-package-lock.json
+# NOTE: Tracks dependency history for npm. This is useful if the dependencies were to change
+# in the future, or if there is a malicious update to a package. It can be, and is frequently
+# regenerated every time package.json is updated. However, it is recommended this remains in
+# the commit history because of the forementioned security and history benefit.
+#
+# package-lock.json <- Do not gitignore
 
 
