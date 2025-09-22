@@ -69,4 +69,12 @@ public class UserAdapter extends Adapter {
         user.get().setPasswordHash(PasswordHashUtility.hashPassword(newPassword));
         userRepository.save(user.get());
     }
+
+    public String getUsernameFromEmail(String email) {
+        return null;
+    }
+
+    public void changeEmail(String username, String email) {
+        
+    }
 }

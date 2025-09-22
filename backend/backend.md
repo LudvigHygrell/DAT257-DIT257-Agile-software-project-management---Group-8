@@ -55,7 +55,7 @@
 ### Login (GET)
 
 `/api/users/login`
-```
+```json
 {
     "username" : string,
     "email" : string,
@@ -67,7 +67,7 @@
 
 `/api/users/change_password`
 
-```
+```json
 {
     "username" : string,
     "old" : string,
@@ -79,7 +79,7 @@
 
 `/api/users/reset_password`
 
-```
+```json
 {
     "email" : string,
     "new_password" : string,
@@ -91,7 +91,7 @@
 
 `/api/users/change_email`
 
-```
+```json
 {
     "username" : string,
     "email" : string,
@@ -104,7 +104,7 @@
 
 `/api/users/get_activity`
 
-```
+```json
 {
     "username" : string,
     "type" : ["comments" AND/OR "likes"],
@@ -116,7 +116,7 @@
 
 `/api/users/create`
 
-```
+```json
 {
     "username" : string,
     "password" : string,
@@ -129,7 +129,7 @@
 
 `/api/users/remove`
 
-```
+```json
 {
     "username" : string
 }
