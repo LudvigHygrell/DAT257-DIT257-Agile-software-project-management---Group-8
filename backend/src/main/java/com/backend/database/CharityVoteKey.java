@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @since 2025-09-18
  */
 @Embeddable
-public class LikeKey implements Serializable {
+public class CharityVoteKey implements Serializable {
     @Serial
     private static final long serialVersionUID = 1;
 
@@ -28,7 +28,7 @@ public class LikeKey implements Serializable {
      * @param user the user who is voting
      * @param charity the charity that is being voted on
      */
-    public LikeKey(String user, String charity) {
+    public CharityVoteKey(String user, String charity) {
         assert null != user;
         assert null != charity;
         this.user = user;

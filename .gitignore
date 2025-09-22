@@ -5,11 +5,13 @@
 # Ignore java output
 target
 
-.*
-
 !.gitignore
 
 # Ignore tmp:
-tmp.java
+tmp*
 
 node_modules
+
+package-lock.json
+
+

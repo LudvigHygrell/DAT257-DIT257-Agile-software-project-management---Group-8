@@ -36,13 +36,15 @@ CREATE TABLE IF NOT EXISTS PausedCharities(
         REFERENCES Administrators(adminUser)
 );
 
-CREATE TABLE IF NOT EXISTS Likes(
-    likeUser TEXT
+CREATE TABLE IF NOT EXISTS CharityScores(
+    ratingUser TEXT
         NOT NULL
         REFERENCES Users(username),
     charity TEXT
         NOT NULL
         REFERENCES Charities(orgId),
+    vote BOOLEAN
+        NOT NULL,
     insertTime TIMESTAMP
         NOT NULL
         DEFAULT CURRENT_TIMESTAMP,

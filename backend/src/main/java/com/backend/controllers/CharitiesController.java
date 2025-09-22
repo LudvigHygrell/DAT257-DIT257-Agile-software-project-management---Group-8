@@ -12,12 +12,7 @@ public class CharitiesController {
 
     private CharitiesAdapter charitiesAdapter;
 
-    /**
-     *
-     * @param json
-     * @return ResponseEntity
-     */
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<String> list(@RequestBody JsonNode json) throws JsonProcessingException {
         if(!json.has("filters")) {
             return ResponseEntity.badRequest().body("Missing filters");
@@ -26,15 +21,11 @@ public class CharitiesController {
             return ResponseEntity.badRequest().body("Missing sorting order");
         }
         //TODO tags not implemented in database yet
-        String order_by = json.get("order_by").asText();
+        // String order_by = json.get("order_by").asText();
         return ResponseEntity.badRequest().body("Not implemented");
     }
-    /**
-     *
-     * @param json
-     * @return ResponseEntity
-     */
-    @GetMapping
+
+    @GetMapping("/get")
     public ResponseEntity<String> get(@RequestBody JsonNode json) {
         if(!json.has("identity")) {
             return ResponseEntity.badRequest().body("Missing Org ID");
@@ -46,67 +37,47 @@ public class CharitiesController {
         return ResponseEntity.status(404).body("Charity not found");
     }
 
-    /**
-     *
-     * @param json
-     * @return ResponseEntity
-     */
-    @PostMapping
+    @PostMapping("/vote")
     public ResponseEntity<String> vote(@RequestBody JsonNode json) {
-        if(!json.has("charity")) {
+        if (!json.has("charity")) {
             return ResponseEntity.badRequest().body("Missing charity");
         }
         if (!json.has("up")) {
-            return ResponseEntity.badRequest().body("Missing vote");
+            return ResponseEntity.badRequest().body("Missing up field.");
         }
         String charity = json.get("charity").asText();
-        Boolean up = json.get("up").asBoolean();
-        if(charitiesAdapter.vote(charity, up)) {
+        boolean up = json.get("up").asBoolean();
+        if (charitiesAdapter.vote(charity, up)) {
             return ResponseEntity.ok().body("Vote posted successfully");
         }
-        return ResponseEntity.status(500).body("Error posting vote"); //TODO Implement CharitiesAdapter
+        return ResponseEntity.status(500).body("Error posting vote");
     }
 
-    /**
-     *
-     * @param json
-     * @return ResponseEntity
-     */
-
-    @PutMapping
-    public ResponseEntity<String> edit_vote(@RequestBody JsonNode json) {
+    @PutMapping("/edit_vote")
+    public ResponseEntity<String> editVote(@RequestBody JsonNode json) {
         if (!json.has("charity")) {
-            return ResponseEntity.badRequest().body("Missing charity");
+            return ResponseEntity.badRequest().body("Missing charity field.");
         }
         if (!json.has("up")) {
-            return ResponseEntity.badRequest().body("Missing vote");
+            return ResponseEntity.badRequest().body("Missing vote value.");
         }
         String charity = json.get("charity").asText();
-        Boolean up = json.get("up").asBoolean();
-        if (charitiesAdapter.edit_vote(charity, up)) {
-            return ResponseEntity.ok().body("Vote edited successfully");
+        boolean up = json.get("up").asBoolean();
+        if (!charitiesAdapter.editVote(charity, up))  {
+            return ResponseEntity.status(500).body("Failed to edit vote.");
         }
-        return ResponseEntity.ok().body(""); //TODO
+        return ResponseEntity.ok("Vote registered successfully.");
     }
-    /**
-     *
-     * @param json
-     * @return ResponseEntity
-     */
 
-    @DeleteMapping
-    public ResponseEntity<String> delete_vote(@RequestBody JsonNode json) {
+    @DeleteMapping("/remove_vote")
+    public ResponseEntity<String> removeVote(@RequestBody JsonNode json) {
         if (!json.has("charity")) {
             return ResponseEntity.badRequest().body("Missing charity");
         }
-        if (!json.has("user")) {
-            return ResponseEntity.badRequest().body("Missing user");
-        }
         String charity = json.get("charity").asText();
-        String user = json.get("user").asText();
-        if (charitiesAdapter.delete_vote(charity, user)) {
-            return ResponseEntity.ok().body("Vote removed successfully");
+        if (charitiesAdapter.deleteVote(charity)) {
+            return ResponseEntity.ok().body("Vote edited successfully");
         }
-        return ResponseEntity.ok().body(""); //TODO
+        return ResponseEntity.status(500).body("Error removing like.");
     }
 }

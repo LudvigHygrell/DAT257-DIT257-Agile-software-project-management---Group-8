@@ -3,6 +3,7 @@ package com.backend.database;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Restricted view into comment-related DB operations.
@@ -67,5 +68,25 @@ public class CommentsAdapter {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 
+     * @param username
+     * @return
+     */
+    public ObjectNode comments(String username) {
+        
+        return null;
+    }
+
+    /**
+     * 
+     * @param username
+     * @return
+     */
+    public ObjectNode likes(String username) {
+
+        return null;
     }
 }

@@ -11,28 +11,28 @@ import java.time.LocalDateTime;
  * @since 2025-09-18
  */
 @Entity
-@Table(name="Likes")
-public class Like {
+@Table(name="CharityScores")
+public class CharityVote {
     @EmbeddedId
-    private LikeKey key;
-    @Column(name = "insertTime")
-    private LocalDateTime insertTime;
+    private CharityVoteKey key;
 
-    protected Like() {}
+    @Column(name="vote")
+    private boolean vote;
+
+    protected CharityVote() {}
 
 
     /**
      * Create a new Like object.
      * @param user The user who is voting.
      * @param charity The charity that is being voted on.
-     * @param insertTime The time tha vote was made.
+     * @param vote Whether the user voted for or against the charity.
      */
-    public Like(String user, String charity, LocalDateTime insertTime) {
+    public CharityVote(String user, String charity, boolean vote) {
         assert null != user;
         assert null != charity;
-        assert null != insertTime;
-        this.key = new LikeKey(user, charity);
-        this.insertTime = insertTime;
+        this.key = new CharityVoteKey(user, charity);
+        this.vote = vote;
     }
     public String getUser(){
         return key.getUser();
@@ -46,10 +46,10 @@ public class Like {
     public void setCharity(String charity) {
         key.setCharity(charity);
     }
-    public LocalDateTime getInsertTime() {
-        return insertTime;
+    public boolean votedUp() {
+        return vote;
     }
-    public void setInsertTime(LocalDateTime insertTime) {
-        this.insertTime = insertTime;
+    public void setVotedUp(boolean value) {
+        vote = value;
     }
 }

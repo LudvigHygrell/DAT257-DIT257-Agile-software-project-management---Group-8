@@ -77,4 +77,8 @@ public class User {
     public String getPasswordHash() {
         return passwordHash;
     }
+
+    public static User getCurrent() {
+        throw new UnsupportedOperationException();
+    }
 }

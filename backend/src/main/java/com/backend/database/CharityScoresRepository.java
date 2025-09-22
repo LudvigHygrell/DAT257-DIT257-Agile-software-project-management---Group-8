@@ -11,6 +11,6 @@ import org.springframework.data.jpa.repository.Query;
  * @version 1.0
  * @since 2025-09-19
  */
-public interface LikeRepository extends JpaRepository<Like, LikeKey> {
+public interface CharityScoresRepository extends JpaRepository<CharityVote, CharityVoteKey> {
 
 }
