@@ -5,5 +5,11 @@
 # Ignore java output
 target
 
+.*
+
+!.gitignore
+
 # Ignore tmp:
-tmp*
+tmp.java
+
+node_modules
