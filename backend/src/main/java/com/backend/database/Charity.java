@@ -32,8 +32,8 @@ public class Charity {
         return String.format("Charity(orgId=%s)", orgID);
     }
 
-    public void setOrgID(String orgID){ this.orgID = orgID;} //Unnecessary?
+    public void setOrgID(String orgID){ this.orgID = orgID; }
 
-    public String getOrgID() {return this.orgID;}
+    public String getOrgID() { return this.orgID; }
 
 }

@@ -8,26 +8,30 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CharitiesAdapter {
 
     @Autowired
-    private final CharityRepository charityRepository;
+    private CharityRepository charityRepository;
 
     @Autowired
-    private final LikeRepository likeRepository;
+    private CharityScoresRepository scoresRepository;
 
-    public CharitiesAdapter(CharityRepository charityRepository, LikeRepository likeRepository) {
-        this.charityRepository = charityRepository;
-        this.likeRepository = likeRepository;
-    }
+    @Autowired
+    private PausedCharitiesRepository pausedCharitiesRepository;
+
+    @Autowired
+    private AdministratorsRepository administratorsRepository;
+
+    protected CharitiesAdapter() {}
 
     public List<String> list(String[] filters, String order_by) {
         Pageable pageable = PageRequest.of(0,10); //TODO Implement sorting, and page parameter(?)
         Page<Charity> charitiesPage = charityRepository.findAll(pageable);
         return charitiesPage.getContent().stream().map(Charity::getOrgID).toList();
-    }//TODO
+    }
 
     /**
      * Returns a charity given its organization ID
@@ -39,35 +43,76 @@ public class CharitiesAdapter {
     /**
      * Registers a vote from the user on the charity.
      * @param charity the charity that is being voted on.
-     * @param up the vote value. true = upvote, false = down vote.
+     * @param value Whether the user voted up or down.
      * @return True if the vote was inserted.
      */
-    public boolean vote(String charity, boolean up) { //TODO Refer to Issue #1
+    public boolean vote(String charity, boolean value) {
         try{
-            //Identify if vote already exists from user
-            //If not, place vote
+            scoresRepository.save(new CharityVote(User.getCurrent().getUserName(), charity, value));        
         } catch (Exception e){
             return false;
         }
         return true;
     }
-    public boolean edit_vote(String charity, boolean up) {return true;}//TODO Refer to Issue #1
 
     /**
-     * Remove a user's vote from a charity page.
-     * @param user The user who placed the vote to be removed.
-     * @param charity The charity the vote was placed on.
-     * @return True if the vote was successfully removed.
+     * Change the value of a vote made by this user.
+     * @param charity Charity that was voted on.
+     * @param value New value of the vote.
+     * @return True if successful
      */
-    public boolean delete_vote(String user, String charity) {
-        try{
-            likeRepository.deleteById(new LikeKey(user,charity));
-            return true;
-        } catch (Exception e){
+    public boolean editVote(String charity, boolean value) {
+        try {
+            scoresRepository.save(new CharityVote(User.getCurrent().getUserName(), charity, value));
+        } catch (Exception ex) {
             return false;
         }
+        return true;
     }
-    public boolean pause(String charity_id) {return true;}//TODO
-    public boolean resume(String charity_id) {return true;}//TODO
-    public boolean get_paused(String[] filters, String order_by) {return true;}//TODO
+
+    /**
+     * Remove a vote made by the current user.
+     * @param charity Charity that was voted on. 
+     * @return True if successful.
+     */
+    public boolean deleteVote(String charity) {
+        try {
+            scoresRepository.deleteById(new CharityVoteKey(User.getCurrent().getUserName(), charity));
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Mark a charity as "paused" (only possible if User.getCurrent() is admin).
+     * @param charity_id Charity to pause.
+     * @return True if successful.
+     */
+    public boolean pause(String charity_id) {
+        try {
+            pausedCharitiesRepository.save(new PausedCharity(charity_id, User.getCurrent().getUserName()));            
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Resumes usage of a specified charity (only possible if User.getCurrent() is admin).
+     * @param charity_id Charity to resume use of.
+     * @return True if successful.
+     */
+    public boolean resume(String charity_id) {
+        try {
+            // NOTE: There will most likely be a trigger for this eventually, however we are still checking just to be sure.
+            Optional<Administrator> admin = administratorsRepository.findById(User.getCurrent().getUserName());
+            if (!admin.isPresent() || admin.get().getLevel() < Administrator.PAUSE_CHARITY_LEVEL)
+                return false;
+            pausedCharitiesRepository.deleteById(charity_id);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
 }

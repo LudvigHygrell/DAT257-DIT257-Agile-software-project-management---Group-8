@@ -49,7 +49,7 @@ INSERT INTO Likes VALUES ('John Doe', '1097940');
 INSERT INTO Likes VALUES ('Lisa Simpson', '1097940');
 
 INSERT INTO Comments VALUES (1,
- '1089464',
+ '1089464',deleted
  '{ "contents": "''; INSERT INTO Administrators VALUES (''Bart Simpson'', 3); --" }',
  CURRENT_TIMESTAMP,
  'Bart Simpson');
