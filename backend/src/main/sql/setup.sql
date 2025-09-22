@@ -1,6 +1,6 @@
--- PostgreSQL
+-- PostgresSQL
 
-CREATE TABLE Users(
+CREATE TABLE IF NOT EXISTS Users(
     username TEXT
         PRIMARY KEY,
     email TEXT
@@ -10,125 +10,111 @@ CREATE TABLE Users(
         NOT NULL -- "password" reserved, so using userPassword instead.
 );
 
-CREATE TABLE Administrators(
-    user TEXT
+CREATE TABLE IF NOT EXISTS Administrators(
+    adminUser TEXT
         PRIMARY KEY
-        REFERENCES(Users),
+        REFERENCES Users(username),
     adminLevel INT
         NOT NULL
-        CHECK(IN (1, 2, 3))
+        CHECK (adminLevel IN (1, 2, 3))
 );
 
-CREATE TABLE Charities(
+CREATE TABLE IF NOT EXISTS Charities(
     orgId TEXT
         PRIMARY KEY,
-    insertTime TIMESTAMP 
+    insertTime TIMESTAMP
         NOT NULL 
         DEFAULT CURRENT_TIMESTAMP    
 );
 
-CREATE TABLE PausedCharities(
+CREATE TABLE IF NOT EXISTS PausedCharities(
     orgId TEXT
         PRIMARY KEY
-        REFERENCES(Charities),
+        REFERENCES Charities(orgId),
     adminUser TEXT
         NOT NULL
-        REFERENCES(Administrators)
+        REFERENCES Administrators(adminUser)
 );
 
-CREATE TABLE Likes(
-    user TEXT
+CREATE TABLE IF NOT EXISTS Likes(
+    likeUser TEXT
         NOT NULL
-        REFERENCES(Users),
+        REFERENCES Users(username),
     charity TEXT
         NOT NULL
-        REFERENCES(Charities),
+        REFERENCES Charities(orgId),
     insertTime TIMESTAMP
         NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(user, charity)
+    PRIMARY KEY(likeUser, charity)
 );
 
-CREATE TABLE Comments(
+CREATE TABLE IF NOT EXISTS Comments(
     commentId INT
         NOT NULL,
     charity TEXT
         NOT NULL
-        REFERENCES(Charities),
+        REFERENCES Charities(orgId),
     comment JSON
+        NOT NULL,
+    commentUser TEXT
         NOT NULL
+        REFERENCES Users(username),
     insertTime TIMESTAMP
         NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
-    user TEXT
-        NOT NULL
-        REFERENCES(Users),
     PRIMARY KEY(commentId, charity)
 );
 
-CREATE TABLE CommentScores(
+CREATE TABLE IF NOT EXISTS CommentScores(
     comment INT
         NOT NULL,
     charity TEXT
         NOT NULL,
-    user TEXT
+    scoreUser TEXT
         NOT NULL
-        REFERENCES(Users),
+        REFERENCES Users(username),
     upDown BOOLEAN
         NOT NULL,
     PRIMARY KEY (comment, charity),
     FOREIGN KEY (comment, charity)
-        REFERENCES(Comments.commentId, Comments.charity)
+        REFERENCES Comments(commentId, charity)
 );
 
-CREATE TABLE SearchedCharities(
+CREATE TABLE IF NOT EXISTS SearchedCharities(
     username TEXT
         NOT NULL
-        REFERENCES(Users),
+        REFERENCES Users(username),
     charity TEXT
         NOT NULL
-        REFERENCES(Charities),
+        REFERENCES Charities(orgId),
     insertTime TIMESTAMP
         NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(username, charity)
 );
 
-CREATE TYPE COMMENT_BLAME_REASON AS ENUM(
-    'other',
-    'inappropriate',
-    'discriminatory',
-    'fallacy'
-);
-
-CREATE TABLE CommentBlame(
+CREATE TABLE IF NOT EXISTS CommentBlame(
     comment INT
         NOT NULL,
     charity TEXT
         NOT NULL,
     reporter TEXT
         NOT NULL
-        REFERENCES(Users),
-    reason COMMENT_BLAME_REASON
+        REFERENCES Users(username),
+    reason TEXT -- TODO
         NOT NULL,
-    PRIMARY KEY(comment, charity)
+    PRIMARY KEY(comment, charity, reporter)
 );
 
-CREATE TYPE CHARITY_BLAME_REASON AS ENUM(
-    'other',
-    'distrustful',
-    'discrimination'
-    -- more ...
-);
-
-CREATE TABLE CharityBlame(
+CREATE TABLE IF NOT EXISTS CharityBlame(
     charity TEXT
         NOT NULL
-        REFERENCES(Charities),
+        REFERENCES Charities(orgId),
     reporter TEXT
         NOT NULL
-        REFERENCES(Users),
-    reason CHARITY_BLAME_REASON
+        REFERENCES Users(username),
+    reason TEXT -- TODO
         NOT NULL,
     PRIMARY KEY (charity, reporter)
 );

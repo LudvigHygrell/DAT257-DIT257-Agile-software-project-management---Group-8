@@ -8,6 +8,9 @@ import java.util.Optional;
 
 /**
  * Restricted view into the Users table.
+ * @author JaarmaCo
+ * @version 1.0
+ * @since 2025-09-18
  */
 @Service
 public class UserAdapter extends Adapter {
@@ -65,5 +68,13 @@ public class UserAdapter extends Adapter {
             throw new RuntimeException(String.format("%s does not exist.", username));
         user.get().setPasswordHash(PasswordHashUtility.hashPassword(newPassword));
         userRepository.save(user.get());
+    }
+
+    public String getUsernameFromEmail(String email) {
+        return null;
+    }
+
+    public void changeEmail(String username, String email) {
+        
     }
 }

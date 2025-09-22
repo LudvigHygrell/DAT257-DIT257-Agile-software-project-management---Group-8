@@ -2,6 +2,9 @@ package com.backend.database;
 
 /**
  * Hashing utilities for hashing and comparing passwords.
+ * @author JaarmaCo
+ * @version 1.0
+ * @since 2025-09-18
  */
 public abstract class PasswordHashUtility {
 

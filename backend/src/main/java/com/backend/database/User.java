@@ -4,8 +4,12 @@ import jakarta.persistence.*;
 
 /**
  * Represents a record in the Users table.
+ * @author JaarmaCo
+ * @version 1.0
+ * @since 2025-09-18
  */
 @Entity
+@Table(name="Users")
 public class User {
 
     public static final String DELETED_USER_NAME = "<deleted user>";

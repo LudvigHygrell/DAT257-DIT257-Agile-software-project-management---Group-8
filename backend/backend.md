@@ -9,44 +9,52 @@
 - pausedCharities(<u>orgId</u>, timestamp, admin)
   
     orgId -> charities.orgId
-  
+
     admin -> administrators.user
 
 - likes(<u>user</u>, <u>charity</u>, timestamp)
   
     user -> users.username
+
     charity -> charities.orgId
 
 - comments(<u>commentId</u>, <u>charity</u>, comment, date, user)
   
     user -> users.username
+
     charity -> charities.orgId
 
 - commentScores(<u>comment</u>, <u>charity</u>, <u>user</u>, upDown)
   
     comment, charity -> comments.commentId, comments.charity
+    
     user -> users.username
+    
     upDown - bool    
 
 - administrators(<u>user</u>, level)
   
     user -> users.username
+    
     level IN (1, 2, 3)
 
 - searchedCharities(<u>username</u>, <u>charity</u>, timestamp)
   
    username -> users.username
+   
    charity -> charities.orgId
 
 - commentBlame(<u>comment</u>, <u>charity</u>, <u>reporter</u>, reason)
   
     comment, charity -> comments.commentId, comments.charity
+   
     reporter -> users.username
 
 - charityBlame(<u>charity</u>, <u>reporter</u>, reason)
   
    charity -> charities.orgId
-    reporter -> users.username
+   
+   reporter -> users.username
 
 # Endpoints
 
@@ -235,8 +243,9 @@
 
 ```json
 {
-    "comment" : string,
-    "charity" : string
+    "comment" : { "message": string },
+    "charity" : string,
+    "user" : string
 }
 ```
 
@@ -259,7 +268,6 @@
 {
     "comment_id" : string,
     "reason" : string,
-    "comment": string OR null,
-    "blame_victim" : string
+    "comment": { "message": string }, OR null
 }
 ```
