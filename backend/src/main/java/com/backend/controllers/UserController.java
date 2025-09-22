@@ -37,30 +37,37 @@ public class UserController {
     private CommentsAdapter commentAdapter;
 
     /**
-     * 
-     * @param json
-     * @return
+     * A basic method for logging into a user. Varifies that the username and password checks against the database. 
+     * @param json The input object for this REST controller
+     * @return One of the following HTTP-packets:
+     * <p>400 If there was some parameter missing (specified in the body) </p>
+     * <p>401 If the username and password did not match for any user</p>
+     * <p>200 If all went well, along with JWT data</p>
      */
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody JsonNode json) {
         if (!json.has("username"))
-            return ResponseEntity.badRequest().body("Missing username");
+            return ResponseEntity.status(400).body("Missing username");
         if (!json.has("password"))
-            return ResponseEntity.badRequest().body("Missing password");
+            return ResponseEntity.status(400).body("Missing password");
 
         String username = json.get("username").asText();
         String password = json.get("password").asText();
 
         if (userAdapter.login(username, password))
-            return ResponseEntity.ok("Login successful");
+            return ResponseEntity.ok("Login successful"); // TODO: Add JWT data
         
         return ResponseEntity.status(401).body("Invalid username or password");
     }
 
     /**
-     * 
-     * @param json
-     * @return
+     * Registers a new user with the provided username, email, and password.
+     * @param json The input object for this REST controller. Must contain "username", "email", and "password".
+     * @return One of the following HTTP-packets:
+     * <p>400 If there was some parameter missing (specified in the body) </p>
+     * <p>409 If the username or email already exists</p>
+     * <p>200 If all went well, and the user was registered</p>
+     * <p>500 If there was an error registering the user</p>
      */
     @PostMapping("/create")
     public ResponseEntity<String> register(@RequestBody JsonNode json) {
@@ -92,6 +99,15 @@ public class UserController {
         return ResponseEntity.status(500).body("Error registering user");
     }
 
+    /**
+     * Changes the password for a user.
+     * @param json The input object for this REST controller. Must contain "username", "old" (password), and "new" (password).
+     * @return One of the following HTTP-packets:
+     * <p>400 If there was some parameter missing (specified in the body) </p>
+     * <p>401 If the username and old password did not match for any user</p>
+     * <p>200 If all went well, and the password was changed</p>
+     * <p>500 If there was an error changing the password</p>
+     */
     @PutMapping("/change_password")
     public ResponseEntity<String> changePassword(@RequestBody JsonNode json) {
         if (!json.has("username"))
@@ -119,6 +135,14 @@ public class UserController {
     }
 
 
+	/**
+     * Resets the password for a user using a verification code.
+     * @param json The input object for this REST controller. Must contain "email", "new_password", and "verification_code".
+     * @return One of the following HTTP-packets:
+     * <p>400 If there was some parameter missing (specified in the body) </p>
+     * <p>200 If all went well, and the password was reset</p>
+     * <p>500 If there was an error resetting the password</p>
+     */
 	@PutMapping("/reset_password")
     public ResponseEntity<String> reset_password(@RequestBody JsonNode json ) {
         if(!json.has("email"))
@@ -143,9 +167,14 @@ public class UserController {
     }
 
     /**
-     * 
-     * @param json
-     * @return
+     * Changes the email for a user.
+     * @param json The input object for this REST controller. Must contain "username", "email", and "password".
+     * @return One of the following HTTP-packets:
+     * <p>400 If there was some parameter missing (specified in the body) </p>
+     * <p>401 If the email already exists</p>
+     * <p>402 If the user-credentials provided did not match any account</p>
+     * <p>200 If all went well, and the email was changed</p>
+     * <p>500 If there was an error changing the email</p>
      */
     @PutMapping("/change_email")
     public ResponseEntity<String> change_email(@RequestBody JsonNode json) {
@@ -175,12 +204,12 @@ public class UserController {
 
     }
     /**
-     * 
-     *      "username" : string,
-     *      "type" : ["comments" AND/OR "likes"],
-     *      "filters" : string (TODO)
-     * @param json
-     * @return
+     * Retrieves the activity for a user, including comments and likes.
+     * @param json The input object for this REST controller. Must contain "username" and "type" (e.g., ["comments", "likes"]).
+     * @return One of the following HTTP-packets:
+     * <p>400 If there was some parameter missing (specified in the body) </p>
+     * <p>200 If all went well, along with the user's activity data</p>
+     * <p>500 If there was an internal server error</p>
      */
     @PostMapping("/get_activity")
     public ResponseEntity<JsonNode> get_activity(@RequestBody JsonNode json) {
@@ -215,9 +244,12 @@ public class UserController {
     }
 
     /**
-     * 
-     * @param json
-     * @return
+     * Deletes a user.
+     * @param json The input object for this REST controller. Must contain "username".
+     * @return One of the following HTTP-packets:
+     * <p>400 If there was some parameter missing (specified in the body) </p>
+     * <p>200 If all went well, and the user was deleted</p>
+     * <p>500 If there was an internal server error</p>
      */
     @DeleteMapping("/remove")
     public ResponseEntity<String> delete_user(@RequestBody JsonNode json) {
