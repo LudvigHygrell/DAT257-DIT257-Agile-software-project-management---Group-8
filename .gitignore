@@ -4,5 +4,11 @@
 # Ignore automated file generation:
 .class
 
+.*
+
+!.gitignore
+
 # Ignore tmp:
 tmp.java
+
+node_modules
