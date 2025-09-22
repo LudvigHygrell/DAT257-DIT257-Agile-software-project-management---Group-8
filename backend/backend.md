@@ -9,44 +9,52 @@
 - pausedCharities(<u>orgId</u>, timestamp, admin)
   
     orgId -> charities.orgId
-  
+
     admin -> administrators.user
 
 - likes(<u>user</u>, <u>charity</u>, timestamp)
   
     user -> users.username
+
     charity -> charities.orgId
 
 - comments(<u>commentId</u>, <u>charity</u>, comment, date, user)
   
     user -> users.username
+
     charity -> charities.orgId
 
 - commentScores(<u>comment</u>, <u>charity</u>, <u>user</u>, upDown)
   
     comment, charity -> comments.commentId, comments.charity
+    
     user -> users.username
+    
     upDown - bool    
 
 - administrators(<u>user</u>, level)
   
     user -> users.username
+    
     level IN (1, 2, 3)
 
 - searchedCharities(<u>username</u>, <u>charity</u>, timestamp)
   
    username -> users.username
+   
    charity -> charities.orgId
 
 - commentBlame(<u>comment</u>, <u>charity</u>, <u>reporter</u>, reason)
   
     comment, charity -> comments.commentId, comments.charity
+   
     reporter -> users.username
 
 - charityBlame(<u>charity</u>, <u>reporter</u>, reason)
   
    charity -> charities.orgId
-    reporter -> users.username
+   
+   reporter -> users.username
 
 # Endpoints
 
@@ -143,7 +151,7 @@
 
 `/api/charities/list`
 
-```
+```json
 {
     "filters" : [],
     "order_by" : string
@@ -154,7 +162,7 @@
 
 `/api/charities/get`
 
-```
+```json
 {
     "identity" : string (orgId)
 }
@@ -165,7 +173,7 @@
 
 `/api/charities/vote`
 
-```
+```json
 {
     "charity" : string,
     "up" : boolean,
@@ -176,7 +184,7 @@
 
 `/api/charities/edit_vote`
 
-```
+```json
 {
     "charity": string,
     "up": boolean
@@ -187,7 +195,7 @@
 
 `/api/charities/delete_vote`
 
-```
+```json
 {
     "user": string,
     "charity": string
@@ -198,7 +206,7 @@
 
 `/api/charities/pause`
 
-```
+```json
 {
     "charity_id" : string
 }
@@ -208,7 +216,7 @@
 
 `/api/charities/resume`
 
-```
+```json
 {
     "charity_id" : string
 }
@@ -218,7 +226,7 @@
 
 `/api/charities/get_paused`
 
-```
+```json
 {
     "filters" : [],
     "order_by" : string
@@ -233,16 +241,11 @@
 
 `/api/comments/add`
 
-```
+```json
 {
-<<<<<<< Updated upstream
-    "comment" : string,
-    "charity" : string
-=======
     "comment" : { "message": string },
     "charity" : string,
     "user" : string
->>>>>>> Stashed changes
 }
 ```
 
@@ -250,7 +253,7 @@
 
 `/api/comments/remove`
 
-```
+```json
 {
     "comment_id" : string,
     "charity" : string
@@ -261,7 +264,7 @@
 
 `/api/comments/blame`
 
-```
+```json
 {
     "comment_id" : string,
     "reason" : string,
