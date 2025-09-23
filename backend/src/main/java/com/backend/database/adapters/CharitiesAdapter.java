@@ -1,5 +1,8 @@
-package com.backend.database;
+package com.backend.database.adapters;
 
+import com.backend.database.repositories.*;
+import com.backend.database.entities.*;
+import com.backend.database.entities.keys.CharityVoteKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

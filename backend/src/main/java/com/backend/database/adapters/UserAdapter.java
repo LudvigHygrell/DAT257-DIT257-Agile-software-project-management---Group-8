@@ -1,6 +1,11 @@
-package com.backend.database;
+package com.backend.database.adapters;
+
+import com.backend.database.repositories.*;
+import com.backend.database.entities.*;
+import com.backend.database.*;
 
 import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +18,7 @@ import java.util.Optional;
  * @since 2025-09-18
  */
 @Service
-public class UserAdapter extends Adapter {
+public class UserAdapter {
 
     @Autowired
     private final UserRepository userRepository;

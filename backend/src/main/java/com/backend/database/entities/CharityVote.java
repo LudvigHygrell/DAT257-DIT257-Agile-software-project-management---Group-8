@@ -1,8 +1,8 @@
-package com.backend.database;
-import com.fasterxml.jackson.databind.JsonNode;
-import jakarta.persistence.*;
+package com.backend.database.entities;
 
-import java.time.LocalDateTime;
+import com.backend.database.entities.keys.*;
+
+import jakarta.persistence.*;
 
 /**
  * Represents a record in the Likes table.

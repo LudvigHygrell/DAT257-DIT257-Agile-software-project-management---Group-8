@@ -1,4 +1,6 @@
-package com.backend.database;
+package com.backend.database.entities;
+
+import com.backend.database.entities.keys.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.Column;

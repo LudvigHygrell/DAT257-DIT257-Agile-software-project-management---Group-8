@@ -1,9 +1,15 @@
-package com.backend.database;
+package com.backend.database.adapters;
+
+import com.backend.database.repositories.*;
+import com.backend.database.entities.*;
+import com.backend.database.entities.keys.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 
 /**
  * Restricted view into comment-related DB operations.

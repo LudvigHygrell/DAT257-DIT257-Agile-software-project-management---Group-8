@@ -1,4 +1,6 @@
-package com.backend.database;
+package com.backend.database.repositories;
+
+import com.backend.database.entities.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +19,7 @@ import java.util.Optional;
 public interface CharityRepository extends JpaRepository<Charity, String>{
 
     /**
-     * Returns a charity given its organization ID. //TODO This might be unnecessary
+     * Returns a charity given its organization ID.
      *
      * @param orgId the organization ID of the charity.
      * @return the charity, or null if it could not be found.

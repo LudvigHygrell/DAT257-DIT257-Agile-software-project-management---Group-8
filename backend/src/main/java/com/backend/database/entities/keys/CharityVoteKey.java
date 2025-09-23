@@ -1,4 +1,4 @@
-package com.backend.database;
+package com.backend.database.entities.keys;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

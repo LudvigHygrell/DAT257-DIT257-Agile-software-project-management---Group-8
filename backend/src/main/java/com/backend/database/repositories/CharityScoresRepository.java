@@ -1,9 +1,9 @@
-package com.backend.database;
+package com.backend.database.repositories;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.hibernate.mapping.Selectable;
+import com.backend.database.entities.*;
+import com.backend.database.entities.keys.*;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 /**
  * Repository for the Like table.

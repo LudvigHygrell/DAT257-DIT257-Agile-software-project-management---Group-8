@@ -1,12 +1,9 @@
 package com.backend.controllers;
 
-import com.backend.database.UserRepository;
-import com.backend.database.CommentsAdapter;
-import com.backend.database.UserAdapter;
+import com.backend.database.adapters.CommentsAdapter;
+import com.backend.database.adapters.UserAdapter;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.config.ResourceReaderRepositoryPopulatorBeanDefinitionParser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

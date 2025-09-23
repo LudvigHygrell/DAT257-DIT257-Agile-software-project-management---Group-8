@@ -1,4 +1,4 @@
-package com.backend.database;
+package com.backend.database.entities.keys;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -7,13 +7,13 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * Composite primary key into the CommentBlame table.
+ * Composite primary key type for the Comments table.
  * @author JaarmaCo
  * @version 1.0
  * @since 2025-09-18
  */
 @Embeddable
-public class CommentBlameKey implements Serializable {
+public class CommentKey implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1;
@@ -24,21 +24,15 @@ public class CommentBlameKey implements Serializable {
     @Column(name="charity")
     private String charity;
 
-    @Column(name="reporter")
-    private String reporter;
-
     /**
-     * Construct a new comment blame key.
-     * @param commentId Identifier of the blamed comment.
+     * Create a new comment key.
+     * @param commentId Identifier of the comment.
      * @param charity Charity that was commented on.
-     * @param reporter User reporting the blame.
      */
-    public CommentBlameKey(int commentId, String charity, String reporter) {
+    public CommentKey(int commentId, String charity) {
         assert null != charity;
-        assert null != reporter;
         this.commentId = commentId;
         this.charity = charity;
-        this.reporter = reporter;
     }
 
     public int getCommentId() {
@@ -49,21 +43,12 @@ public class CommentBlameKey implements Serializable {
         return charity;
     }
 
-    public String getReporter() {
-        return reporter;
-    }
-
-    public void setCommentId(int commentId) {
-        this.commentId = commentId;
+    public void setCommentId(int id) {
+        commentId = id;
     }
 
     public void setCharity(String charity) {
         assert null != charity;
         this.charity = charity;
-    }
-
-    public void setReporter(String reporter) {
-        assert null != reporter;
-        this.reporter = reporter;
     }
 }
