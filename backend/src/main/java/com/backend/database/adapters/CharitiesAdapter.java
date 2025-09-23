@@ -43,8 +43,8 @@ public class CharitiesAdapter {
      * @param order_by Ordering of the results.
      * @return A list 
      */
-    public List<String> list(String[] filters, String order_by) {
-        Pageable pageable = PageRequest.of(0,10); //TODO Implement sorting, and page parameter(?)
+    public List<String> list(String[] filters, String order_by, int pageSize, int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber,pageSize); //TODO Implement sorting
         Page<Charity> charitiesPage = charityRepository.findAll(pageable);
         return charitiesPage.getContent().stream().map(Charity::getOrgID).toList();
     }

@@ -153,8 +153,10 @@
 
 ```json
 {
-    "filters" : [],
-    "order_by" : string
+    "filters" : [], 
+    "order_by" : string,
+    "pageSize" : int,
+    "pageNumber" : int,
 }
 ```
 
