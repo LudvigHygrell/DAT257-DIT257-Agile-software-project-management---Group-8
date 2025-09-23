@@ -51,7 +51,6 @@ INSERT INTO CharityScores VALUES ('Lisa Simpson', '1097940', TRUE);
 INSERT INTO Comments VALUES (1,
  '1089464',
  '{ "contents": "''; INSERT INTO Administrators VALUES (''Bart Simpson'', 3); --" }',
- CURRENT_TIMESTAMP,
  'Bart Simpson');
 
 INSERT INTO CommentScores VALUES (1, '1089464', 'Lisa Simpson', FALSE);

@@ -20,7 +20,12 @@ public class UserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if(userAdapter.isUsername(username))
-            return new UserDetail(username, userAdapter.getPassword(username));
+            return new UserDetail(username, userAdapter
+                    .getPassword(username)
+                    .orElseThrow(
+                            () -> new UsernameNotFoundException(
+                                    String.format("User %s not found.", username)))
+                    .toString());
         throw new UsernameNotFoundException("User not found: " + username);
     }
     

@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.Optional;
+
 /**
  * The UserController class handles user-related API endpoints such as login and registration.
  * This class contains methods to process incoming requests, validate input data, and interact
@@ -66,7 +68,6 @@ public class UserController {
 
         String username = json.get("username").asText();
         String password = json.get("password").asText();
-        password = encoder.hashPassword(password);
 
         if (userAdapter.login(username, password)){
             final UserDetail user = (UserDetail) this.userDetailService.loadUserByUsername(username);
@@ -106,8 +107,7 @@ public class UserController {
         if (userAdapter.isEmail(email))
             return ResponseEntity.status(409).body("Email already exists");
         try {
-            String encoded_password = encoder.hashPassword(password);
-            userAdapter.register(username, email, encoded_password);
+            userAdapter.register(username, email, password);
             return ResponseEntity.ok("User registered successfully");
         } catch(Exception e) {
             e.printStackTrace();
@@ -140,10 +140,13 @@ public class UserController {
         if (old_password.equals(new_password))
             return ResponseEntity.badRequest().body("New password must be different from old password");
 
-        if (!userAdapter.login(username, encoder.hashPassword(old_password)))
+        if (userAdapter.getPassword(username)
+                .map((pw) -> pw.equals(encoder.hashPassword(old_password)))
+                .orElse(false)) {
             return ResponseEntity.status(401).body("Invalid username or password");
+        }
         try {
-            userAdapter.changePassword(username, encoder.hashPassword(new_password));
+            userAdapter.changePassword(username, new_password);
             return ResponseEntity.ok("Password changed successfully");
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -161,7 +164,7 @@ public class UserController {
      * <p>500 If there was an error resetting the password</p>
      */
 	@PutMapping("/reset_password")
-    public ResponseEntity<String> reset_password(@RequestBody JsonNode json ) {
+    public ResponseEntity<String> resetPassword(@RequestBody JsonNode json ) {
         if(!json.has("email"))
             return ResponseEntity.status(400).body("The email parameter is not set.");
         if(!json.has("new_password"))
@@ -172,10 +175,15 @@ public class UserController {
         // TODO: implement the check for verification code
 
         String email = json.get("email").asText();
-        String username = userAdapter.getUsernameFromEmail(email);
+        Optional<String> username = userAdapter.getUsernameFromEmail(email);
         String new_password = json.get("new_password").asText();
+
+        if (username.isEmpty()) {
+            return ResponseEntity.status(500).body("Error in getting username for provided email.");
+        }
+
         try {
-            userAdapter.changePassword(username, new_password);
+            userAdapter.changePassword(username.get(), new_password);
             return ResponseEntity.status(200).body("All went fine. You password is now changed!");
         } catch(Exception e) {
             e.printStackTrace();
@@ -194,7 +202,7 @@ public class UserController {
      * <p>500 If there was an error changing the email</p>
      */
     @PutMapping("/change_email")
-    public ResponseEntity<String> change_email(@RequestBody JsonNode json) {
+    public ResponseEntity<String> changeEmail(@RequestBody JsonNode json) {
         if(!json.has("username"))
             return ResponseEntity.status(400).body("The username parameter was not set");
         if(!json.has("email"))
@@ -208,7 +216,7 @@ public class UserController {
 
         if(userAdapter.isEmail(email))
             return ResponseEntity.status(401).body("The email you set is already a registered email at our site");
-        if(!userAdapter.login(username, encoder.hashPassword(password)))
+        if(!userAdapter.login(username, password))
             return ResponseEntity.status(402).body("The user-credentials provided did not match any account");
 
         try {
