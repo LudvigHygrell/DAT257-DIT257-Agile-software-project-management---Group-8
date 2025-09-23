@@ -9,7 +9,7 @@ import jakarta.persistence.criteria.Root;
 
 /**
  * Builds @see{Filter} objects that can later be applied in a @see{FilteredQuery}
- * @tparam Entity Database entity being filtered.
+ * @param <Entity> Database entity being filtered.
  * @author JaarmaCo
  * @since 2025-09-23
  * @version 1.0
@@ -31,35 +31,50 @@ public class FilterBuilder<Entity> {
 
     /**
      * Create a less than filter.
-     * @tparam Value Numeric type.
+     * @param <Value> Numeric type.
      * @param field Field to compare to.
      * @param value Value to assign as the right hand operand.
      * @return A filter that, when applied to a query, filters: Entity.field < value
      */
     public <Value extends Number> Filter<Entity> lessThan(String field, Value value) {
-        return new Filter<>(cb.lt(root.get(field), value), entityClass, FilteringMethod.LESS, field, value);
+        assert null != field;
+        assert null != value;
+        return new Filter<>(cb.lt(root.get(field), value), 
+            entityClass, 
+            FilteringMethod.LESS, 
+            field, value);
     }
 
     /**
      * Create a greater than filter.
-     * @tparam Value Numeric type.
+     * @param <Value> Numeric type.
      * @param field Field to compare to.
      * @param value Value to assign as the right hand operand.
      * @return A filter that, when applied to a query, filters: Entity.field > value
      */
     public <Value extends Number> Filter<Entity> greaterThan(String field, Value value) {
-        return new Filter<>(cb.gt(root.get(field), value), entityClass, FilteringMethod.GREATER, field, value);
+        assert null != field;
+        assert null != value;
+        return new Filter<>(cb.gt(root.get(field), value),
+            entityClass,
+            FilteringMethod.GREATER,
+            field, value);
     }
 
     /**
      * Create an equal-to filter.
-     * @tparam Value Numeric type.
+     * @param <Value> Numeric type.
      * @param field Field to compare to.
      * @param value Value to assign as the right hand operand.
      * @return A filter that, when applied to a query, filters: Entity.field = value 
      */
-    public <Value extends Number> Filter<Entity> equalTo(String field, Value value) {
-        return new Filter<>(cb.equal(root.get(field), value), entityClass, FilteringMethod.EQUALS, field, value);
+    public <Value> Filter<Entity> equalTo(String field, Value value) {
+        assert null != field;
+        assert null != value;
+        return new Filter<>(cb.equal(root.get(field), value),
+            entityClass,
+            FilteringMethod.EQUALS,
+            field, value);
     }
 
     /**
@@ -69,7 +84,12 @@ public class FilterBuilder<Entity> {
      * @return A filter that, when applied to a query, filters: Entity.field LIKE value
      */
     public Filter<Entity> like(String field, String value) {
-        return new Filter<>(cb.like(root.get(field), value), entityClass, FilteringMethod.LIKE, field, value);
+        assert null != field;
+        assert null != value;
+        return new Filter<>(cb.like(root.get(field), value),
+            entityClass,
+            FilteringMethod.LIKE,
+            field, value);
     }
 
     private Predicate[] predicates(Iterable<Filter<Entity>> filters) {
@@ -84,7 +104,11 @@ public class FilterBuilder<Entity> {
      * @return A filter that corresponds to: filters OR ...
      */
     public Filter<Entity> or(Iterable<Filter<Entity>> filters) {
-        return new Filter<>(cb.or(predicates(filters)), entityClass, FilteringMethod.OR, filters);
+        assert null != filters;
+        return new Filter<>(cb.or(predicates(filters)),
+            entityClass,
+            FilteringMethod.OR,
+            filters);
     }
 
     /**
@@ -93,7 +117,11 @@ public class FilterBuilder<Entity> {
      * @return A filter that corresponds to: filters AND ...
      */
     public Filter<Entity> and(Iterable<Filter<Entity>> filters) {
-        return new Filter<>(cb.and(predicates(filters)), entityClass, FilteringMethod.AND, filters);
+        assert null != filters;
+        return new Filter<>(cb.and(predicates(filters)),
+            entityClass,
+            FilteringMethod.AND,
+            filters);
     }
 
     /**
@@ -102,6 +130,17 @@ public class FilterBuilder<Entity> {
      * @return A filter that inverts the result of the provided filter.
      */
     public Filter<Entity> not(Filter<Entity> filter) {
-        return new Filter<>(cb.not(filter.getPredicate()), entityClass, FilteringMethod.NOT, List.of(filter));
+        assert null != filter;
+        return new Filter<>(cb.not(filter.getPredicate()),
+            entityClass,
+            FilteringMethod.NOT,
+            List.of(filter));
+    }
+
+    /**
+     * Gets Entity.class  
+     */
+    public Class<Entity> getEntityClass() {
+        return entityClass;
     }
 }

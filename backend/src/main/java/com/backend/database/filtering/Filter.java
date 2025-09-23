@@ -11,7 +11,7 @@ import jakarta.persistence.criteria.Predicate;
 
 /**
  * Opaque object that holds a single filter component.
- * @tparam Entity Database entity this filter applies to.
+ * @param <Entity> Database entity this filter applies to.
  * @author JaarmaCo
  * @since 2025-09-23
  * @version 1.0
@@ -26,6 +26,11 @@ public class Filter<Entity> {
     private final Iterable<Filter<Entity>> subFilters;
 
     /* package-private */ <Op> Filter(Predicate predicate, Class<Entity> entityClass, FilteringMethod method, String field, Op operand) {
+        assert null != predicate;
+        assert null != entityClass;
+        assert null != method;
+        assert null != field;
+        assert null != operand;
         this.predicate = predicate;
         this.method = method;
         this.entityClass = entityClass;
@@ -35,6 +40,10 @@ public class Filter<Entity> {
     }
 
     /* package-private */ Filter(Predicate predicate, Class<Entity> entityClass, FilteringMethod method, Iterable<Filter<Entity>> subFilters) {
+        assert null != predicate;
+        assert null != entityClass;
+        assert null != method;
+        assert null != subFilters;
         this.predicate = predicate;
         this.method = method;
         this.entityClass = entityClass;

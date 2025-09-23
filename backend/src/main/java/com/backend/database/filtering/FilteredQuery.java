@@ -9,7 +9,7 @@ import jakarta.persistence.criteria.Root;
 
 /**
  * Class used to send filtered queries to the database.
- * @tparam Entity Database entity to query.
+ * @param <Entity> Database entity to query.
  * @author JaarmaCo
  * @since 2025-09-23
  * @version 1.0
@@ -52,6 +52,7 @@ public class FilteredQuery<Entity> {
      * @return A list of the results of the query.
      */
     public List<Entity> runQuery(Filter<Entity> filter) {
+        assert null != filter;
         query.select(root).where(filter.getPredicate());
         return manager.createQuery(query).getResultList();
     } 
