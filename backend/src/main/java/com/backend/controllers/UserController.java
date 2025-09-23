@@ -48,6 +48,7 @@ public class UserController {
 
     @Autowired
     private PasswordHashUtility encoder;
+
     /**
      * A basic method for logging into a user. Varifies that the username and password checks against the database. 
      * @param json The input object for this REST controller
@@ -105,7 +106,7 @@ public class UserController {
         if (userAdapter.isEmail(email))
             return ResponseEntity.status(409).body("Email already exists");
         try {
-            String encoded_password = encoder.hashPassword(password)
+            String encoded_password = encoder.hashPassword(password);
             userAdapter.register(username, email, encoded_password);
             return ResponseEntity.ok("User registered successfully");
         } catch(Exception e) {
@@ -207,7 +208,7 @@ public class UserController {
 
         if(userAdapter.isEmail(email))
             return ResponseEntity.status(401).body("The email you set is already a registered email at our site");
-        if(!userAdapter.login(username, encoder.encode(password)))
+        if(!userAdapter.login(username, encoder.hashPassword(password)))
             return ResponseEntity.status(402).body("The user-credentials provided did not match any account");
 
         try {

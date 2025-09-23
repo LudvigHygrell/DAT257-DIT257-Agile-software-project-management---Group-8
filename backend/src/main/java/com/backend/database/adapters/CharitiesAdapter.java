@@ -13,6 +13,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Adapter for interacting with charity data.
+ * @author Ludvig Hygrell, JaarmaCo
+ * @since 2025-09-23
+ * @version 1.0
+ */
 @Service
 public class CharitiesAdapter {
 
@@ -30,6 +36,12 @@ public class CharitiesAdapter {
 
     protected CharitiesAdapter() {}
 
+    /**
+     * List available charities.
+     * @param filters Filters to apply when listing.
+     * @param order_by Ordering of the results.
+     * @return A list 
+     */
     public List<String> list(String[] filters, String order_by) {
         Pageable pageable = PageRequest.of(0,10); //TODO Implement sorting, and page parameter(?)
         Page<Charity> charitiesPage = charityRepository.findAll(pageable);
