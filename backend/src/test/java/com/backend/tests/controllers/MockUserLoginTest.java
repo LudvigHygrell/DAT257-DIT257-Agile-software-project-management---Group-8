@@ -7,12 +7,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 import com.backend.tests.ResourceLoader;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 /**
  * Tests basic user login functionality.
@@ -38,13 +40,20 @@ public class MockUserLoginTest {
                             .toPrettyString()))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/api/users/login")
+        MvcResult result = mockMvc.perform(get("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ResourceLoader.loadJson("login-user-mock.json")
                             .toPrettyString()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String jwtToken = new ObjectMapper()
+                .readTree(result.getResponse()
+                        .getContentAsString())
+                .get("token").asText();
 
         mockMvc.perform(delete("/api/users/remove")
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ResourceLoader.loadJson("delete-user-mock.json")
                             .toPrettyString()))
