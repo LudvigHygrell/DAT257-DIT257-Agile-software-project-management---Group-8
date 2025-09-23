@@ -77,4 +77,8 @@ public class UserAdapter extends Adapter {
     public void changeEmail(String username, String email) {
         
     }
+
+    public String getPassword(String username) {
+        return null;
+    }
 }

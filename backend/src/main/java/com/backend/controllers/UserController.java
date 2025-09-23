@@ -2,12 +2,17 @@ package com.backend.controllers;
 
 import com.backend.database.UserRepository;
 import com.backend.database.CommentsAdapter;
+import com.backend.database.User;
 import com.backend.database.UserAdapter;
+import com.backend.jwt.JwtUtil;
+import com.backend.jwt.user.UserDetailService;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.config.ResourceReaderRepositoryPopulatorBeanDefinitionParser;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +39,18 @@ public class UserController {
 
     @Autowired
     private UserAdapter userAdapter;
+
+    @Autowired
     private CommentsAdapter commentAdapter;
+
+    @Autowired
+    private UserDetailService userDetailService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
     /**
      * A basic method for logging into a user. Varifies that the username and password checks against the database. 
@@ -45,7 +61,7 @@ public class UserController {
      * <p>200 If all went well, along with JWT data</p>
      */
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody JsonNode json) {
+    public ResponseEntity<?> login(@RequestBody JsonNode json) {
         if (!json.has("username"))
             return ResponseEntity.status(400).body("Missing username");
         if (!json.has("password"))
@@ -54,8 +70,11 @@ public class UserController {
         String username = json.get("username").asText();
         String password = json.get("password").asText();
 
-        if (userAdapter.login(username, password))
-            return ResponseEntity.ok("Login successful"); // TODO: Add JWT data
+        if (userAdapter.login(username, password)){
+            final User user = (User) this.userDetailService.loadUserByUsername(username);
+            final String jwt = jwtUtil.generateToken((UserDetails)user);
+            return ResponseEntity.ok().body("{\"token\": \"" + jwt + "\"}"); // Returns the JWT token
+        }
         
         return ResponseEntity.status(401).body("Invalid username or password");
     }
@@ -88,9 +107,9 @@ public class UserController {
         
         if (userAdapter.isEmail(email))
             return ResponseEntity.status(409).body("Email already exists");
-
         try {
-            userAdapter.register(username, email, password);
+            String encoded_password = encoder.encode(password);
+            userAdapter.register(username, email, encoded_password);
             return ResponseEntity.ok("User registered successfully");
         } catch(Exception e) {
             e.printStackTrace();
@@ -123,10 +142,10 @@ public class UserController {
         if (old_password.equals(new_password))
             return ResponseEntity.badRequest().body("New password must be different from old password");
 
-        if (!userAdapter.login(username, old_password))
+        if (!userAdapter.login(username, encoder.encode(old_password)))
             return ResponseEntity.status(401).body("Invalid username or password");
         try {
-            userAdapter.changePassword(username, new_password);
+            userAdapter.changePassword(username, encoder.encode(new_password));
             return ResponseEntity.ok("Password changed successfully");
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -191,7 +210,7 @@ public class UserController {
 
         if(userAdapter.isEmail(email))
             return ResponseEntity.status(401).body("The email you set is already a registered email at our site");
-        if(!userAdapter.login(username, password))
+        if(!userAdapter.login(username, encoder.encode(password)))
             return ResponseEntity.status(402).body("The user-credentials provided did not match any account");
 
         try {
