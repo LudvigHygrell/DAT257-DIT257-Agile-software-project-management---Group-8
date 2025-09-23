@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS CharityScores(
     insertTime TIMESTAMP
         NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(likeUser, charity)
+    PRIMARY KEY(ratingUser, charity)
 );
 
 CREATE TABLE IF NOT EXISTS Comments(
@@ -121,6 +121,6 @@ CREATE TABLE IF NOT EXISTS CharityBlame(
     PRIMARY KEY (charity, reporter)
 );
 
-CREATE VIEW NextCommendId(charity) AS SELECT MAX(commentId)+1
+CREATE OR REPLACE VIEW NextCommendId(charity) AS SELECT MAX(commentId)+1
     FROM Comments
-    WHERE Comments.charity=NextCommendId.charity;
+    WHERE Comments.charity=charity;

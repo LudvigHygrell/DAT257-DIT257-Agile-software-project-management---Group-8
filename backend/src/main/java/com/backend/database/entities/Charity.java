@@ -13,8 +13,8 @@ import jakarta.persistence.*;
 @Table(name="Charities")
 public class Charity {
     @Id
-    @Column(name = "orgID")
-    private String orgID;
+    @Column(name = "orgId")
+    private String orgId;
 
     protected Charity() {}
 
@@ -24,16 +24,16 @@ public class Charity {
      */
     public Charity(String orgID){
         assert null != orgID;
-        this.orgID = orgID;
+        this.orgId = orgID;
     }
 
     @Override
     public String toString(){
-        return String.format("Charity(orgId=%s)", orgID);
+        return String.format("Charity(orgId=%s)", orgId);
     }
 
-    public void setOrgID(String orgID){ this.orgID = orgID; }
+    public void setOrgID(String orgID){ this.orgId = orgID; }
 
-    public String getOrgID() { return this.orgID; }
+    public String getOrgID() { return this.orgId; }
 
 }

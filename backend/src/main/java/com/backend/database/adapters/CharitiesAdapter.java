@@ -34,6 +34,7 @@ public class CharitiesAdapter {
     @Autowired
     private AdministratorsRepository administratorsRepository;
 
+
     protected CharitiesAdapter() {}
 
     /**
@@ -122,7 +123,7 @@ public class CharitiesAdapter {
         try {
             // NOTE: There will most likely be a trigger for this eventually, however we are still checking just to be sure.
             Optional<Administrator> admin = administratorsRepository.findById(User.getCurrent().getUserName());
-            if (!admin.isPresent() || admin.get().getLevel() < Administrator.PAUSE_CHARITY_LEVEL)
+            if (admin.isEmpty() || admin.get().getLevel() < Administrator.PAUSE_CHARITY_LEVEL)
                 return false;
             pausedCharitiesRepository.deleteById(charity_id);
         } catch (Exception ex) {

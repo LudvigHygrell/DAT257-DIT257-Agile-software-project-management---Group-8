@@ -2,11 +2,15 @@ package com.backend.database.entities;
 
 import com.backend.database.entities.keys.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+
+import java.rmi.UnexpectedException;
 
 /**
  * Represents an entry in the Comments table.
@@ -22,7 +26,7 @@ public class Comment {
     private CommentKey key;
 
     @Column(name="comment")
-    private JsonNode comment;
+    private String comment;
 
     @Column(name="commentUser")
     private String commentUser;
@@ -41,7 +45,7 @@ public class Comment {
         assert null != comment;
         assert null != commentUser;
         this.key = new CommentKey(commentId, charity);
-        this.comment = comment;
+        this.comment = comment.toString();
         this.commentUser = commentUser;
     }
 
@@ -54,7 +58,11 @@ public class Comment {
     }
 
     public JsonNode getComment() {
-        return comment;
+        try {
+            return new ObjectMapper().readTree(comment);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("Unexpected processing error in validated JSON.");
+        }
     }
 
     public String getCommentUser() {
@@ -72,7 +80,7 @@ public class Comment {
 
     public void setComment(JsonNode comment) {
         assert null != comment;
-        this.comment = comment;
+        this.comment = comment.toString();
     }
 
     public void setCommentUser(String user) {

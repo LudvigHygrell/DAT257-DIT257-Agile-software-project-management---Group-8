@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.function.Function;
 /**
  * This class is a placeholder for JWT utility functions, used for creating and authenticating JSON Web Tokens.
  */
+@Service
 public class JwtUtil {
 
     @Value("${jwt.secret}")

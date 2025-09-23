@@ -26,6 +26,9 @@ public class CommentsAdapter {
     @Autowired
     private CommentBlameRepository commentBlameRepository;
 
+    @Autowired
+    private NextCommentIdRepository nextCommentIdRepository;
+
     /**
      * Register a new comment in the DB.
      * @param comment The comment contents to add.
@@ -35,7 +38,8 @@ public class CommentsAdapter {
      */
     public boolean add(JsonNode comment, String user, String charity) {
         try {
-            int nextId = commentsRepository.getNextCommentId(charity);
+            int nextId = nextCommentIdRepository.findById(charity)
+                    .orElseThrow(() -> new RuntimeException("Failed to get next id.")).getId();
             Comment record = new Comment(nextId, charity, comment, user);
             commentsRepository.save(record);
         } catch (Exception ex) {

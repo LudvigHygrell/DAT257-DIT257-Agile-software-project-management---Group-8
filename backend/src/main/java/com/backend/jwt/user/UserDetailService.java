@@ -7,10 +7,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.backend.database.adapters.UserAdapter;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
-
+@Service
 public class UserDetailService implements UserDetailsService {
 
     @Autowired
