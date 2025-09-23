@@ -1,0 +1,53 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/filtering.schema.json",
+    "title": "Filter object schema",
+    "description": "Json Schema for filters that can be passed from the client to the BeneSphere server.",
+    "definitions": {
+        "comparisonFilter": {
+            "description": "Comparison filter, accepts a field to compare on (field), an operand (value) and an operation (filter).",
+            "type": "object",
+            "properties": {
+                "filter": {
+                    "type": "string",
+                    "enum": ["less", "greater", "equals", "like"]
+                },
+                "field": { "type": "string" },
+                "value": {
+                    "oneOf": [
+                        { "type": "string" },
+                        { "type": "number" },
+                        { "type": "boolean" }
+                    ]
+                }
+            },
+            "required": ["filter", "field", "value"]
+        },
+        "booleanFilter": {
+            "description": "Boolean filter, accepts a boolean operation (filter) and one or more operands (arguments).",
+            "type": "object",
+            "properties": {
+                "filter": {
+                    "type": "string",
+                    "enum": ["not", "and", "or"]
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#"
+                    },
+                    "minItems": 1
+                }
+            },
+            "required": ["filter", "arguments"]
+        }
+    },
+    "oneOf": [
+        {
+            "$ref": "#/definitions/comparisonFilter"
+        },
+        {
+            "$ref": "#/definitions/booleanFilter"
+        }
+    ]
+}
