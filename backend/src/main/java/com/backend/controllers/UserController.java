@@ -1,18 +1,15 @@
 package com.backend.controllers;
 
-import com.backend.database.UserRepository;
-import com.backend.database.CommentsAdapter;
-import com.backend.database.User;
-import com.backend.database.UserAdapter;
+import com.backend.database.adapters.CommentsAdapter;
+import com.backend.database.PasswordHashUtility;
+import com.backend.database.adapters.UserAdapter;
 import com.backend.jwt.JwtUtil;
+import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.config.ResourceReaderRepositoryPopulatorBeanDefinitionParser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,8 +47,7 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private PasswordEncoder encoder;
-
+    private PasswordHashUtility encoder;
     /**
      * A basic method for logging into a user. Varifies that the username and password checks against the database. 
      * @param json The input object for this REST controller
@@ -69,9 +65,10 @@ public class UserController {
 
         String username = json.get("username").asText();
         String password = json.get("password").asText();
+        password = encoder.hashPassword(password);
 
         if (userAdapter.login(username, password)){
-            final User user = (User) this.userDetailService.loadUserByUsername(username);
+            final UserDetail user = (UserDetail) this.userDetailService.loadUserByUsername(username);
             final String jwt = jwtUtil.generateToken((UserDetails)user);
             return ResponseEntity.ok().body("{\"token\": \"" + jwt + "\"}"); // Returns the JWT token
         }
@@ -108,7 +105,7 @@ public class UserController {
         if (userAdapter.isEmail(email))
             return ResponseEntity.status(409).body("Email already exists");
         try {
-            String encoded_password = encoder.encode(password);
+            String encoded_password = encoder.hashPassword(password)
             userAdapter.register(username, email, encoded_password);
             return ResponseEntity.ok("User registered successfully");
         } catch(Exception e) {
@@ -142,10 +139,10 @@ public class UserController {
         if (old_password.equals(new_password))
             return ResponseEntity.badRequest().body("New password must be different from old password");
 
-        if (!userAdapter.login(username, encoder.encode(old_password)))
+        if (!userAdapter.login(username, encoder.hashPassword(old_password)))
             return ResponseEntity.status(401).body("Invalid username or password");
         try {
-            userAdapter.changePassword(username, encoder.encode(new_password));
+            userAdapter.changePassword(username, encoder.hashPassword(new_password));
             return ResponseEntity.ok("Password changed successfully");
         } catch (Exception ex) {
             ex.printStackTrace();

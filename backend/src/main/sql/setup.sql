@@ -120,3 +120,7 @@ CREATE TABLE IF NOT EXISTS CharityBlame(
         NOT NULL,
     PRIMARY KEY (charity, reporter)
 );
+
+CREATE VIEW NextCommendId(charity) AS SELECT MAX(commentId)+1
+    FROM Comments
+    WHERE Comments.charity=NextCommendId.charity;

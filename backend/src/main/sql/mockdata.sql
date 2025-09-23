@@ -45,8 +45,8 @@ INSERT INTO Charities VALUES ('1136547');
 
 INSERT INTO PausedCharities VALUES ('1136547', '<admin>');
 
-INSERT INTO Likes VALUES ('John Doe', '1097940');
-INSERT INTO Likes VALUES ('Lisa Simpson', '1097940');
+INSERT INTO CharityScores VALUES ('John Doe', '1097940', TRUE);
+INSERT INTO CharityScores VALUES ('Lisa Simpson', '1097940', TRUE);
 
 INSERT INTO Comments VALUES (1,
  '1089464',deleted

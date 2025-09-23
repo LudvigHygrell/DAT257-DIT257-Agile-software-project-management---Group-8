@@ -20,6 +20,10 @@ IF NOT EXISTS (SELECT 1 FROM pg_user WHERE usename='benesphere') THEN
         TO BeneSphere;
 
     GRANT SELECT
+        ON TABLE Administrators
+        TO BeneSphere;
+
+    GRANT SELECT
         ON TABLE Charities
         TO BeneSphere;
 
@@ -27,8 +31,8 @@ IF NOT EXISTS (SELECT 1 FROM pg_user WHERE usename='benesphere') THEN
         ON TABLE PausedCharities
         TO BeneSphere;
 
-    GRANT SELECT, INSERT, DELETE
-        ON TABLE Likes
+    GRANT SELECT, INSERT, DELETE, UPDATE
+        ON TABLE CharityScores
         TO BeneSphere;
 
     GRANT SELECT, INSERT, UPDATE

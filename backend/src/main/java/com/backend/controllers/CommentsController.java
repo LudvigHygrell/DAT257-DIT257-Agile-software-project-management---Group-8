@@ -1,7 +1,8 @@
 package com.backend.controllers;
 
+import com.backend.database.adapters.CommentsAdapter;
+
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.backend.database.CommentsAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
