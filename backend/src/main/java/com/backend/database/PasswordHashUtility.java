@@ -1,12 +1,18 @@
 package com.backend.database;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 /**
  * Hashing utilities for hashing and comparing passwords.
  * @author JaarmaCo
  * @version 1.0
  * @since 2025-09-18
  */
-public abstract class PasswordHashUtility {
+@Service
+public class PasswordHashUtility {
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
      * Hash a password for save DB insertion.
@@ -14,8 +20,8 @@ public abstract class PasswordHashUtility {
      * @param password Password to hash
      * @return The hashed version of the password.
      */
-    public static String hashPassword(String password) {
-        return password; // TODO
+    public String hashPassword(String password) {
+        return passwordEncoder.encode(password);
     }
 
     /**
@@ -25,7 +31,7 @@ public abstract class PasswordHashUtility {
      * @param password Password to compare to.
      * @return True if the password matched the hash.
      */
-    public static boolean passwordMatches(String hashedPassword, String password) {
+    public boolean passwordMatches(String hashedPassword, String password) {
         return hashPassword(password).equals(hashedPassword);
     }
 }

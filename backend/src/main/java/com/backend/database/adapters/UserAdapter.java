@@ -21,6 +21,9 @@ import java.util.Optional;
 public class UserAdapter {
 
     @Autowired
+    private PasswordHashUtility passwordHasher;
+
+    @Autowired
     private final UserRepository userRepository;
 
     /**
@@ -39,7 +42,7 @@ public class UserAdapter {
      * @return true if the password hash matched the stored hash for the given user's password.
      */
     public boolean login(String username, String password) {
-        return PasswordHashUtility.passwordMatches(
+        return passwordHasher.passwordMatches(
                 userRepository.getReferenceById(username).getPasswordHash(), password);
     }
 
@@ -60,7 +63,7 @@ public class UserAdapter {
     @Transactional
     public void register(String username, String email, String password) {
         userRepository.saveAndFlush(
-                new User(username, email, PasswordHashUtility.hashPassword(password)));
+                new User(username, email, passwordHasher.hashPassword(password)));
     }
 
     public void deleteUser(String user) {
@@ -71,7 +74,7 @@ public class UserAdapter {
         Optional<User> user = userRepository.findById(username);
         if (user.isEmpty())
             throw new RuntimeException(String.format("%s does not exist.", username));
-        user.get().setPasswordHash(PasswordHashUtility.hashPassword(newPassword));
+        user.get().setPasswordHash(passwordHasher.hashPassword(newPassword));
         userRepository.save(user.get());
     }
 
