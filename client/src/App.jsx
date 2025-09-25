@@ -7,6 +7,7 @@ import TopCharities from './components/TopCharities.jsx';
 import CharityPage from './pages/CharityPage.jsx';
 import { fake_charities } from './Dummydata.jsx';
 import LoginModal from './components/LoginModal.jsx';
+import Registration from './components/Registration.jsx';
 
 import './styles/App.css';
 
@@ -15,15 +16,35 @@ import './styles/App.css';
 function App() {
   // State to control whether login modal is visible or hidden
   const [showLogin, setShowLogin] = useState(false);
+  // State to control whether registration modal is visible or hidden
+  const [showRegistration, setShowRegistration] = useState(false);
 
   // Function to show the login modal (called by Navbar)
   const handleLoginClick = () => {
     setShowLogin(true);
+    setShowRegistration(false); // Close registration if it's open
   };
 
   // Function to hide the login modal (called by LoginModal)
   const closeLogin = () => {
     setShowLogin(false);
+  };
+
+  // Function to show the registration modal (called by LoginModal)
+  const handleSwitchToRegister = () => {
+    setShowLogin(false);
+    setShowRegistration(true);
+  };
+
+  // Function to hide the registration modal (called by Registration)
+  const closeRegistration = () => {
+    setShowRegistration(false);
+  };
+
+  // Function to switch back to login modal (called by Registration)
+  const handleSwitchToLogin = () => {
+    setShowRegistration(false);
+    setShowLogin(true);
   };
 
   return (
@@ -58,7 +79,17 @@ function App() {
         />
       </Routes>
       {/* Login modal, only visible when showLogin is true */}
-      <LoginModal isVisible={showLogin} onClose={closeLogin} />
+      <LoginModal
+        isVisible={showLogin}
+        onClose={closeLogin}
+        onSwitchToRegister={handleSwitchToRegister}
+      />
+      {/* Registration modal, only visible when showRegistration is true */}
+      <Registration
+        isVisible={showRegistration}
+        onClose={closeRegistration}
+        onSwitchToLogin={handleSwitchToLogin}
+      />
     </div>
 
   );
