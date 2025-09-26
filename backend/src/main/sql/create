@@ -45,7 +45,11 @@ main() {
     _yes_no
   fi
 
-  echo 'Ensuring access as postgres.'
+  echo 'Ensuring access as postgres, you may be prompted for your sudo password here.'
+  echo
+  echo 'If you are unsure about continuing this script press CTRL+C to exit here and inspect'
+  echo 'the source code before continuing.'
+  echo
   sudo -u postgres echo 'Access as user postgres granted.'
 
   echo "  ____                                          "
@@ -102,18 +106,24 @@ EOF
   fi
 
   if [[ -z $PASSPHRASE_FILE ]]; then
-    read -e -p 'Enter passphrase file: ' PASSPHRASE_FILE
+    read -e -p 'Enter passphrase file (or nothing to use a default password): ' PASSPHRASE_FILE
   fi
 
-  PASSPHRASE_FILE=${PASSPHRASE_FILE/#\~/$HOME}
-  PASSPHRASE_FILE=$(realpath $PASSPHRASE_FILE)
+  if [[ $PASSPHRASE_FILE ]]; then
+    PASSPHRASE_FILE=${PASSPHRASE_FILE/#\~/$HOME}
+    PASSPHRASE_FILE=$(realpath $PASSPHRASE_FILE)
 
-  echo "Reading passphrase from ${PASSPHRASE_FILE}"
-  local PASS=$(gpg --passphrase-file $PASSPHRASE_FILE --pinentry-mode loopback -d ./dbpasswords/benesphere.key.gpg)
+    echo "Reading passphrase from ${PASSPHRASE_FILE}"
+    local PASS=$(gpg --passphrase-file $PASSPHRASE_FILE --pinentry-mode loopback -d ./dbpasswords/benesphere.key.gpg)
 
-  if [[ -z $PASS ]]; then
-    echo 'Failed to decrypt password file.'
-    exit 1
+    if [[ -z $PASS ]]; then
+      echo 'Failed to decrypt password file.'
+      exit 1
+    fi
+
+  else
+    PASS="$(sha256sum <$0 | cut -d ' ' -f1)"
+    echo "No passphrase file provided, choosing default password ${PASS}"
   fi
 
   local CONNSTRING=postgresql://benesphere_sudo:${PASS}@localhost:5432/benesphere_db
@@ -125,8 +135,11 @@ EOF
   echo 'Creating tables...'
   sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/setup.sql"
 
-  echo 'Inserting mock data...'
-  sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/mockdata.sql"
+  printf 'Insert mock data? '
+  if _yes_no; then
+    echo 'Inserting mock data...'
+    sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/mockdata.sql"
+  fi
 
   echo 'Setting up permissions for benesphere user.'
   sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/permissions.sql"
@@ -143,4 +156,4 @@ EOF
   echo "Created login script for benesphere_sudo at $(realpath $BACKEND_ROOT/.benesphere_db/login-sudo.sh)"
 }
 
-main
+main $@

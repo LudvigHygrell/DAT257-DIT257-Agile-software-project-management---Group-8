@@ -3,18 +3,25 @@
 To set up the initial database, there is a [setup script](../src/main/sql/create) that will set everything up
 for you.
 
+> **_NOTE_**: You may need to `cd` into the `backend/src/main/sql` directory.
+
 There are a few prerequisites to be able to run the setup:
 
 1. You are working on a UNIX system with access to bash.
-2. You have access to a passphrase file used to decrypt the super SQL user password.
-3. You have `sudo` access and [`PostgresSQL`](https://www.postgresql.org/) installed on your machine.
+2. You have `sudo` access and [`PostgresSQL`](https://www.postgresql.org/) installed on your machine.
+
+There is also an additional optional prerequisite that for when a secure password selection
+for the root user is required:
+
+3. A passphrase file used to decrypt the local password file of the repository.
 
 Access to the passphrase is available for all team members, but must not be included
 on the remote repository.
 
-To gain access to the key, contact git user [`JaarmaCo`](https://github.com/JaarmaCo) and you will have it transferred to you.
+To gain access to the passphrase for the key, contact git user [`JaarmaCo`](https://github.com/JaarmaCo) and you will have 
+it transferred to you.
 
-During pre-release, the database super user password will be the `sha256` sum of the chorus of
+During pre-release, the secure database super user password will be the `sha256` sum of the chorus of
 Never gonna give you up by Rick Astley. More specifically, the string:
 
 ```
@@ -26,6 +33,7 @@ Never gonna say goodbye
 Never gonna tell a lie and hurt you
 ```
 
+The default password for the database super user is the sha256 sum of the setup script.
 
 ## Specifications
 
