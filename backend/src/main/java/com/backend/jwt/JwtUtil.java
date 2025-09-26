@@ -5,9 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -31,14 +29,31 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * Get the exact name of the user the token applies to.
+     * @param token JWT to extract a username from.
+     * @return The username of the user that owns the given token.
+     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    /**
+     * Get the expiration time of the specified JWT.
+     * @param token JWT to extract an expiration time from.
+     * @return The point in the when the JWT expires.
+     */
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    /**
+     * Extract a value from all claims in the given token.
+     * @param <T> Type of claim to extract.
+     * @param token JWT to extract claims from.
+     * @param claimsResolver Mapping function used to extract a value from the Claims list.
+     * @return The extracted value.
+     */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -57,6 +72,11 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
+    /**
+     * Generate a new JWT.
+     * @param userDetails Details about the user to generate a token for.
+     * @return The new token.
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
@@ -73,10 +93,14 @@ public class JwtUtil {
                 .compact();
     }
 
+    /**
+     * Validate a token expiration and target user.
+     * @param token Token to validate.
+     * @param userDetails User the token must apply to.
+     * @return True if the token is valid.
+     */
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
-
 }

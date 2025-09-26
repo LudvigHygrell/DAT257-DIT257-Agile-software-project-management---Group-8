@@ -13,6 +13,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name="CharityScores")
 public class CharityVote {
+    
     @EmbeddedId
     private CharityVoteKey key;
 
@@ -34,21 +35,27 @@ public class CharityVote {
         this.key = new CharityVoteKey(user, charity);
         this.vote = vote;
     }
+    
     public String getUser(){
         return key.getUser();
     }
+    
     public void setUser(String user){
         key.setUser(user);
     }
+    
     public String getCharity() {
         return key.getCharity();
     }
+    
     public void setCharity(String charity) {
         key.setCharity(charity);
     }
+    
     public boolean votedUp() {
         return vote;
     }
+
     public void setVotedUp(boolean value) {
         vote = value;
     }

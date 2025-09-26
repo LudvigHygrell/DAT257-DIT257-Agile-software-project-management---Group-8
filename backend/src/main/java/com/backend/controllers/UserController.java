@@ -72,7 +72,7 @@ public class UserController {
         String username = json.get("username").asText();
         String password = json.get("password").asText();
 
-        if (userAdapter.login(username, password)){
+        if (userAdapter.login(username, password)) {
             final UserDetail user = (UserDetail) this.userDetailService.loadUserByUsername(username);
             final String jwt = jwtUtil.generateToken((UserDetails)user);
             return ResponseEntity.ok().body("{\"token\": \"" + jwt + "\"}"); // Returns the JWT token
@@ -140,6 +140,7 @@ public class UserController {
         String username = json.get("username").asText();
         String old_password = json.get("old").asText();
         String new_password = json.get("new").asText();
+
         if (old_password.equals(new_password))
             return ResponseEntity.badRequest().body("New password must be different from old password");
 
@@ -168,11 +169,11 @@ public class UserController {
      */
 	@PutMapping("/reset_password")
     public ResponseEntity<String> resetPassword(@RequestBody JsonNode json ) {
-        if(!json.has("email"))
+        if (!json.has("email"))
             return ResponseEntity.status(400).body("The email parameter is not set.");
-        if(!json.has("new_password"))
+        if (!json.has("new_password"))
             return ResponseEntity.status(400).body("The new_password parameter is not set.");
-        if(!json.has("verification_code"))
+        if (!json.has("verification_code"))
             return ResponseEntity.status(400).body("The verification_code parameter was not set.");
 
         // TODO: implement the check for verification code
@@ -206,22 +207,23 @@ public class UserController {
      */
     @PutMapping("/change_email")
     public ResponseEntity<String> changeEmail(@RequestBody JsonNode json) {
-        if(!json.has("username"))
+        if (!json.has("username"))
             return ResponseEntity.status(400).body("The username parameter was not set");
-        if(!json.has("email"))
+        if (!json.has("email"))
             return ResponseEntity.status(400).body("The email parameter was not set.");
-        if(!json.has("password"))
+        if (!json.has("password"))
             return ResponseEntity.status(400).body("The password parameter was not set.");
 
         String username = json.get("username").asText();
         String password = json.get("password").asText();
         String email = json.get("email").asText();
 
-        if(userAdapter.isEmail(email))
+        if (userAdapter.isEmail(email)) {
             return ResponseEntity.status(401).body("The email you set is already a registered email at our site");
-        if(!userAdapter.login(username, password))
+        }
+        if (!userAdapter.login(username, password)) {
             return ResponseEntity.status(402).body("The user-credentials provided did not match any account");
-
+        }
         try {
             userAdapter.changeEmail(username, email);
             return ResponseEntity.status(200).body("Your email-address was successfully changed");
@@ -253,7 +255,6 @@ public class UserController {
         }
 
         String username = json.get("username").asText();
-
         try {
             switch (json.get("type").asText())
             {
@@ -270,7 +271,8 @@ public class UserController {
                             factory.numberNode(comment.getCommentId()))
                         .<ObjectNode> set("charity", 
                             factory.textNode(comment.getCharity()))
-                        .set("comment", comment.getComment()));
+                        .<ObjectNode> set("comment",
+                            comment.getComment()));
                 } 
                 return ResponseEntity.status(200).body(comments_node);
             case "likes":
@@ -296,9 +298,9 @@ public class UserController {
      */
     @DeleteMapping("/remove")
     public ResponseEntity<String> delete_user(@RequestBody JsonNode json) {
-        if(!json.has("username"))
+        if (!json.has("username")) {
             return ResponseEntity.status(400).body("The username-parameter was not set");
-
+        }
         try {
             String username = json.get("username").asText();
             userAdapter.deleteUser(username);

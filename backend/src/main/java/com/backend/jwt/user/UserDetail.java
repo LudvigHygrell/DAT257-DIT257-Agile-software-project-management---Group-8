@@ -6,9 +6,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 
 public class UserDetail implements UserDetails {
-    private String username;
-    private String password;
-    private ArrayList<GrantedAuthority> roles;
+    
+    private final String username;
+    private final String password;
+    private final ArrayList<GrantedAuthority> roles;
 
     public UserDetail(String username, String password, ArrayList<GrantedAuthority> roles) {
         this.username = username;

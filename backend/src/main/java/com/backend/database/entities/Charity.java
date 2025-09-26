@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name="Charities")
 public class Charity {
+    
     @Id
     @Column(name = "orgId")
     private String orgId;
@@ -35,5 +36,4 @@ public class Charity {
     public void setOrgID(String orgID){ this.orgId = orgID; }
 
     public String getOrgID() { return this.orgId; }
-
 }

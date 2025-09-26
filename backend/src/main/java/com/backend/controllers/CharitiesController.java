@@ -13,10 +13,10 @@ public class CharitiesController {
 
     @GetMapping("/list")
     public ResponseEntity<String> list(@RequestBody JsonNode json) throws JsonProcessingException {
-        if(!json.has("filters")) {
+        if (!json.has("filters")) {
             return ResponseEntity.badRequest().body("Missing filters");
         }
-        if(!json.has("order_by")) {
+        if (!json.has("order_by")) {
             return ResponseEntity.badRequest().body("Missing sorting order");
         }
         //TODO tags not implemented in database yet
@@ -26,14 +26,10 @@ public class CharitiesController {
 
     @GetMapping("/get")
     public ResponseEntity<String> get(@RequestBody JsonNode json) {
-        if(!json.has("identity")) {
+        if (!json.has("identity")) {
             return ResponseEntity.badRequest().body("Missing Org ID");
         }
-        String identity = json.get("identity").asText();
-        if(charitiesAdapter.get(identity)){
-            return ResponseEntity.ok("Charity retrieved successfully");
-        }
-        return ResponseEntity.status(404).body("Charity not found");
+        return ResponseEntity.status(404).body("Charities are work in progress.");
     }
 
     @PostMapping("/vote")

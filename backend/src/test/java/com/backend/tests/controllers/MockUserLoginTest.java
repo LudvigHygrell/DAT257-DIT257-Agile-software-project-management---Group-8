@@ -8,7 +8,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import com.backend.tests.ResourceLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,15 +32,22 @@ public class MockUserLoginTest {
   @Autowired
   private MockMvc mockMvc;
 
+  /**
+   * Validate that we can register, log in and delete a user.
+   */
   @Test
   public void registerLoginDeleteShouldSucceed() throws Exception {
 
+    // Create user.
+    //
     mockMvc.perform(post("/api/users/create")
         .contentType(MediaType.APPLICATION_JSON)
         .content(ResourceLoader.loadJson("register-user-mock.json")
             .toPrettyString()))
         .andExpect(status().isOk());
 
+    // Log in with new user (and keep auth info).
+    //
     MvcResult result = mockMvc.perform(get("/api/users/login")
         .contentType(MediaType.APPLICATION_JSON)
         .content(ResourceLoader.loadJson("login-user-mock.json")
@@ -54,6 +60,8 @@ public class MockUserLoginTest {
             .getContentAsString())
         .get("token").asText();
 
+    // Delete the new user.
+    //
     mockMvc.perform(delete("/api/users/remove")
         .header("Authorization", "Bearer " + jwtToken)
         .contentType(MediaType.APPLICATION_JSON)

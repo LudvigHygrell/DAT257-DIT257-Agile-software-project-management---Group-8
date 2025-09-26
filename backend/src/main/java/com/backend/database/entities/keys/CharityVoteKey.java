@@ -42,12 +42,12 @@ public class CharityVoteKey implements Serializable {
     public String getCharity() {
         return charity;
     }
+
     public void setUser(String user) {
         this.user = user;
     }
+    
     public void setCharity(String charity) {
         this.charity = charity;
     }
-
-
 }

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 

@@ -25,6 +25,5 @@ public interface CharityRepository extends JpaRepository<Charity, String>{
      * @return the charity, or null if it could not be found.
      */
     @Query("SELECT c FROM Charity c WHERE c.orgId=:orgId")
-    Optional<Charity> findByOrgID(@Param("orgId") String orgId);
-
+    public Optional<Charity> findByOrgID(@Param("orgId") String orgId);
 }

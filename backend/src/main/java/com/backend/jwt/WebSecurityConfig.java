@@ -17,8 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.backend.jwt.user.UserDetailService;
-
+/**
+ * Security configuration for incoming requests.
+ */
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -26,40 +27,48 @@ public class WebSecurityConfig {
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    private UserDetailService userDetailService;
-
     private final Logger log = LoggerFactory.getLogger(WebSecurityConfig.class);
 
+    /**
+     * Filters incoming requests (blocking "bad" ones).
+     * @param http Security object to filter.
+     * @return Object containing the assigned filters.
+     * @throws Exception Thrown if building the filter fails.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        log.info("Setting up security filters.");
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/users/login").permitAll()
-                        .requestMatchers("/api/users/create").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .exceptionHandling((exceptionHandling) ->
-                    exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> {
-                        log.error("ACCESS DENIED: {}", accessDeniedException.getMessage());
-                        response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    }));
-
+        http.csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(authorize -> authorize // Authenticate all but create and login
+                    .requestMatchers("/api/users/login").permitAll()
+                    .requestMatchers("/api/users/create").permitAll()
+                    .anyRequest().authenticated())
+            .sessionManagement(session -> session // Use stateless sessions
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exceptionHandling -> // Report denied access to log output
+                exceptionHandling.accessDeniedHandler((request, response, accessDeniedException) -> {
+                    log.error("ACCESS DENIED: {}", accessDeniedException.getMessage());
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                }));
+        // Authorize using JWT
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
+    /**
+     * Part of security configuration.
+     * <p>
+     * Not used, behaviour is default.
+     */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
+    /**
+     * Specifies how passwords are encoded.
+     * <p>
+     * Current encoding is BCrypt
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

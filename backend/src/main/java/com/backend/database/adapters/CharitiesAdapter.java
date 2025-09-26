@@ -35,7 +35,6 @@ public class CharitiesAdapter {
     @Autowired
     private AdministratorsRepository administratorsRepository;
 
-
     protected CharitiesAdapter() {}
 
     /**
@@ -47,15 +46,9 @@ public class CharitiesAdapter {
     public List<String> list(String[] filters, String order_by, int pageSize, int pageNumber) {
         Pageable pageable = PageRequest.of(pageNumber,pageSize); //TODO Implement sorting
         Page<Charity> charitiesPage = charityRepository.findAll(pageable);
-        return charitiesPage.getContent().stream().map(Charity::getOrgID).toList();
+        return charitiesPage.getContent().stream()
+            .map(Charity::getOrgID).toList();
     }
-
-    /**
-     * Returns a charity given its organization ID
-     * @param identity the charity that is to be returned
-     * @return True if the charity was found
-     */
-    public boolean get(String identity) {return true;} //TODO what are we returning since the table only contains orgID?
 
     /**
      * Registers a vote from the user on the charity.
@@ -64,7 +57,7 @@ public class CharitiesAdapter {
      * @return True if the vote was inserted.
      */
     public boolean vote(String charity, boolean value) {
-        try{
+        try {
             scoresRepository.save(new CharityVote(UserUtil.getUsername(), charity, value));        
         } catch (Exception e){
             return false;
@@ -108,6 +101,9 @@ public class CharitiesAdapter {
      */
     public boolean pause(String charity_id) {
         try {
+            Optional<Administrator> admin = administratorsRepository.findById(UserUtil.getUsername());
+            if (admin.isEmpty() || admin.get().getLevel() < Administrator.PAUSE_CHARITY_LEVEL)
+                return false;
             pausedCharitiesRepository.save(new PausedCharity(charity_id, UserUtil.getUsername()));            
         } catch (Exception ex) {
             return false;
