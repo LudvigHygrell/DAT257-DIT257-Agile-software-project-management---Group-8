@@ -1,23 +1,5 @@
 \set ON_ERROR_STOP ON
 
--- Iterate over all public schema tables and delete their contents.
-DO $$
-DECLARE
-    tblName NAME;
-BEGIN
-    -- Temporarily disable triggers.
-    SET session_replication_role = replica;
-    FOR tblName IN
-        SELECT tablename
-            FROM pg_catalog.pg_tables
-            WHERE schemaname='public'
-    LOOP
-        EXECUTE FORMAT('DELETE FROM %I;', tblName);
-    END LOOP;
-    -- Re-enable triggers.
-    SET session_replication_role = DEFAULT;
-END $$;
-
 INSERT INTO Users VALUES ('<deleted>', 'benesphere@blackhole.mx', '2bh1jkb34334');
 INSERT INTO Users VALUES ('<moderator>', 'moderator.user@benesphere.org', '23njk3533543');
 INSERT INTO Users VALUES ('<admin>', 'admin.user@benesphere.org', 'nf4i433jrk3');
