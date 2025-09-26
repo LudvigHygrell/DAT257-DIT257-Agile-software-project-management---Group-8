@@ -3,6 +3,7 @@ package com.backend.database.filtering;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -55,5 +56,5 @@ public class FilteredQuery<Entity> {
         assert null != filter;
         query.select(root).where(filter.getPredicate());
         return manager.createQuery(query).getResultList();
-    } 
+    }
 }

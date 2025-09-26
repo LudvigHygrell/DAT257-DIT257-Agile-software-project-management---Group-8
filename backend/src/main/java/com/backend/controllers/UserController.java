@@ -3,6 +3,7 @@ package com.backend.controllers;
 import com.backend.database.adapters.CommentsAdapter;
 import com.backend.database.PasswordHashUtility;
 import com.backend.database.adapters.UserAdapter;
+import com.backend.database.entities.Comment;
 import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
@@ -19,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -226,7 +229,6 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("There was an error at the server - database communication. This is nothing you can do about, but will be fixed in the soon future.");
         }
-
     }
     /**
      * Retrieves the activity for a user, including comments and likes.
@@ -237,15 +239,15 @@ public class UserController {
      * <p>500 If there was an internal server error</p>
      */
     @PostMapping("/get_activity")
-    public ResponseEntity<JsonNode> get_activity(@RequestBody JsonNode json) {
+    public ResponseEntity<JsonNode> getActivity(@RequestBody JsonNode json) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode ret_node = factory.objectNode();
 
-        if(!json.has("username")) {
+        if (!json.has("username")) {
             ret_node.put("message", "The username-parameter was not set");
             return ResponseEntity.status(400).body(ret_node);
         }
-        if(!json.has("type")){
+        if (!json.has("type")) {
             ret_node.put("message", "The type-parameter was not set");
             return ResponseEntity.status(400).body(ret_node);
         }
@@ -253,14 +255,30 @@ public class UserController {
         String username = json.get("username").asText();
 
         try {
-            ObjectNode comments_node = commentAdapter.comments(username);
-            ObjectNode likes_node = commentAdapter.likes(username);
-
-            // TODO: implement the filters-functionallity
-
-            ret_node.set("likes", likes_node);
-            ret_node.set("comments", comments_node);
-            return ResponseEntity.status(200).body(ret_node);
+            switch (json.get("type").asText())
+            {
+            case "comments":
+                List<Comment> comments = json.has("filters") ? 
+                    commentAdapter.getFilteredComments(username, 
+                        json.get("filters")) 
+                    : commentAdapter.getComments(username);
+                
+                ArrayNode comments_node = factory.arrayNode();
+                for (Comment comment : comments) {
+                    comments_node.add(factory.objectNode()
+                        .<ObjectNode> set("commentId", 
+                            factory.numberNode(comment.getCommentId()))
+                        .<ObjectNode> set("charity", 
+                            factory.textNode(comment.getCharity()))
+                        .set("comment", comment.getComment()));
+                } 
+                return ResponseEntity.status(200).body(comments_node);
+            case "likes":
+                return ResponseEntity.status(200).body(factory.arrayNode());
+            default:
+                return ResponseEntity.badRequest().body(factory.objectNode()
+                    .put("message", "Bad type parameter."));
+            }
         } catch(Exception e) {
             e.printStackTrace();
             ret_node.put("message", "There was some internal server error in the database-communication");
@@ -289,7 +307,5 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("There was an internal server error with the database-communication");
         }
-
     }
-
 }

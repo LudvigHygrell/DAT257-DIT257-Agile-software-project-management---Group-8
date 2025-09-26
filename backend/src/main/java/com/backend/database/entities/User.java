@@ -78,8 +78,4 @@ public class User {
     public PasswordHashUtility.Digest getPasswordHash() {
         return new PasswordHashUtility.Digest(passwordHash);
     }
-
-    public static User getCurrent() {
-        throw new UnsupportedOperationException();
-    }
 }

@@ -99,6 +99,14 @@ public abstract class JsonToFilterConverter {
         assert null != builder;
         assert null != json;
 
+        if (json.isArray()) {
+            List<Filter<Entity>> filters = new ArrayList<>();
+            for (JsonNode subnode : json) {
+                filters.add(filterFromJson(builder, subnode));
+            }
+            return builder.and(filters);
+        }
+
         if (!json.has("filter"))
             throw new IllegalArgumentException("Missing required property \"filter\".");
 

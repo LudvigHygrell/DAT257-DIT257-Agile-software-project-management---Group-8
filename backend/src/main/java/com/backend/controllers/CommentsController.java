@@ -1,6 +1,7 @@
 package com.backend.controllers;
 
 import com.backend.database.adapters.CommentsAdapter;
+import com.backend.jwt.user.UserUtil;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class CommentsController {
     private CommentsAdapter commentsAdapter;
 
     @PostMapping("/add")
-    public ResponseEntity<String> add (@RequestBody JsonNode json){
+    public ResponseEntity<String> add(@RequestBody JsonNode json){
         if(!json.has("comment")){
             return ResponseEntity.badRequest().body("Missing comment text");
         }
@@ -33,14 +34,14 @@ public class CommentsController {
         JsonNode comment = json.get("comment");
         String charity = json.get("charity").asText();
 
-        if (commentsAdapter.add(comment, "" /*TODO*/, charity)){
+        if (commentsAdapter.add(comment, UserUtil.getUsername(), charity)){
             return ResponseEntity.ok("Comment successfully added");
         }
         return ResponseEntity.status(500).body("Error posting comment");
     }
 
     @DeleteMapping("/remove")
-    public ResponseEntity<String> remove (@RequestBody JsonNode json){
+    public ResponseEntity<String> remove(@RequestBody JsonNode json){
         if (!json.has("comment_id")){
             return ResponseEntity.badRequest().body("Missing comment id");
         }
@@ -57,7 +58,7 @@ public class CommentsController {
     }
 
     @PostMapping("/blame")
-    public  ResponseEntity<String> blame (@RequestBody JsonNode json){
+    public  ResponseEntity<String> blame(@RequestBody JsonNode json){
         if (!json.has("comment_id")){
             return ResponseEntity.badRequest().body("Missing comment id");
         }
@@ -74,7 +75,7 @@ public class CommentsController {
         if (json.has("comment")){  //Check if the blame contains a "comment" type
             comment = json.get("comment").asText();
         }*/
-        if(commentsAdapter.blame(comment_id, charity, ""/*TODO*/, reason)){
+        if(commentsAdapter.blame(comment_id, charity, UserUtil.getUsername(), reason)){
             return ResponseEntity.ok("Comment successfully blamed");
         }
 

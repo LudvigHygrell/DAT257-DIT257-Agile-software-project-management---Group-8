@@ -3,6 +3,8 @@ package com.backend.database.repositories;
 import com.backend.database.entities.*;
 import com.backend.database.entities.keys.*;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +17,6 @@ import org.springframework.data.repository.query.Param;
  */
 public interface CommentsRepository extends JpaRepository<Comment, CommentKey> {
 
+    @Query("SELECT Comment c WHERE c.commentUser=:user")
+    public List<Comment> findAllByUser(@Param("user") String user);
 }

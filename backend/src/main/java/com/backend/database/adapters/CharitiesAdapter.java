@@ -1,6 +1,7 @@
 package com.backend.database.adapters;
 
 import com.backend.database.repositories.*;
+import com.backend.jwt.user.UserUtil;
 import com.backend.database.entities.*;
 import com.backend.database.entities.keys.CharityVoteKey;
 
@@ -64,7 +65,7 @@ public class CharitiesAdapter {
      */
     public boolean vote(String charity, boolean value) {
         try{
-            scoresRepository.save(new CharityVote(User.getCurrent().getUserName(), charity, value));        
+            scoresRepository.save(new CharityVote(UserUtil.getUsername(), charity, value));        
         } catch (Exception e){
             return false;
         }
@@ -79,7 +80,7 @@ public class CharitiesAdapter {
      */
     public boolean editVote(String charity, boolean value) {
         try {
-            scoresRepository.save(new CharityVote(User.getCurrent().getUserName(), charity, value));
+            scoresRepository.save(new CharityVote(UserUtil.getUsername(), charity, value));
         } catch (Exception ex) {
             return false;
         }
@@ -93,7 +94,7 @@ public class CharitiesAdapter {
      */
     public boolean deleteVote(String charity) {
         try {
-            scoresRepository.deleteById(new CharityVoteKey(User.getCurrent().getUserName(), charity));
+            scoresRepository.deleteById(new CharityVoteKey(UserUtil.getUsername(), charity));
         } catch (Exception ex) {
             return false;
         }
@@ -101,13 +102,13 @@ public class CharitiesAdapter {
     }
 
     /**
-     * Mark a charity as "paused" (only possible if User.getCurrent() is admin).
+     * Mark a charity as "paused" (only possible if UserUtil is admin).
      * @param charity_id Charity to pause.
      * @return True if successful.
      */
     public boolean pause(String charity_id) {
         try {
-            pausedCharitiesRepository.save(new PausedCharity(charity_id, User.getCurrent().getUserName()));            
+            pausedCharitiesRepository.save(new PausedCharity(charity_id, UserUtil.getUsername()));            
         } catch (Exception ex) {
             return false;
         }
@@ -115,14 +116,14 @@ public class CharitiesAdapter {
     }
 
     /**
-     * Resumes usage of a specified charity (only possible if User.getCurrent() is admin).
+     * Resumes usage of a specified charity (only possible if UserUtil is admin).
      * @param charity_id Charity to resume use of.
      * @return True if successful.
      */
     public boolean resume(String charity_id) {
         try {
             // NOTE: There will most likely be a trigger for this eventually, however we are still checking just to be sure.
-            Optional<Administrator> admin = administratorsRepository.findById(User.getCurrent().getUserName());
+            Optional<Administrator> admin = administratorsRepository.findById(UserUtil.getUsername());
             if (admin.isEmpty() || admin.get().getLevel() < Administrator.PAUSE_CHARITY_LEVEL)
                 return false;
             pausedCharitiesRepository.deleteById(charity_id);
