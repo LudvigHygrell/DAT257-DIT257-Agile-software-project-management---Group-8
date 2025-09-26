@@ -17,6 +17,6 @@ import org.springframework.data.repository.query.Param;
  */
 public interface CommentsRepository extends JpaRepository<Comment, CommentKey> {
 
-    @Query("SELECT Comment c WHERE c.commentUser=:user")
+    @Query("SELECT c FROM Comment c WHERE c.commentUser=:user")
     public List<Comment> findAllByUser(@Param("user") String user);
 }
