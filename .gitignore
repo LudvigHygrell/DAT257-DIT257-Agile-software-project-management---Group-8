@@ -19,4 +19,7 @@ node_modules
 #
 # package-lock.json <- Do not gitignore
 
+# SQL super user password file.
+#
+benesphere.key
 
