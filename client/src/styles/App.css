@@ -26,7 +26,7 @@ html, body, #root {
 .left-panel {
   flex: 1;
   padding: 20px;
-  background-color: #D9F0E7; /* stesso sfondo della navbar */
+  background-color: #D9F0E7;
   overflow: hidden;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
@@ -37,7 +37,7 @@ html, body, #root {
   flex: 2;
   padding: 20px;
   overflow-y: auto;
-  background-color: #D9F0E7; /* stesso sfondo della navbar */
+  background-color: #D9F0E7; 
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }

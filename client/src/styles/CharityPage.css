@@ -4,25 +4,25 @@
 .charity-page {
   display: flex;
   gap: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 90%;            
+  height: 85vh;          
+  margin: 2rem auto;
   padding: 2rem;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 80px); /* full viewport height minus navbar height */
+  background: #D9F0E7; 
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
 }
 
 /* ===============================
    LEFT PANEL: CHARITY INFO
    =============================== */
 .charity-page-info {
-  flex: 2; /* takes more space than right panel */
+  flex: 2;
   display: flex;
   flex-direction: column;
   gap: 2rem;
   height: 100%;
-  overflow-y: auto; /* scroll if content overflows */
+  overflow-y: auto;
 }
 
 /* Charity header: logo + title */
@@ -37,7 +37,8 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  border: 2px solid #28a745;
+  border: 3px solid #28a745; 
+  object-fit: cover;
 }
 
 .charity-title h2 {
@@ -47,13 +48,15 @@
 }
 
 .charity-page-category {
-  font-size: 1.1rem;
-  color: #666;
+  font-size: 1rem;
+  color: #666; 
+  margin-top: 0.2rem;
 }
 
 .charity-page-score {
   font-weight: bold;
   margin-top: 0.5rem;
+  color: #333;
 }
 
 /* ===============================
@@ -61,17 +64,23 @@
    =============================== */
 .charity-description-section,
 .charity-photos-section {
-  width: 100%;           /* full width of left panel */
-  padding: 1rem;
-  background: #f9f9f9;
+  width: 100%;
+  padding: 1.2rem;
+  background: #f9f9f9; 
   border-radius: 12px;
-  box-sizing: border-box; /* include padding in width */
-  margin-top: 2rem;
+  box-sizing: border-box;
+}
+
+.charity-description-section h3,
+.charity-photos-section h3 {
+  margin-top: 0;
+  color: #28a745; 
 }
 
 .charity-description {
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.6;
+  color: #333;
 }
 
 /* Activities photos grid */
@@ -82,93 +91,76 @@
 }
 
 .charity-photos img {
-  flex: 1 1 calc(50% - 0.5rem); /* two images per row */
+  flex: 1 1 calc(50% - 0.5rem);
   max-width: 100%;
   border-radius: 8px;
   object-fit: cover;
 }
 
+
+
 /* ===============================
-   RIGHT PANEL: COMMENTS
-   =============================== */
+  RIGHT PANEL: COMMENTS
+  =============================== */
 .charity-comments-section {
-  flex: 1; /* smaller than left panel */
+  flex: 0.9;             
   display: flex;
   flex-direction: column;
-  height: 100%;
-  background: #f9f9f9;
+  height: 100%;          
+  overflow-y: auto;      
+  background: #eaf6f3;
   border-radius: 12px;
   padding: 1rem;
   gap: 1rem;
+  border: 2px solid #81D5C4;
 }
 
-/* Comments list grows to fill space, scroll if too long */
+
+
+/* Comments list grows to fill space */
 .charity-comments {
   flex: 1;
   overflow-y: auto;
-  padding-right: 0.5rem; /* avoid text being covered by scrollbar */
-}
-
-/* Individual comment spacing */
-.charity-comments p {
-  margin-bottom: 0.5rem;
-}
-
-/* ===============================
-   COMMENT FORM (stays at bottom)
-   =============================== */
-.charity-comment-form {
+  padding-right: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.2rem; 
 }
 
-.charity-comment-form textarea {
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  resize: vertical;
+/* Individual comment */
+.comment-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(83, 138, 247, 0.10);
+  border: 2px solid #538AF7;
+  position: relative;
+  transition: box-shadow 0.2s;
 }
 
-.charity-comment-form button {
-  align-self: flex-end;
-  padding: 0.5rem 1rem;
-  background-color: #28a745;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.charity-comment-form button:hover {
-  background-color: #218838;
+.comment-card:hover {
+  box-shadow: 0 4px 16px rgba(81, 213, 196, 0.15);
 }
 
 
-
-
-/* ===============================
-   COMMENT FORMAT 
-   =============================== */
 
 .comment-header {
   display: flex;
-  justify-content: space-between; 
-  align-items: center;            
-  margin-bottom: 0.25rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .comment-meta {
   display: flex;
-  gap: 0.5rem;   
+  gap: 0.5rem;
   align-items: center;
 }
 
 .comment-date {
   font-size: 0.85rem;
-  color: #666;
+  color: #538AF7;
+  font-weight: bold;
 }
 
 .vote-icon {
@@ -176,3 +168,43 @@
   height: 20px;
 }
 
+/* ===============================
+  COMMENT FORM
+  =============================== */
+.charity-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 2px solid #81D5C4;
+}
+
+.charity-comment-form textarea {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #538AF7;
+  font-size: 1rem;
+  resize: vertical;
+  width: 100%;
+  background: #eaf6f3;
+  color: #333;
+}
+
+.charity-comment-form button {
+  align-self: flex-end;
+  padding: 0.5rem 1rem;
+  background-color: #538AF7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.charity-comment-form button:hover {
+  background-color: #81D5C4;
+  color: #538AF7;
+}

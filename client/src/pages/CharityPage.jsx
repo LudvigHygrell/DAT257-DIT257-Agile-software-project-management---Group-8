@@ -37,7 +37,15 @@ function CharityPage({ charities }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-    setComments([...comments, { name: "Anonymous", text: newComment }]);
+
+    const newCommentObj = {
+      name: "Anonymous",
+      text: newComment,
+      date: new Date().toISOString().slice(0,10),
+      vote: null
+    };
+
+    setComments([newCommentObj, ...comments]); 
     setNewComment("");
   };
 
