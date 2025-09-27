@@ -145,3 +145,34 @@
 .charity-comment-form button:hover {
   background-color: #218838;
 }
+
+
+
+
+/* ===============================
+   COMMENT FORMAT 
+   =============================== */
+
+.comment-header {
+  display: flex;
+  justify-content: space-between; /* nome+data a sinistra, icona a destra */
+  align-items: center;            /* allineamento verticale centrato */
+  margin-bottom: 0.25rem;
+}
+
+.comment-meta {
+  display: flex;
+  gap: 0.5rem;   /* spazio tra nome e data */
+  align-items: center;
+}
+
+.comment-date {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.vote-icon {
+  width: 20px;
+  height: 20px;
+}
+
