@@ -4,7 +4,7 @@
     justify-content: space-between;             /* push content to opposite ends */
     align-items: center;                        /* center items vertically within box */
     padding: 1rem 2rem;                         /* Space inside navbar (top/bottom), (left/right) */
-    background-color: #fffff3;                /* background color */
+    background-color: #538AF7;                /* background color */
     color: #000000;                           /* text-color*/
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);    /* Subtle shadow color below navbar */
     border-radius: 10px;                        /* Rounded corners */
@@ -33,14 +33,14 @@
 /* Styling for the "BeneSphere" title text */
 .title {
     font-weight: bold;                  /* text-bold */
-    color: #28a745;                   /* text color */
+    color: #D9F0E7;                   /* text color */
     font-size: 2.5rem;                  /* text-size */
     margin: 0;                       /* Remove default heading margins */
     transition: background-color 0.2s;  /* Smooth color change on hover */
 }
 
 .title:hover {
-    color: #218838;                  /* different color on hover */
+    color: #7AB4E8;                  /* different color on hover */
     cursor: pointer;                 /* Show hand cursor when hovering */
 }
 

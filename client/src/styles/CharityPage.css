@@ -155,14 +155,14 @@
 
 .comment-header {
   display: flex;
-  justify-content: space-between; /* nome+data a sinistra, icona a destra */
-  align-items: center;            /* allineamento verticale centrato */
+  justify-content: space-between; 
+  align-items: center;            
   margin-bottom: 0.25rem;
 }
 
 .comment-meta {
   display: flex;
-  gap: 0.5rem;   /* spazio tra nome e data */
+  gap: 0.5rem;   
   align-items: center;
 }
 

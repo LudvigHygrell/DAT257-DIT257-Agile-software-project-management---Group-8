@@ -1,51 +1,50 @@
-
 /* Reset default browser styles and set up full-height layout */
 html, body, #root {
-  height: 100%;              /* Take full height of browser window */
-  margin: 0;                 /* Remove default browser margins */
-  padding: 0;                /* Remove default browser padding */
-  overflow: hidden;          /* Prevent page scrolling (components handle their own scrolling) */
-  width: 100%;               /* Take full width of browser window */
-  font-family: sans-serif;   /* Use system default sans-serif font */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f5f6fa;
 }
 
 /* Main app container */
 .app-container {
-  padding-top: 85px;        /* Push content down to avoid navbar overlap (navbar height + margins) */
-  padding-bottom: 20px;     /* Add space at bottom so content doesn't touch edge */
+  padding-top: 85px;
+  padding-bottom: 20px;
 }
-
-
 
 /* Main content area with two-column layout */
 .main-content {
-  display: flex;               /* Use flexible box layout for side-by-side */
-  height: calc(100% - 80px);   /* Full height minus space for other elements */
-  gap: 1rem;                   /* Space between left and right columns */
+  display: flex;
+  height: calc(100% - 80px);
+  gap: 2rem;
 }
 
-
+/* Left panel */
 .left-panel {
   flex: 1;
   padding: 20px;
-  background-color: #ffffff;
-  border-right: 2px solid #ddd;
-  overflow: hidden; 
+  background-color: #D9F0E7; /* stesso sfondo della navbar */
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 
-
-/* Individual panel styling (used by both left and right columns) */
+/* Individual panel styling */
 .panel {
-  flex: 2;                     /* Take 2 parts of available space (right column is larger) */
-  padding: 20px;               /* Space inside each panel */
-  overflow-y: auto;            /* Allow vertical scrolling if content is too tall */
-  background-color: #ffffff;      /* background-color */
+  flex: 2;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #D9F0E7; /* stesso sfondo della navbar */
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 
 
-
-
-
-
-
-
+/* Optional: Add a subtle hover effect */
+.panel:hover, .left-panel:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  transition: box-shadow 0.2s;
+}
