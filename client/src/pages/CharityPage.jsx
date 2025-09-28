@@ -48,6 +48,21 @@ function CharityPage({ charities }) {
     setComments([newCommentObj, ...comments]); 
     setNewComment("");
   };
+  const [sortOrder, setSortOrder] = useState("newest"); // "newest" or "oldest"
+   // Sort comments based on the selected order
+  const getSortedComments = () => {
+  return [...comments].sort((a, b) => {
+    switch (sortOrder) {
+      case "newest":
+        return new Date(b.date) - new Date(a.date);
+      case "oldest":
+        return new Date(a.date) - new Date(b.date);
+      default:
+        return 0; // no sorting
+    }
+  });
+};
+  const sortedComments = getSortedComments();
 
   return (
     <div className="charity-page">
@@ -89,13 +104,20 @@ function CharityPage({ charities }) {
       {/* RIGHT PANEL */}
       <div className="charity-comments-section">
         <h3>Comments</h3>
+        {/* Sort buttons */}
+          <div className="sort-buttons">
+            <button className={`sort-newest ${sortOrder === "newest" ? "active" : ""}`}  
+              onClick={() => setSortOrder("newest")}>Newest</button>
+            <button className={`sort-oldest ${sortOrder === "oldest" ? "active" : ""}`}  
+              onClick={() => setSortOrder("oldest")}>Oldest</button>
+          </div>
         <div className="charity-comments">
-          {comments.map((c, idx) => (
+          {sortedComments.map((c, idx) => (
             <div key={idx} className="comment-card">
               <div className="comment-header">
                 <div className="comment-meta">
-                  <strong>{c.name}</strong>   {/* styled with .comment-header strong */}
-                  <span className="comment-date">{c.date}</span>  {/* styled with .comment-date */}
+                  <strong>{c.name}</strong>   
+                  <span className="comment-date">{c.date}</span>  
                 </div>
                 {c.vote === "like" && <img src={thumbsUp} alt="like" className="vote-icon" />}
                 {c.vote === "dislike" && <img src={thumbsDown} alt="dislike" className="vote-icon" />}
