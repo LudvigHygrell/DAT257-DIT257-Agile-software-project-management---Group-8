@@ -3,7 +3,8 @@ import '../styles/LoginModal.css';
 
 // isVisible: boolean that controls if modal shows or hides
 // onClose: function to call when user wants to close the modal
-function LoginModal({ isVisible, onClose }) {
+// onSwitchToRegister: function to call when user clicks register
+function LoginModal({ isVisible, onClose, onSwitchToRegister }) {
     // Create state variables to store user input for email and password
     // useState('') creates a variable with empty string as initial value
     // setEmail is the function to update the email value
@@ -62,8 +63,8 @@ function LoginModal({ isVisible, onClose }) {
                 </form>
                 {/* Section with additional links */}
                 <div className="link-section">
-                    {/* TODO: Replace # with actual registration page */}
-                    <a href="#" className="link">Register</a>
+                    {/* Register link that switches to registration modal */}
+                    <a href="#" onClick={(e) => { e.preventDefault(); onSwitchToRegister(); }} className="link">Register</a>
                     {/* TODO: Replace # with actual forgot password page */}
                     <a href="#" className="link">Forgot Password?</a>
                 </div>
