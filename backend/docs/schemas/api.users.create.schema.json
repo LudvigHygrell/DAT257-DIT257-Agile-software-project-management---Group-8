@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api.users.create.schema.json",
+    "title": "End point schema /api/users/create",
+    "description": "Schema for json arguments accepted by the /api/users/create end point.",
+    "properties": {
+        "username": {
+            "type": "string",
+            "$comment": "Username of the new user."
+        },
+        "email": {
+            "type": "string",
+            "$comment": "Email of the new user."
+        },
+        "password": {
+            "type": "string",
+            "$comment": "Password specified by the user."
+        }
+    },
+    "required": [ "username", "password", "email" ]
+}

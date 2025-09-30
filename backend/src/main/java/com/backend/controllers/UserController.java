@@ -254,11 +254,13 @@ public class UserController {
             return ResponseEntity.status(400).body(ret_node);
         }
 
-        String username = json.get("username").asText();
+        //String username = json.get("username").asText();
         try {
             switch (json.get("type").asText())
             {
             case "comments":
+                return ResponseEntity.status(200).body(factory.arrayNode());
+            /* 
                 List<Comment> comments = json.has("filters") ? 
                     commentAdapter.getFilteredComments(username, 
                         json.get("filters")) 
@@ -274,7 +276,7 @@ public class UserController {
                         .<ObjectNode> set("comment",
                             comment.getComment()));
                 } 
-                return ResponseEntity.status(200).body(comments_node);
+                return ResponseEntity.status(200).body(comments_node);*/
             case "likes":
                 return ResponseEntity.status(200).body(factory.arrayNode());
             default:

@@ -1,0 +1,24 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api.users.get_activity.schema.json",
+    "title": "End point schema /api/users/get_activity",
+    "description": "Schema for json arguments accepted by the /api/users/get_activity end point.",
+    "properties": {
+        "username": {
+            "type": "string",
+            "$comment": "Username to get the activity of."
+        },
+        "type": {
+            "enum": [
+                "comments",
+                "likes"
+            ],
+            "$comment": "Type of activity data to get."
+        },
+        "query": {
+            "$comment": "Query restrictions on table result set specified by type.",
+            "$ref": "./query.schema.json"
+        }
+    },
+    "required": [ "username", "type", "query" ]
+}

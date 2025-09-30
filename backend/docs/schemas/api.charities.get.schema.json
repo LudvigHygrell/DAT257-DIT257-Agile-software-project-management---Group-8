@@ -1,0 +1,13 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api.charities.get.schema.json",
+    "title": "End point schema /api/charities/get",
+    "description": "Schema for json arguments accepted by the /api/charities/get end point.",
+    "properties": {
+        "identity": {
+            "type": "string",
+            "$comment": "Charity to get."
+        }
+    },
+    "required": [ "identity" ]
+}

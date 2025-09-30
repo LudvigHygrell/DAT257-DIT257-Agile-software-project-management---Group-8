@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api.users.change_email.schema.json",
+    "title": "End point schema /api/users/change_email",
+    "description": "Schema for json arguments accepted by the /api/users/change_email end point.",
+    "properties": {
+        "username": {
+            "type": "string",
+            "$comment": "Username of the user that is logging in."
+        },
+        "email": {
+            "type": "string",
+            "$comment": "Email to change to."
+        },
+        "password": {
+            "type": "string",
+            "$comment": "Password specified by the user."
+        }
+    },
+    "required": [ "username", "password", "email" ]
+}

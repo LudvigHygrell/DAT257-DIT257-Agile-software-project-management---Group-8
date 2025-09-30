@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api.comments.blame.schema.json",
+    "title": "End point schema /api/comments/blame",
+    "description": "Schema for json arguments accepted by the /api/comments/blame end point.",
+    "properties": {
+        "comment_id": {
+            "type": "string",
+            "$comment": "Identifier of the comment to blame."
+        },
+        "charity": {
+            "type": "string",
+            "$comment": "Charity that was commented on."
+        },
+        "reason": {
+            "type": "string",
+            "$comment": "Reporter's reasoning for blaming the comment."
+        }
+    },
+    "required": [ "comment_id", "charity" ]
+}
