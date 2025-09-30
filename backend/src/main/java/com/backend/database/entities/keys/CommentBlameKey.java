@@ -1,8 +1,5 @@
 package com.backend.database.entities.keys;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -12,19 +9,13 @@ import java.io.Serializable;
  * @version 1.0
  * @since 2025-09-18
  */
-@Embeddable
 public class CommentBlameKey implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1;
 
-    @Column(name="commentid")
     private int commentId;
-
-    @Column(name="charity")
     private String charity;
-
-    @Column(name="reporter")
     private String reporter;
 
     protected CommentBlameKey() {}

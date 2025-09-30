@@ -3,8 +3,9 @@ package com.backend.database.entities;
 import com.backend.database.entities.keys.*;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 
 /**
@@ -14,11 +15,21 @@ import jakarta.persistence.Table;
  * @since 2025-09-18
  */
 @Entity
+@IdClass(CommentBlameKey.class)
 @Table(name="commentblame")
 public class CommentBlame {
 
-    @EmbeddedId
-    private CommentBlameKey key;
+    @Id
+    @Column(name="commentid")
+    private int commentId;
+
+    @Id
+    @Column(name="charity")
+    private String charity;
+
+    @Id
+    @Column(name="reporter")
+    private String reporter;
 
     @Column(name="reason")
     private String reason;
@@ -37,20 +48,23 @@ public class CommentBlame {
         assert null != charity;
         assert null != reporter;
         assert null != reason;
-        this.key = new CommentBlameKey(commentId, charity, reporter);
+
+        this.commentId = commentId;
+        this.charity = charity;
+        this.reporter = reporter;
         this.reason = reason;
     }
 
     public int getCommentId() {
-        return key.getCommentId();
+        return commentId;
     }
 
     public String getCharity() {
-        return key.getCharity();
+        return charity;
     }
 
     public String getReporter() {
-        return key.getReporter();
+        return reporter;
     }
 
     public String getReason() {
@@ -58,17 +72,17 @@ public class CommentBlame {
     }
 
     public void setCommentId(int commentId) {
-        this.key.setCommentId(commentId);
+        this.commentId = commentId;
     }
 
     public void setCharity(String charity) {
         assert null != charity;
-        this.key.setCharity(charity);
+        this.charity = charity;
     }
 
     public void setReporter(String reporter) {
         assert null != reporter;
-        this.key.setReporter(reporter);
+        this.reporter = reporter;
     }
 
     public void setReason(String reason) {

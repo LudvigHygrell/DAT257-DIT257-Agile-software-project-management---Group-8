@@ -11,11 +11,17 @@ import jakarta.persistence.*;
  * @since 2025-09-18
  */
 @Entity
+@IdClass(CharityVoteKey.class)
 @Table(name="charityscores")
 public class CharityVote {
     
-    @EmbeddedId
-    private CharityVoteKey key;
+    @Id
+    @Column(name="user")
+    private String user;
+
+    @Id
+    @Column(name="charity")
+    private String charity;
 
     @Column(name="vote")
     private boolean vote;
@@ -32,24 +38,27 @@ public class CharityVote {
     public CharityVote(String user, String charity, boolean vote) {
         assert null != user;
         assert null != charity;
-        this.key = new CharityVoteKey(user, charity);
+        this.user = user;
+        this.charity = charity;
         this.vote = vote;
     }
     
     public String getUser(){
-        return key.getUser();
+        return user;
     }
     
     public void setUser(String user){
-        key.setUser(user);
+        assert null != user;
+        this.user = user;
     }
     
     public String getCharity() {
-        return key.getCharity();
+        return charity;
     }
     
     public void setCharity(String charity) {
-        key.setCharity(charity);
+        assert null != charity;
+        this.charity = charity;
     }
     
     public boolean votedUp() {
