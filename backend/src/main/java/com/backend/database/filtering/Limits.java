@@ -8,6 +8,11 @@ package com.backend.database.filtering;
 public record Limits(int maxResults, int resultsStart) {
 
     /**
+     * Limits value for a non-limited result.
+     */
+    public static final Limits NOT_LIMITED = new Limits(Integer.MAX_VALUE, 0);
+
+    /**
      * Create a new limits instance.
      * @param maxResults Maximum number of allowed results.
      */

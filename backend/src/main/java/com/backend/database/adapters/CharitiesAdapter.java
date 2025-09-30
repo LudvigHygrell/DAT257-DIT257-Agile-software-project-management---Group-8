@@ -6,12 +6,8 @@ import com.backend.database.entities.*;
 import com.backend.database.entities.keys.CharityVoteKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,16 +34,14 @@ public class CharitiesAdapter {
     protected CharitiesAdapter() {}
 
     /**
-     * List available charities.
-     * @param filters Filters to apply when listing.
-     * @param order_by Ordering of the results.
-     * @return A list 
+     * Find a charity based on it's orgId
+     * @param orgId Identfier of the charity organization.
+     * @return The resulting charity.
+     * @throws Exception Thrown if getting the charity fails.
      */
-    public List<String> list(String[] filters, String order_by, int pageSize, int pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber,pageSize); //TODO Implement sorting
-        Page<Charity> charitiesPage = charityRepository.findAll(pageable);
-        return charitiesPage.getContent().stream()
-            .map(Charity::getOrgID).toList();
+    public Charity get(String orgId) throws Exception {
+        return charityRepository.findById(orgId)
+            .orElseThrow(() -> new Exception("Error getting charity."));
     }
 
     /**

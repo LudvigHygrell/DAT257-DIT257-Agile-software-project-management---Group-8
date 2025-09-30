@@ -1,5 +1,7 @@
 package com.backend.database.filtering;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 /**
  * Ordering applied to filtered queries.
  * 
@@ -13,6 +15,28 @@ public record Ordering(String field, int direction) {
      */
     public static final Ordering NONE = new Ordering("", 0);
 
+    /**
+     * Convert to Ordering from a json object.
+     */
+    public static Ordering fromJson(JsonNode node) {
+        String field = "";
+        int dir = 0;
+
+        if (node.has("field"))
+            field = node.get("field").asText();
+
+        if (node.has("ordering"))
+            dir = switch (node.get("ordering").asText()) {
+                case "ascending" -> 1;
+                case "descending" -> -1;
+                default -> 0;
+            };
+
+        if (dir != 0 && field.isEmpty())
+            throw new IllegalArgumentException("Field not specified in asc/desc ordering.");
+
+        return new Ordering(field, dir); 
+    }
 
     /**
      * Creates an ascending ordering.

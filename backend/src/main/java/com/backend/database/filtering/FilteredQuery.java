@@ -81,4 +81,26 @@ public class FilteredQuery<Entity> {
             .setFirstResult(limits.resultsStart())
             .getResultList();
     }
+
+    /**
+     * Run an unfiltered query and apply ordering and limits to the result.
+     * @param ordering How results are ordered.
+     * @param limits Maximum number of results, and where the results start.
+     * @return A list of all fetched records.
+     */
+    public List<Entity> runQuery(Ordering ordering, Limits limits) {
+        assert null != ordering;
+        assert null != limits;
+
+        CriteriaQuery<Entity> q = query.select(root);
+        if (ordering.isOrdered()) {
+            q = q.orderBy(ordering.isDescending() ?
+                criteriaBuilder.desc(root.get(ordering.field().toLowerCase()))
+                : criteriaBuilder.asc(root.get(ordering.field().toLowerCase())));
+        }
+        return manager.createQuery(q)
+            .setMaxResults(limits.maxResults())
+            .setFirstResult(limits.resultsStart())
+            .getResultList();
+    }
 }

@@ -7,6 +7,9 @@
         "max_count": {
             "type": "integer"
         },
+        "first": {
+            "type": "integer"
+        },
         "filters": {
             "type": "array",
             "items": {

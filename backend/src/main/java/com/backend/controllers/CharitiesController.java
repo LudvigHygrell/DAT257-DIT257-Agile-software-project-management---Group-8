@@ -1,35 +1,95 @@
 package com.backend.controllers;
 
 import com.backend.database.adapters.CharitiesAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.backend.database.entities.Charity;
+import com.backend.database.filtering.FilteredQuery;
+import com.backend.database.filtering.JsonToFilterConverter;
+import com.backend.database.filtering.Limits;
+import com.backend.database.filtering.Ordering;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/charities")
 public class CharitiesController {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
     private CharitiesAdapter charitiesAdapter;
 
+    private JsonNodeFactory jb = JsonNodeFactory.instance;
+
+    @SuppressWarnings("deprecation")
     @GetMapping("/list")
-    public ResponseEntity<String> list(@RequestBody JsonNode json) throws JsonProcessingException {
-        if (!json.has("filters")) {
-            return ResponseEntity.badRequest().body("Missing filters");
+    public ResponseEntity<JsonNode> list(@RequestBody JsonNode json) {
+        if (!json.isObject())
+            return ResponseEntity.badRequest().body(
+                jb.objectNode().put("message", jb.textNode("Expected a Json object.")));
+        
+        Ordering order;
+        Limits limits;
+        try {
+            order = json.has("sorting") ? Ordering.fromJson(json.get("sorting")) : Ordering.NONE;
+            
+            int start = 0;
+            int maxResults = Integer.MAX_VALUE;
+
+            if (json.has("first"))
+                start = json.get("first").asInt();
+            if (json.has("max_count"))
+                maxResults = json.get("max_count").asInt();
+
+            limits = new Limits(start, maxResults);
+
+        } catch (Exception ex) {
+            return ResponseEntity.status(500)
+                .body(jb.objectNode()
+                .put("message", "Error in Json formatting."));
         }
-        if (!json.has("order_by")) {
-            return ResponseEntity.badRequest().body("Missing sorting order");
+
+        List<Charity> results;
+        try {
+            FilteredQuery<Charity> query = new FilteredQuery<>(entityManager, Charity.class);
+            if (json.has("filters")) {
+                results = query.runQuery(
+                    JsonToFilterConverter.filterFromJson(
+                        query.getFilterBuilder(), json.get("filters")));
+            } else {
+                results = query.runQuery(order, limits);
+            }
+        } catch (Exception ex) {
+            return ResponseEntity.status(500)
+                .body(jb.objectNode()
+                .put("message", "Error fetching results."));
         }
-        //TODO tags not implemented in database yet
-        // String order_by = json.get("order_by").asText();
-        return ResponseEntity.badRequest().body("Not implemented");
+        return ResponseEntity.ok().body(jb.arrayNode()
+            .addAll(results.stream()
+                .map(c -> c.toJson()).toList()));
     }
 
     @GetMapping("/get")
-    public ResponseEntity<String> get(@RequestBody JsonNode json) {
+    public ResponseEntity<JsonNode> get(@RequestBody JsonNode json) {
         if (!json.has("identity")) {
-            return ResponseEntity.badRequest().body("Missing Org ID");
+            return ResponseEntity.badRequest().body(
+                jb.objectNode().put("message", "Missing Org ID"));
         }
-        return ResponseEntity.status(404).body("Charities are work in progress.");
+        try {
+            return ResponseEntity.ok()
+                .body(charitiesAdapter.get(json.get("identity").asText()).toJson());
+        } catch (Exception ex) {
+            return ResponseEntity.status(500)
+                .body(jb.objectNode().put("message", "Error fetching charity."));
+        }
     }
 
     @PostMapping("/vote")

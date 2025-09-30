@@ -152,11 +152,14 @@
 `/api/charities/list`
 
 ```json
-{
-    "filters" : [], 
-    "order_by" : string,
-    "pageSize" : int,
-    "pageNumber" : int,
+{ 
+    "sorting" : {
+        "field": string,
+        "ordering": "ascending" | "descending"
+    },
+    "max_count": int,
+    "first": int,
+    "filters": []
 }
 ```
 
