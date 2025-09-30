@@ -1,0 +1,20 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/query.schema.json",
+    "title": "Object query schema",
+    "description": "Schema of advanced queries to the back end.",
+    "properties": {
+        "max_count": {
+            "type": "integer"
+        },
+        "filters": {
+            "type": "array",
+            "items": {
+                "$ref": "./filtering.schema.json#"
+            }
+        },
+        "sorting": {
+            "$ref": "./ordering.schema.json#"
+        }
+    }
+}
