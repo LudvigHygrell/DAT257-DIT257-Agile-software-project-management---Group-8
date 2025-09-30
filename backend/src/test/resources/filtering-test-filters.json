@@ -1,0 +1,47 @@
+[
+    [
+        {
+            "filter": "like",
+            "field": "commentUser",
+            "value": "%a%"
+        }
+    ],
+    [
+        {
+            "filter": "or",
+            "arguments": [
+                {
+                    "filter": "greater",
+                    "field": "commentId",
+                    "value": 3
+                },
+                {
+                    "filter": "like",
+                    "field": "charity",
+                    "value": "10%"
+                }
+            ]
+        }
+    ],
+    [
+        {
+            "filter": "less",
+            "field": "commentId",
+            "value": 5
+        }
+    ],
+    [
+        {
+            "filter": "greater",
+            "field": "commentId",
+            "value": 9
+        }
+    ],
+    [
+        {
+            "filter": "less",
+            "field": "commentId",
+            "value": 2
+        }
+    ]
+]
