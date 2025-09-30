@@ -5,7 +5,6 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
 
 /**
@@ -74,8 +73,8 @@ public class FilteredQuery<Entity> {
             .where(filter.getPredicate());
         if (ordering.isOrdered()) {
             q = q.orderBy(ordering.isDescending() ?
-                criteriaBuilder.desc(root.get(ordering.field()))
-                : criteriaBuilder.asc(root.get(ordering.field())));
+                criteriaBuilder.desc(root.get(ordering.field().toLowerCase()))
+                : criteriaBuilder.asc(root.get(ordering.field().toLowerCase())));
         }
         return manager.createQuery(q)
             .setMaxResults(limits.maxResults())

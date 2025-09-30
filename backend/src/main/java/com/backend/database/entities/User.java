@@ -10,7 +10,7 @@ import jakarta.persistence.*;
  * @since 2025-09-18
  */
 @Entity
-@Table(name="Users")
+@Table(name="users")
 public class User {
 
     public static final String DELETED_USER_NAME = "<deleted user>";

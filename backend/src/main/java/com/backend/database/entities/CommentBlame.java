@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
  * @since 2025-09-18
  */
 @Entity
-@Table(name="CommentBlame")
+@Table(name="commentblame")
 public class CommentBlame {
 
     @EmbeddedId

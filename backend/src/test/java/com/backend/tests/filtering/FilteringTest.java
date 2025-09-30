@@ -34,13 +34,13 @@ public class FilteringTest {
         JsonNode json = ResourceLoader.loadJson("filtering-test-filters.json");
         for (JsonNode filters : json) {
             
-            logger.info("Applying filters: %s", filters);
+            logger.info("Applying filters: {}", filters);
 
             FilteredQuery<Comment> q = new FilteredQuery<>(entityManager, Comment.class);
             Filter<Comment> compiledFilter = JsonToFilterConverter.filterFromJson(q.getFilterBuilder(), filters);
             
             List<Comment> comments = q.runQuery(compiledFilter);
-            logger.info("Query complete. %d filters in total.", comments.size());
+            logger.info("Query complete. {} filters in total.", comments.size());
             for (Comment comment : comments) {
                 logger.info(comment.toString());
             }

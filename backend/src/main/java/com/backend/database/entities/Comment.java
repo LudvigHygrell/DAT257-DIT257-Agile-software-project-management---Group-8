@@ -1,5 +1,7 @@
 package com.backend.database.entities;
 
+import java.util.Objects;
+
 import com.backend.database.entities.keys.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 
 /**
@@ -17,16 +21,22 @@ import jakarta.persistence.Table;
  * @since 2025-09-18
  */
 @Entity
-@Table(name="Comments")
+@IdClass(CommentKey.class)
+@Table(name="comments")
 public class Comment {
 
-    @EmbeddedId
-    private CommentKey key;
+    @Id
+    @Column(name="charity")
+    private String charity;
+
+    @Id
+    @Column(name="commentid")
+    private int commentId;
 
     @Column(name="comment")
     private String comment;
 
-    @Column(name="commentUser")
+    @Column(name="commentuser")
     private String commentUser;
 
     protected Comment() {}
@@ -42,17 +52,18 @@ public class Comment {
         assert null != charity;
         assert null != comment;
         assert null != commentUser;
-        this.key = new CommentKey(commentId, charity);
+        this.commentId = commentId;
+        this.charity = charity;
         this.comment = comment.toString();
         this.commentUser = commentUser;
     }
 
     public int getCommentId() {
-        return key.getCommentId();
+        return commentId;
     }
 
     public String getCharity() {
-        return key.getCharity();
+        return charity;
     }
 
     public JsonNode getComment() {
@@ -68,12 +79,12 @@ public class Comment {
     }
 
     public void setCommentId(int id) {
-        this.key.setCommentId(id);
+        this.commentId = id;
     }
 
     public void setCharity(String charity) {
         assert null != charity;
-        this.key.setCharity(charity);
+        this.charity = charity;
     }
 
     public void setComment(JsonNode comment) {
@@ -84,5 +95,25 @@ public class Comment {
     public void setCommentUser(String user) {
         assert null != user;
         this.commentUser = user;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Comment(charity=%s, commentId=%d, comment=%s, commentUser=%s)", 
+            getCharity(), getCommentId(), comment, commentUser);
+    }
+    
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Comment &&
+            ((Comment)object).getCharity().equals(getCharity()) &&
+            ((Comment)object).getCommentId() == getCommentId() &&
+            ((Comment)object).comment.equals(comment) &&
+            ((Comment)object).commentUser.equals(commentUser);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getCommentId(), getCharity(), comment, commentUser);
     }
 }

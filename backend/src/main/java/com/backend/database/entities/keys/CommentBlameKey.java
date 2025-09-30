@@ -18,7 +18,7 @@ public class CommentBlameKey implements Serializable {
     @Serial
     private static final long serialVersionUID = 1;
 
-    @Column(name="commentId")
+    @Column(name="commentid")
     private int commentId;
 
     @Column(name="charity")
@@ -26,6 +26,8 @@ public class CommentBlameKey implements Serializable {
 
     @Column(name="reporter")
     private String reporter;
+
+    protected CommentBlameKey() {}
 
     /**
      * Construct a new comment blame key.

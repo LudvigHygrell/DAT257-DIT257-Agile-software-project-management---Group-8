@@ -10,11 +10,11 @@ import jakarta.persistence.*;
  */
 
 @Entity
-@Table(name="Charities")
+@Table(name="charities")
 public class Charity {
     
     @Id
-    @Column(name = "orgId")
+    @Column(name = "orgid")
     private String orgId;
 
     protected Charity() {}

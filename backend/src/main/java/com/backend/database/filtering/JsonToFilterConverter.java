@@ -30,29 +30,16 @@ public abstract class JsonToFilterConverter {
         };
     }
 
-    private static <Entity> void assertValidField(String field, Class<Entity> entityClass) {
-        for (Field rfield : entityClass.getDeclaredFields()) {
-            rfield.setAccessible(true);
-            if (rfield.isAnnotationPresent(Column.class) && field.equals(rfield.getName())) {
-                return;
-            }
-        }
-        throw new AssertionError(String.format("Field \"%s\" does not exists in the entity class %s.", 
-            field, entityClass.getName()));
-    }
-
     private static <Entity> Filter<Entity> comparisonFilterFromJson(FilterBuilder<Entity> builder, JsonNode json, FilteringMethod method) {
 
         if (!json.has("field"))
             throw new IllegalArgumentException("Missing expected field \"field\"");
 
-        if (!json.has("arguments"))
+        if (!json.has("value"))
             throw new IllegalArgumentException("Missing expected field \"value\"");
 
         String field = json.get("field").asText();
         JsonNode rhs = json.get("value");
-
-        assertValidField(field, builder.getEntityClass());
 
         return switch (method) {
         case LESS

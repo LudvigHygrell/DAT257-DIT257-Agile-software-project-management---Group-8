@@ -6,14 +6,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="PausedCharities")
+@Table(name="pausedcharities")
 public class PausedCharity {
     
     @Id
-    @Column(name="orgId")
+    @Column(name="orgid")
     private String orgId;
 
-    @Column(name="adminUser")
+    @Column(name="adminuser")
     private String adminUser;
 
     public PausedCharity(String orgId, String adminUser) {

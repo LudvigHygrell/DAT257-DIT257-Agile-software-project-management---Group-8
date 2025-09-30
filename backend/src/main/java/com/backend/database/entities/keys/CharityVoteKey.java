@@ -23,6 +23,8 @@ public class CharityVoteKey implements Serializable {
     @Column(name="charity")
     private String charity;
 
+    protected CharityVoteKey() {}
+
     /**
      * Create a new Like key
      * @param user the user who is voting

@@ -11,7 +11,7 @@ import jakarta.persistence.*;
  * @since 2025-09-18
  */
 @Entity
-@Table(name="CharityScores")
+@Table(name="charityscores")
 public class CharityVote {
     
     @EmbeddedId
