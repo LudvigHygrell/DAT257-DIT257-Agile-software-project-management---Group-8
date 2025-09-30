@@ -1,9 +1,11 @@
 package com.backend.controllers;
 
-import com.backend.database.adapters.CommentsAdapter;
 import com.backend.database.PasswordHashUtility;
 import com.backend.database.adapters.UserAdapter;
 import com.backend.database.entities.Comment;
+import com.backend.database.entities.CommentBlame;
+import com.backend.database.filtering.FilteredQuery;
+import com.backend.database.filtering.JsonToFilterConverter;
 import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
@@ -20,12 +22,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * The UserController class handles user-related API endpoints such as login and registration.
@@ -42,8 +47,8 @@ public class UserController {
     @Autowired
     private UserAdapter userAdapter;
 
-    @Autowired
-    private CommentsAdapter commentAdapter;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private UserDetailService userDetailService;
@@ -253,32 +258,33 @@ public class UserController {
             ret_node.put("message", "The type-parameter was not set");
             return ResponseEntity.status(400).body(ret_node);
         }
+        if (!json.has("query")) {
+            ret_node.put("message", "The query-parameter was not set.");
+            return ResponseEntity.status(400).body(ret_node);
+        }
 
-        //String username = json.get("username").asText();
+        var result = new Object() {
+            public <T> ResponseEntity<JsonNode> get(Class<T> clazz, Function<T, JsonNode> f) {
+                
+                FilteredQuery<T> query = new FilteredQuery<>(entityManager, clazz);
+                List<T> results = JsonToFilterConverter.runQueryFromJson(query, json.get("query"));
+
+                return ResponseEntity.ok().body(factory.objectNode()
+                    .<ObjectNode> set("value", 
+                        factory.arrayNode()
+                            .addAll(results.stream().<JsonNode> map(f).toList()))
+                    .<ObjectNode> set("message", 
+                        factory.textNode("success")));
+            }
+        };
+
         try {
             switch (json.get("type").asText())
             {
             case "comments":
-                return ResponseEntity.status(200).body(factory.arrayNode());
-            /* 
-                List<Comment> comments = json.has("filters") ? 
-                    commentAdapter.getFilteredComments(username, 
-                        json.get("filters")) 
-                    : commentAdapter.getComments(username);
-                
-                ArrayNode comments_node = factory.arrayNode();
-                for (Comment comment : comments) {
-                    comments_node.add(factory.objectNode()
-                        .<ObjectNode> set("commentId", 
-                            factory.numberNode(comment.getCommentId()))
-                        .<ObjectNode> set("charity", 
-                            factory.textNode(comment.getCharity()))
-                        .<ObjectNode> set("comment",
-                            comment.getComment()));
-                } 
-                return ResponseEntity.status(200).body(comments_node);*/
-            case "likes":
-                return ResponseEntity.status(200).body(factory.arrayNode());
+                return result.get(Comment.class, c -> c.toJson());
+            case "comment_blame":
+                return result.get(CommentBlame.class, c -> c.toJson());
             default:
                 return ResponseEntity.badRequest().body(factory.objectNode()
                     .put("message", "Bad type parameter."));

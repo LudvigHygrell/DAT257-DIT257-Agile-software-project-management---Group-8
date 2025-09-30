@@ -7,6 +7,8 @@ import com.backend.database.entities.keys.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -94,6 +96,14 @@ public class Comment {
     public void setCommentUser(String user) {
         assert null != user;
         this.commentUser = user;
+    }
+
+    public JsonNode toJson() {
+        return JsonNodeFactory.instance.objectNode()
+            .put("charity", charity)
+            .put("commentId", commentId)
+            .put("comment", comment)
+            .put("user", commentUser);
     }
 
     @Override

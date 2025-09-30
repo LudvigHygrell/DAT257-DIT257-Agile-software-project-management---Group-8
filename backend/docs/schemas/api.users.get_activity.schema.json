@@ -11,7 +11,7 @@
         "type": {
             "enum": [
                 "comments",
-                "likes"
+                "comment_blame"
             ],
             "$comment": "Type of activity data to get."
         },

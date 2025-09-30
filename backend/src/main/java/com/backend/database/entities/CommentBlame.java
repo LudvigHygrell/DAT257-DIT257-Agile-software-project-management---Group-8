@@ -1,6 +1,8 @@
 package com.backend.database.entities;
 
 import com.backend.database.entities.keys.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,6 +55,14 @@ public class CommentBlame {
         this.charity = charity;
         this.reporter = reporter;
         this.reason = reason;
+    }
+
+    public JsonNode toJson() {
+        return JsonNodeFactory.instance.objectNode()
+            .put("commentId", commentId)
+            .put("charity", charity)
+            .put("reporter", reporter)
+            .put("reason", reason);
     }
 
     public int getCommentId() {

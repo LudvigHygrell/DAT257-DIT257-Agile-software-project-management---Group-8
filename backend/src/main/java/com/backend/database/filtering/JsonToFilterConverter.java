@@ -101,4 +101,35 @@ public abstract class JsonToFilterConverter {
             default -> comparisonFilterFromJson(builder, json, method);
         };
     }
+
+    /**
+     * Translate ordering, limits and filters from the specified json and execute the query.
+     * @param <Entity> Entity type to query.
+     * @param query Query to construct.
+     * @param json The json containing the properties of the json to run.
+     * @return The list of results.
+     */
+    public static <Entity> List<Entity> runQueryFromJson(FilteredQuery<Entity> query, JsonNode json) {
+        assert null != query;
+        assert null != json;
+
+        Ordering order;
+        Limits limits;
+        order = json.has("sorting") ? Ordering.fromJson(json.get("sorting")) : Ordering.NONE;
+        
+        int start = 0;
+        int maxResults = Integer.MAX_VALUE;
+
+        if (json.has("first"))
+            start = json.get("first").asInt();
+        if (json.has("max_count"))
+            maxResults = json.get("max_count").asInt();
+
+        limits = new Limits(start, maxResults);
+        
+        if (json.has("filters")) {
+            return query.runQuery(filterFromJson(query.getFilterBuilder(), json.get("filters")), order, limits);
+        }
+        return query.runQuery(order, limits);
+    }
 }

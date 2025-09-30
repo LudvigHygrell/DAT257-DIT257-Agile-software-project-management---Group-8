@@ -4,8 +4,6 @@ import com.backend.database.adapters.CharitiesAdapter;
 import com.backend.database.entities.Charity;
 import com.backend.database.filtering.FilteredQuery;
 import com.backend.database.filtering.JsonToFilterConverter;
-import com.backend.database.filtering.Limits;
-import com.backend.database.filtering.Ordering;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -36,48 +34,24 @@ public class CharitiesController {
             return ResponseEntity.badRequest().body(
                 jb.objectNode().put("message", jb.textNode("Expected a Json object.")));
         
-        Ordering order;
-        Limits limits;
-        try {
-            order = json.has("sorting") ? Ordering.fromJson(json.get("sorting")) : Ordering.NONE;
-            
-            int start = 0;
-            int maxResults = Integer.MAX_VALUE;
-
-            if (json.has("first"))
-                start = json.get("first").asInt();
-            if (json.has("max_count"))
-                maxResults = json.get("max_count").asInt();
-
-            limits = new Limits(start, maxResults);
-
-        } catch (Exception ex) {
-            return ResponseEntity.status(500)
-                .body(jb.objectNode()
-                .put("message", "Error in Json formatting."));
-        }
-
         List<Charity> results;
         try {
             FilteredQuery<Charity> query = new FilteredQuery<>(entityManager, Charity.class);
-            if (json.has("filters")) {
-                results = query.runQuery(
-                    JsonToFilterConverter.filterFromJson(
-                        query.getFilterBuilder(), json.get("filters")));
-            } else {
-                results = query.runQuery(order, limits);
-            }
+            results = JsonToFilterConverter.runQueryFromJson(query, json);
         } catch (Exception ex) {
             return ResponseEntity.status(500)
                 .body(jb.objectNode()
                 .put("message", "Error fetching results."));
         }
-        return ResponseEntity.ok().body(jb.arrayNode()
-            .addAll(results.stream()
-                .map(c -> c.toJson()).toList()));
+        return ResponseEntity.ok().body(jb.objectNode()
+            .put("message", "success")
+            .put("value", jb.arrayNode()
+                .addAll(results.stream()
+                    .map(c -> c.toJson()).toList())));
     }
 
     @GetMapping("/get")
+    @SuppressWarnings("deprecation")
     public ResponseEntity<JsonNode> get(@RequestBody JsonNode json) {
         if (!json.has("identity")) {
             return ResponseEntity.badRequest().body(
@@ -85,7 +59,9 @@ public class CharitiesController {
         }
         try {
             return ResponseEntity.ok()
-                .body(charitiesAdapter.get(json.get("identity").asText()).toJson());
+                .body(jb.objectNode()
+                    .put("message", "success")
+                    .put("value", charitiesAdapter.get(json.get("identity").asText()).toJson()));
         } catch (Exception ex) {
             return ResponseEntity.status(500)
                 .body(jb.objectNode().put("message", "Error fetching charity."));
