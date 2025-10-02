@@ -4,6 +4,7 @@ import com.backend.database.PasswordHashUtility;
 import com.backend.database.adapters.UserAdapter;
 import com.backend.database.entities.Comment;
 import com.backend.database.entities.CommentBlame;
+import com.backend.database.entities.SearchedCharity;
 import com.backend.database.filtering.FilteredQuery;
 import com.backend.database.filtering.JsonToFilterConverter;
 import com.backend.jwt.JwtUtil;
@@ -287,6 +288,8 @@ public class UserController {
                 return result.get(Comment.class, c -> c.toJson());
             case "comment_blame":
                 return result.get(CommentBlame.class, c -> c.toJson());
+            case "searched_charities":
+                return result.get(SearchedCharity.class, c -> c.toJson());
             default:
                 return ResponseEntity.badRequest().body(factory.objectNode()
                     .put("message", "Bad type parameter."));

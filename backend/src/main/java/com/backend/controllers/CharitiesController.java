@@ -38,6 +38,7 @@ public class CharitiesController {
         try {
             FilteredQuery<Charity> query = new FilteredQuery<>(entityManager, Charity.class);
             results = JsonToFilterConverter.runQueryFromJson(query, json);
+            charitiesAdapter.addSkimSearchEntries(results);
         } catch (Exception ex) {
             return ResponseEntity.status(500)
                 .body(jb.objectNode()
@@ -58,10 +59,12 @@ public class CharitiesController {
                 jb.objectNode().put("message", "Missing Org ID"));
         }
         try {
+            Charity charity = charitiesAdapter.get(json.get("identity").asText());
+            charitiesAdapter.addSearchEntry(charity);
             return ResponseEntity.ok()
                 .body(jb.objectNode()
                     .put("message", "success")
-                    .put("value", charitiesAdapter.get(json.get("identity").asText()).toJson()));
+                    .put("value", charity.toJson()));
         } catch (Exception ex) {
             return ResponseEntity.status(500)
                 .body(jb.objectNode().put("message", "Error fetching charity."));

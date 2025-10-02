@@ -90,6 +90,9 @@ CREATE TABLE IF NOT EXISTS SearchedCharities(
     charity TEXT
         NOT NULL
         REFERENCES Charities(orgId),
+    visited BOOLEAN
+        NOT NULL
+        DEFAULT NO,
     insertTime TIMESTAMP
         NOT NULL
         DEFAULT CURRENT_TIMESTAMP,

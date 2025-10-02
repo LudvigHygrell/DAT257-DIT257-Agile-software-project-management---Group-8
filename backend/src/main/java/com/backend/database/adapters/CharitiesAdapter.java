@@ -8,6 +8,7 @@ import com.backend.database.entities.keys.CharityVoteKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -30,6 +31,9 @@ public class CharitiesAdapter {
 
     @Autowired
     private AdministratorsRepository administratorsRepository;
+
+    @Autowired
+    private SearchedCharitiesRepository searchedCharities;
 
     protected CharitiesAdapter() {}
 
@@ -121,5 +125,25 @@ public class CharitiesAdapter {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Register search entries for a charities searched by a user (but not visited).
+     * @param charities Charities to add to the search entry.
+     */
+    public void addSkimSearchEntries(Collection<Charity> charities) {
+        assert null != charities;
+        searchedCharities.saveAll(charities.stream()
+            .map(c -> new SearchedCharity(UserUtil.getUsername(), c.getOrgID()))
+            .toList());
+    }
+
+    /**
+     * Register a new search entry into the charities visited, and viewed by a user.
+     * @param charity Charity to add.
+     */
+    public void addSearchEntry(Charity charity) {
+        assert null != charity;
+        searchedCharities.save(new SearchedCharity(UserUtil.getUsername(), charity.getOrgID(), true));
     }
 }
