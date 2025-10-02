@@ -247,7 +247,7 @@ public class UserController {
      * <p>200 If all went well, along with the user's activity data</p>
      * <p>500 If there was an internal server error</p>
      */
-    @PostMapping("/get_activity")
+    @GetMapping("/get_activity")
     public ResponseEntity<JsonNode> getActivity(@RequestBody JsonNode json) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode ret_node = factory.objectNode();
