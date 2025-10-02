@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api-return-values/charities/list.schema.json",
+    "title": "End point schema /api/charities/list return value",
+    "description": "Schema for json values returned by the /api/charities/list end point.",
+    "properties": {
+        "value": {
+            "type": "array",
+            "items": {
+                "properties": {
+                    "orgId": { "type": "string" }
+                }
+            }
+        },
+        "message": {
+            "type": "string",
+            "$comment": "Status message of the result."
+        }
+    },
+    "required": [ "message" ]
+}

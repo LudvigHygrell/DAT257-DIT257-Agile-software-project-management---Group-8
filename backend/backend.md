@@ -58,6 +58,56 @@
 
 # Endpoints
 
+## Endpoint description syntax
+
+The following is a set of endpoints that the backend uses to communicate with front-end instances.
+
+Each section will contain a header that contains the endpoint function, followed by the HTTP method of
+the endpoint.
+
+### Arguments syntax
+
+Following the header, there will be code block containing a representation of the json values accepted
+by the endpoint. Assume that the accepted properties on the json objects are the exact properties on the
+representations.
+
+If a comment following a peoperty ends with "(optional)" it signifies that the property can be left out
+without causing an error. Assume all other properties are required.
+
+Comments that follow json elements and end with "// , ..." signifies that there may occur more occurences
+of similar elements folowing the commented element.
+
+Values of properties are not to be taken litteraly, they are representations of the expected format of the
+property. This is true as long as the string does not contain the '|' character, in that case, the expected
+format is one, and only one, of the exact strings delimitered by the '|' character.
+
+### Return syntax
+
+Any comment that starts with "TODO: " indicates that the following part of the comment is going to be added
+to the representation once the proper functionality is implemented. Specifying a field that is marked with
+the "TODO: " comment will _never_ be an error, but it may have no effect on the results, as it is still a
+work in progress feature.
+
+Following the representation, there will be one or more code blocks that specify the values that may be returned
+by the endpoint. This will occur after a line containing the string "Return:" followed by a code block that
+will either contain a json object that represents the returnable value.
+
+Following the "Return:" label, there may also optionally be one or more "or:" labels followed by code blocks.
+These specify other options for what may be returned by the endpoint.
+
+Assume that the representation of returned objects follows the same syntax as for arguments, unless something
+else is specified.
+
+### Filtering
+
+Any endpoint that has the return format of two properties: one named "value" and one named "message" where "value"
+is a json array can be filtered on.
+
+> For an exact definition of filters and advanced queries, please refer to the [documentation on filtering](./docs/filtering.md).
+
+The exact fields that can be filtered on are the exact fields of the objects contained in the returned "value" array.
+For an exact schema on these returned objects, refer to the `backend/docs/schemas` files.
+
 ## User endpoints
 
 ### Login (GET)
@@ -292,14 +342,14 @@ or:
 
 ```jsonc
 {
-    "identity": "12d33r3f44t" // Organization id.
+    "orgId": "12d33r3f44t" // Organization id.
 }
 ```
 Return:
 ```jsonc
 {
     "value": {
-        "identity": "345g35t5" // Charity organization id
+        "orgId": "345g35t5" // Charity organization id
         // TODO: , ...
     }
     ,

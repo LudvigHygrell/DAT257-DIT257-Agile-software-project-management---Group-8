@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft-07/schema#",
-    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api.charities.vote.schema.json",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api/charities/vote.schema.json",
     "title": "End point schema /api/charities/vote",
     "description": "Schema for json arguments accepted by the /api/charities/vote end point.",
     "properties": {

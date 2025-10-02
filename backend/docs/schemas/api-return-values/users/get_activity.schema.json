@@ -1,0 +1,44 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api-return-values/users/get_activity.schema.json",
+    "title": "End point schema /api/users/get_activity return value",
+    "description": "Schema for json values returned by the /api/users/get_activity end point.",
+    "properties": {
+        "value": {
+            "$comment": "Value returned by the endpoint.",
+            "type": "array",
+            "items": {
+                "oneOf": [
+                    {
+                        "$comment": "Returned comment objects (only if \"type\" was \"comments\")",
+                        "properties": {
+                            "commentId": { "type": "integer" },
+                            "charity": { "type": "string" },
+                            "comment": {
+                                "type": "object",
+                                "properties": {
+                                    "message": { "type": "string" }
+                                },
+                                "required": [ "message" ]
+                            },
+                            "user": { "type": "string" }
+                        },
+                        "required": [ "commentId", "charity", "comment", "user" ]
+                    },
+                    {
+                        "$comment": "Returned comment blame objects (only if \"type\" was \"comment_blame\")",
+                        "properties": {
+                            "commentId": { "type": "integer" },
+                            "charity": { "type": "string" },
+                            "reason": { "type": "string" },
+                            "reporter": { "type": "string" }
+                        },
+                        "required": [ "commentId", "charity", "reason", "reporter" ]
+                    }
+                ]
+            }
+        },
+        "message": { "type": "string", "$comment": "Status message of the result." }
+    },
+    "required": [ "message" ]
+}
