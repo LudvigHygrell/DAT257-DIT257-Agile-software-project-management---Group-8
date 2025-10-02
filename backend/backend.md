@@ -68,8 +68,8 @@ the endpoint.
 ### Arguments syntax
 
 Following the header, there will be code block containing a representation of the json values accepted
-by the endpoint. Assume that the accepted properties on the json objects are the exact properties on the
-representations.
+by the endpoint. Assume that the accepted properties on the accepted json object parameters are the exact
+properties on the representations.
 
 If a comment following a peoperty ends with "(optional)" it signifies that the property can be left out
 without causing an error. Assume all other properties are required.
