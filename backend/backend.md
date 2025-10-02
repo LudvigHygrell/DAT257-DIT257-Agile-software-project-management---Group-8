@@ -231,8 +231,8 @@ Return:
                 "message": "Comment message"
                 // , ...
             },
-            "user": "CommentingUser" // User that commented
-            // TODO: "time": 34554566 // Timestamp of comment
+            "user": "CommentingUser", // User that commented
+            "insertTime": 34554566 // Timestamp of comment
         } // , ...
     ],
     "message": "Status message"
@@ -298,7 +298,6 @@ Return:
 
 ```jsonc
 {
-    "type": "comments|comment_blame",
     "first": 0, // index of first result (optional)
     "max_count": 99, // Max number of results (optional)
     "filters": [ // Filter of results (optional)
@@ -445,6 +444,55 @@ Return:
 ```
 
 ## Comments
+
+### List comments (GET)
+`/api/comments/list`
+```jsonc
+{
+    "first": 0, // index of first result (optional)
+    "max_count": 99, // Max number of results (optional)
+    "filters": [ // Filter of results (optional)
+        {
+            "field": "somefield",
+            "value": 42,
+            "filter": "less|greater|equals|like"
+        },
+        {
+            "filter": "or|and|not",
+            "arguments": [ /* sub-filter(s) */ ]
+        }
+    ],
+    "sorting": { // How results are sorted (optional)
+        "field": "field-to-sort-by", // Sort by selected data field
+        "ordering": "ascending|descending" // Sort in ascending or descending order
+    }
+}
+```
+Return:
+```jsonc
+{
+    "value": [
+        {
+            "commentId": 1234, // Id of comment
+            "charity": "1245tgr", // charity commented on.
+            "comment": { // contents
+                "message": "Comment message"
+                // , ...
+            },
+            "user": "username", // Commenting user
+            "insertTime": 123452666 // Time of creation.
+        }
+        // , ...
+    ],
+    "message": "Status message"
+}
+```
+or:
+```json
+{
+    "message": "Error message"
+}
+```
 
 ### Add comment (POST)
 

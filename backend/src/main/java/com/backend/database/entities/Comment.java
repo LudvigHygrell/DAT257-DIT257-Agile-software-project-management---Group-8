@@ -1,5 +1,6 @@
 package com.backend.database.entities;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 import com.backend.database.entities.keys.*;
@@ -14,6 +15,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 /**
  * Represents an entry in the Comments table.
@@ -39,6 +42,10 @@ public class Comment {
 
     @Column(name="commentuser")
     private String commentUser;
+
+    @Column(name="inserttime", insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp insertTime;
 
     protected Comment() {}
 
@@ -79,6 +86,10 @@ public class Comment {
         return commentUser;
     }
 
+    public Timestamp getInsertTime() {
+        return insertTime;
+    }
+
     public void setCommentId(int id) {
         this.commentId = id;
     }
@@ -103,7 +114,8 @@ public class Comment {
             .put("charity", charity)
             .put("commentId", commentId)
             .put("comment", comment)
-            .put("user", commentUser);
+            .put("user", commentUser)
+            .put("insertTime", insertTime.getTime());
     }
 
     @Override

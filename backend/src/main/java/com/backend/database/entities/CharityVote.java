@@ -1,5 +1,7 @@
 package com.backend.database.entities;
 
+import java.sql.Timestamp;
+
 import com.backend.database.entities.keys.*;
 
 import jakarta.persistence.*;
@@ -25,6 +27,10 @@ public class CharityVote {
 
     @Column(name="vote")
     private boolean vote;
+
+    @Column(name="inserttime", insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp insertTime;
 
     protected CharityVote() {}
 
@@ -67,5 +73,9 @@ public class CharityVote {
 
     public void setVotedUp(boolean value) {
         vote = value;
+    }
+
+    public Timestamp getInsertTime() {
+        return insertTime;
     }
 }
