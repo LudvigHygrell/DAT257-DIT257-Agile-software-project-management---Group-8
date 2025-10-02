@@ -213,12 +213,12 @@ or:
 
 `/api/users/create`
 
-```jsonc
+```jsonc 
 {
     "username" : "NameOfUser",
-    "password" : "password123",
-    "email" : "user@email.site",
-    "signed" : false // Not used (optional)
+    "password" : "password123",
+    "email" : "user@email.site",
+    "signed" : false // Not used (optional)
 }
 ```
 Return:
@@ -332,7 +332,7 @@ Return:
 
 `/api/charities/edit_vote`
 
-```json
+```jsonc
 {
     "charity": "23535g25442", // Organization id
     "up": false // New value of "up", true - vote for, false - vote against
@@ -415,7 +415,7 @@ Return:
 
 `/api/comments/remove`
 
-```json
+```jsonc
 {
     "comment_id" : 99, // Identifier of the comment
     "charity" : "32542h5454" // Organization id of charity to remove a comment from
@@ -430,7 +430,7 @@ Return:
 
 `/api/comments/blame`
 
-```json
+```jsonc
 {
     "comment_id" : 99, // Comment id of comment to blame
     "charity": "sdrt4t4t5", // Organization of the charity that was commented on. 
