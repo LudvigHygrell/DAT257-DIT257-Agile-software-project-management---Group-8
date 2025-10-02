@@ -234,7 +234,9 @@ public class UserController {
             return ResponseEntity.status(200).body("Your email-address was successfully changed");
         } catch(Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("There was an error at the server - database communication. This is nothing you can do about, but will be fixed in the soon future.");
+            return ResponseEntity.status(500)
+                .body("There was an error at the server - database communication." 
+                + " This is nothing you can do about, but will be fixed in the soon future.");
         }
     }
     /**

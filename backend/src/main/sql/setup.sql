@@ -121,6 +121,26 @@ CREATE TABLE IF NOT EXISTS CharityBlame(
     PRIMARY KEY (charity, reporter)
 );
 
+CREATE TABLE IF NOT EXISTS CharityClasses(
+    className TEXT
+        PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS CharityInfo(
+    charity TEXT
+        PRIMARY KEY
+        REFERENCES Charities(orgId),
+    humanName TEXT
+        NOT NULL UNIQUE,
+    class TEXT
+        NOT NULL
+        REFERENCES CharityClasses(className),
+    homePageUrl TEXT
+        NOT NULL,
+    charityDescriptionFile TEXT
+        NOT NULL
+);
+
 CREATE OR REPLACE VIEW NextCommendId(charity) AS SELECT MAX(commentId)+1
     FROM Comments
     WHERE Comments.charity=charity;
