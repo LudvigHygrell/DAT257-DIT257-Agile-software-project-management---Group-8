@@ -105,7 +105,7 @@ Return:
 
 `/api/users/reset_password`
 
-```json
+```jsonc
 {
     "email" : "user@email.site",
     "new_password" : "Password to set...",
@@ -213,7 +213,7 @@ or:
 
 `/api/users/create`
 
-```json
+```jsonc
 {
     "username" : "NameOfUser",
     "password" : "password123",
