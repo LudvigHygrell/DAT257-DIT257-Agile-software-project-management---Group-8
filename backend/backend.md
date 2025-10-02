@@ -255,6 +255,19 @@ or:
 or:
 ```jsonc
 {
+    "value": [
+        {
+            "username": "SearchingUser", // Name of the user
+            "charity": "3rt424", // Charity that was searched for
+            "insertTime": 23455671 // Time of search
+        } // , ...
+    ],
+    "message": "Status message"
+}
+```
+or:
+```jsonc
+{
     "message": "Error message"
 }
 ```

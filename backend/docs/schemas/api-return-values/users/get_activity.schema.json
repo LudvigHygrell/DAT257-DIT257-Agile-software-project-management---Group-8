@@ -21,7 +21,8 @@
                                 },
                                 "required": [ "message" ]
                             },
-                            "user": { "type": "string" }
+                            "user": { "type": "string" },
+                            "insertTime": { "type": "integer" }
                         },
                         "required": [ "commentId", "charity", "comment", "user" ]
                     },
@@ -34,6 +35,15 @@
                             "reporter": { "type": "string" }
                         },
                         "required": [ "commentId", "charity", "reason", "reporter" ]
+                    },
+                    {
+                        "$comment": "Returned search charity objects (only if \"type\" was \"searched_charities\")",
+                        "properties": {
+                            "username": { "type": "string" },
+                            "charity": { "type": "string" },
+                            "insertTime": { "type": "integer" }
+                        },
+                        "required": [ "username", "charity", "insertTime" ]
                     }
                 ]
             }
