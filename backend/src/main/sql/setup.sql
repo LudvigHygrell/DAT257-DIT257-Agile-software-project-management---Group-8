@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS Users(
 CREATE TABLE IF NOT EXISTS Administrators(
     adminUser TEXT
         PRIMARY KEY
-        REFERENCES Users(username),
+        REFERENCES Users(username)
+            ON DELETE RESTRICT,
     adminLevel INT
         NOT NULL
         CHECK (adminLevel IN (1, 2, 3))
@@ -30,19 +31,24 @@ CREATE TABLE IF NOT EXISTS Charities(
 CREATE TABLE IF NOT EXISTS PausedCharities(
     orgId TEXT
         PRIMARY KEY
-        REFERENCES Charities(orgId),
+        REFERENCES Charities(orgId)
+            ON DELETE CASCADE,
     adminUser TEXT
         NOT NULL
         REFERENCES Administrators(adminUser)
+            ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS CharityScores(
     ratingUser TEXT
         NOT NULL
-        REFERENCES Users(username),
+        DEFAULT '<deleted>'
+        REFERENCES Users(username)
+            ON DELETE SET DEFAULT,
     charity TEXT
         NOT NULL
-        REFERENCES Charities(orgId),
+        REFERENCES Charities(orgId)
+            ON DELETE CASCADE,
     vote BOOLEAN
         NOT NULL,
     insertTime TIMESTAMP
@@ -56,12 +62,15 @@ CREATE TABLE IF NOT EXISTS Comments(
         NOT NULL,
     charity TEXT
         NOT NULL
-        REFERENCES Charities(orgId),
+        REFERENCES Charities(orgId)
+            ON DELETE CASCADE,
     comment JSON
         NOT NULL,
     commentUser TEXT
         NOT NULL
-        REFERENCES Users(username),
+        DEFAULT '<deleted>'
+        REFERENCES Users(username)
+            ON DELETE SET DEFAULT,
     insertTime TIMESTAMP
         NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
@@ -75,21 +84,30 @@ CREATE TABLE IF NOT EXISTS CommentScores(
         NOT NULL,
     scoreUser TEXT
         NOT NULL
-        REFERENCES Users(username),
+        DEFAULT '<deleted>'
+        REFERENCES Users(username)
+            ON DELETE SET DEFAULT,
     upDown BOOLEAN
         NOT NULL,
     PRIMARY KEY (comment, charity),
     FOREIGN KEY (comment, charity)
         REFERENCES Comments(commentId, charity)
+            ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS SearchedCharities(
     username TEXT
         NOT NULL
-        REFERENCES Users(username),
+        DEFAULT '<deleted>'
+        REFERENCES Users(username)
+            ON DELETE SET DEFAULT,
     charity TEXT
         NOT NULL
-        REFERENCES Charities(orgId),
+        REFERENCES Charities(orgId)
+            ON DELETE NO ACTION,
+    visited BOOLEAN
+        NOT NULL
+        DEFAULT FALSE,
     insertTime TIMESTAMP
         NOT NULL
         DEFAULT CURRENT_TIMESTAMP,
@@ -103,7 +121,9 @@ CREATE TABLE IF NOT EXISTS CommentBlame(
         NOT NULL,
     reporter TEXT
         NOT NULL
-        REFERENCES Users(username),
+        DEFAULT '<deleted>'
+        REFERENCES Users(username)
+            ON DELETE SET DEFAULT,
     reason TEXT -- TODO
         NOT NULL,
     PRIMARY KEY(comment, charity, reporter)
@@ -112,13 +132,38 @@ CREATE TABLE IF NOT EXISTS CommentBlame(
 CREATE TABLE IF NOT EXISTS CharityBlame(
     charity TEXT
         NOT NULL
-        REFERENCES Charities(orgId),
+        REFERENCES Charities(orgId)
+            ON DELETE CASCADE,
     reporter TEXT
         NOT NULL
-        REFERENCES Users(username),
+        DEFAULT '<deleted>'
+        REFERENCES Users(username)
+            ON DELETE SET DEFAULT,
     reason TEXT -- TODO
         NOT NULL,
     PRIMARY KEY (charity, reporter)
+);
+
+CREATE TABLE IF NOT EXISTS CharityClasses(
+    className TEXT
+        PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS CharityInfo(
+    charity TEXT
+        PRIMARY KEY
+        REFERENCES Charities(orgId)
+            ON DELETE CASCADE,
+    humanName TEXT
+        NOT NULL UNIQUE,
+    class TEXT
+        NOT NULL
+        REFERENCES CharityClasses(className)
+            ON DELETE CASCADE,
+    homePageUrl TEXT
+        NOT NULL,
+    charityDescriptionFile TEXT
+        NOT NULL
 );
 
 CREATE OR REPLACE VIEW NextCommendId(charity) AS SELECT MAX(commentId)+1

@@ -1,39 +1,74 @@
 package com.backend.controllers;
 
 import com.backend.database.adapters.CharitiesAdapter;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.backend.database.entities.Charity;
+import com.backend.database.filtering.FilteredQuery;
+import com.backend.database.filtering.JsonToFilterConverter;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/charities")
 public class CharitiesController {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
     private CharitiesAdapter charitiesAdapter;
 
+    private JsonNodeFactory jb = JsonNodeFactory.instance;
+
+    @SuppressWarnings("deprecation")
     @GetMapping("/list")
-    public ResponseEntity<String> list(@RequestBody JsonNode json) throws JsonProcessingException {
-        if(!json.has("filters")) {
-            return ResponseEntity.badRequest().body("Missing filters");
+    public ResponseEntity<JsonNode> list(@RequestBody JsonNode json) {
+        if (!json.isObject())
+            return ResponseEntity.badRequest().body(
+                jb.objectNode().put("message", jb.textNode("Expected a Json object.")));
+        
+        List<Charity> results;
+        try {
+            FilteredQuery<Charity> query = new FilteredQuery<>(entityManager, Charity.class);
+            results = JsonToFilterConverter.runQueryFromJson(query, json);
+            charitiesAdapter.addSkimSearchEntries(results);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500)
+                .body(jb.objectNode()
+                .put("message", "Error fetching results."));
         }
-        if(!json.has("order_by")) {
-            return ResponseEntity.badRequest().body("Missing sorting order");
-        }
-        //TODO tags not implemented in database yet
-        // String order_by = json.get("order_by").asText();
-        return ResponseEntity.badRequest().body("Not implemented");
+        return ResponseEntity.ok().body(jb.objectNode()
+            .put("message", "success")
+            .put("value", jb.arrayNode()
+                .addAll(results.stream()
+                    .map(c -> c.toJson()).toList())));
     }
 
     @GetMapping("/get")
-    public ResponseEntity<String> get(@RequestBody JsonNode json) {
-        if(!json.has("identity")) {
-            return ResponseEntity.badRequest().body("Missing Org ID");
+    @SuppressWarnings("deprecation")
+    public ResponseEntity<JsonNode> get(@RequestBody JsonNode json) {
+        if (!json.has("identity")) {
+            return ResponseEntity.badRequest().body(
+                jb.objectNode().put("message", "Missing Org ID"));
         }
-        String identity = json.get("identity").asText();
-        if(charitiesAdapter.get(identity)){
-            return ResponseEntity.ok("Charity retrieved successfully");
+        try {
+            Charity charity = charitiesAdapter.get(json.get("identity").asText());
+            charitiesAdapter.addSearchEntry(charity);
+            return ResponseEntity.ok()
+                .body(jb.objectNode()
+                    .put("message", "success")
+                    .put("value", charity.toJson()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(500)
+                .body(jb.objectNode().put("message", "Error fetching charity."));
         }
-        return ResponseEntity.status(404).body("Charity not found");
     }
 
     @PostMapping("/vote")

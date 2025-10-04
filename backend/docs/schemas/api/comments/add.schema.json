@@ -1,0 +1,14 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api/comments/add.schema.json",
+    "title": "End point schema /api/comments/add",
+    "description": "Schema for json arguments accepted by the /api/comments/add end point",
+    "properties": {
+        "comment": true,
+        "charity": {
+            "type": "string",
+            "$comment": "Charity being commented on."
+        }
+    },
+    "required": [ "comment", "charity" ]
+}

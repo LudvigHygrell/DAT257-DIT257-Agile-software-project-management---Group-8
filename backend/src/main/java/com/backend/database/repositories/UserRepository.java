@@ -25,5 +25,5 @@ public interface UserRepository extends JpaRepository<User, String> {
      * @return The located user or null.
      */
     @Query("SELECT u FROM User u WHERE u.email=:email")
-    Optional<User> findByEmail(@Param("email") String email);
+    public Optional<User> findByEmail(@Param("email") String email);
 }

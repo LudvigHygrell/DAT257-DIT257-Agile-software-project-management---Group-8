@@ -1,5 +1,7 @@
 package com.backend.database.entities;
 
+import java.sql.Timestamp;
+
 import com.backend.database.entities.keys.*;
 
 import jakarta.persistence.*;
@@ -11,13 +13,24 @@ import jakarta.persistence.*;
  * @since 2025-09-18
  */
 @Entity
-@Table(name="CharityScores")
+@IdClass(CharityVoteKey.class)
+@Table(name="charityscores")
 public class CharityVote {
-    @EmbeddedId
-    private CharityVoteKey key;
+    
+    @Id
+    @Column(name="user")
+    private String user;
+
+    @Id
+    @Column(name="charity")
+    private String charity;
 
     @Column(name="vote")
     private boolean vote;
+
+    @Column(name="inserttime", insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp insertTime;
 
     protected CharityVote() {}
 
@@ -31,25 +44,38 @@ public class CharityVote {
     public CharityVote(String user, String charity, boolean vote) {
         assert null != user;
         assert null != charity;
-        this.key = new CharityVoteKey(user, charity);
+        this.user = user;
+        this.charity = charity;
         this.vote = vote;
     }
+    
     public String getUser(){
-        return key.getUser();
+        return user;
     }
+    
     public void setUser(String user){
-        key.setUser(user);
+        assert null != user;
+        this.user = user;
     }
+    
     public String getCharity() {
-        return key.getCharity();
+        return charity;
     }
+    
     public void setCharity(String charity) {
-        key.setCharity(charity);
+        assert null != charity;
+        this.charity = charity;
     }
+    
     public boolean votedUp() {
         return vote;
     }
+
     public void setVotedUp(boolean value) {
         vote = value;
+    }
+
+    public Timestamp getInsertTime() {
+        return insertTime;
     }
 }

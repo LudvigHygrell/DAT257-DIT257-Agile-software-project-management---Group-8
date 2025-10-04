@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="Administrators")
+@Table(name="administrators")
 public class Administrator {
     
     /**
@@ -15,7 +15,7 @@ public class Administrator {
     public static final int PAUSE_CHARITY_LEVEL = 1;
 
     @Id
-    @Column(name="adminUser")
+    @Column(name="adminuser")
     private String adminUser;
 
     @Column(name="level")

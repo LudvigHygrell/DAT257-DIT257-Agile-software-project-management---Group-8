@@ -1,0 +1,159 @@
+#!/usr/bin/env bash
+
+#
+# bash script file.
+#
+# Creates a new database and then runs the mock initializer script.
+#
+
+set -e
+
+_yes_no() {
+  local yn
+  while true; do
+    read -p '[y/n]: ' yn
+    case "$yn" in
+    [Yy]*)
+      return 0
+      ;;
+    [Nn]*)
+      return 1
+      ;;
+    esac
+  done
+}
+
+_install_gpg_package() {
+
+  if [[ $(which apt) ]]; then
+    sudo apt update
+    sudo apt install gpg
+  elif [[ $(which dnf) ]]; then
+    sudo dnf install gnupg2
+  elif [[ $(which pacman) ]]; then
+    sudo pacman -S gnupg
+  elif [[ $(which brew) ]]; then
+    brew install gnupg
+  fi
+}
+
+main() {
+
+  if [[ -z $(which gpg) ]]; then
+    echo 'This script will not run without access to the Gnu Privacy Guard software (gnupg).'
+    printf 'Install package? '
+    _yes_no
+  fi
+
+  echo 'Ensuring access as postgres, you may be prompted for your sudo password here.'
+  echo
+  echo 'If you are unsure about continuing this script press CTRL+C to exit here and inspect'
+  echo 'the source code before continuing.'
+  echo
+  sudo -u postgres echo 'Access as user postgres granted.'
+
+  echo "  ____                                          "
+  echo " |  _ \\                                         "
+  echo " | |_) | ___ _ __   ___                         "
+  echo " |  _ < / _ \\ '_ \\ / _ \\                        "
+  echo " | |_) |  __/ | | |  __/                        "
+  echo " |____/_\\___|_|_|_|\\___|           _____  ____  "
+  echo "  / ____|     | |                 |  __ \\|  _ \\ "
+  echo " | (___  _ __ | |__   ___ _ __ ___| |  | | |_) |"
+  echo "  \\___ \\| '_ \\| '_ \\ / _ \\ '__/ _ \\ |  | |  _ < "
+  echo "  ____) | |_) | | | |  __/ | |  __/ |__| | |_) |"
+  echo " |_____/| .__/|_| |_|\\___|_|  \\___|_____/|____/ "
+  echo "        | |                                     "
+  echo "        |_|                                     "
+  tee <<EOF
+
+Creation script for the BeneSphere DB.
+    
+OBS!
+
+This script will destroy any existing instance of this database, run at your own risk.
+
+Continue? 
+EOF
+
+  _yes_no
+
+  local BACKEND_ROOT=$(realpath "../../../")
+  local DEFAULT_PASSPHRASE_FILE=$HOME/.benesphere_db/.secret/benesphere-pw.txt
+  local PASSPHRASE_FILE
+
+  echo "Looking for default credentials in $DEFAULT_PASSPHRASE_FILE"
+
+  if [ -f $DEFAULT_PASSPHRASE_FILE ]; then
+    echo "Found passphrase at default path $DEFAULT_PASSPHRASE_FILE"
+    printf "Use it? "
+    if _yes_no; then
+      PASSPHRASE_FILE=$DEFAULT_PASSPHRASE_FILE
+    fi
+  else
+    echo "None found in $DEFAULT_PASSPHRASE_FILE"
+    DEFAULT_PASSPHRASE_FILE=$BACKEND_ROOT/.benesphere_db/.secret/benesphere-pw.txt
+    echo "Trying $DEFAULT_PASSPHRASE_FILE"
+    if [ -f $DEFAULT_PASSPHRASE_FILE ]; then
+      echo "Found passphrase at default path $DEFAULT_PASSPHRASE_FILE"
+      printf "Use it? "
+      if _yes_no; then
+        PASSPHRASE_FILE=$DEFAULT_PASSPHRASE_FILE
+      fi
+    else
+      echo "No default option found. You'll have to enter it manually."
+    fi
+  fi
+
+  if [[ -z $PASSPHRASE_FILE ]]; then
+    read -e -p 'Enter passphrase file (or nothing to use a default password): ' PASSPHRASE_FILE
+  fi
+
+  if [[ $PASSPHRASE_FILE ]]; then
+    PASSPHRASE_FILE=${PASSPHRASE_FILE/#\~/$HOME}
+    PASSPHRASE_FILE=$(realpath $PASSPHRASE_FILE)
+
+    echo "Reading passphrase from ${PASSPHRASE_FILE}"
+    local PASS=$(gpg --passphrase-file $PASSPHRASE_FILE --pinentry-mode loopback -d ./dbpasswords/benesphere.key.gpg)
+
+    if [[ -z $PASS ]]; then
+      echo 'Failed to decrypt password file.'
+      exit 1
+    fi
+
+  else
+    PASS="$(sha256sum <$0 | cut -d ' ' -f1)"
+    echo "No passphrase file provided, choosing default password ${PASS}"
+  fi
+
+  local CONNSTRING=postgresql://benesphere_sudo:${PASS}@localhost:5432/benesphere_db
+  local USR_CONNSTRING=postgresql://benesphere:J2-3%2F5=941Adv@localhost:5432/benesphere_db
+
+  echo 'Creating database...'
+  sudo -u postgres psql -v benesphere_password=$PASS -f "$(dirname "$0")/user-db-setup.sql"
+
+  echo 'Creating tables...'
+  sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/setup.sql"
+
+  printf 'Insert mock data? '
+  if _yes_no; then
+    echo 'Inserting mock data...'
+    sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/mockdata.sql"
+  fi
+
+  echo 'Setting up permissions for benesphere user.'
+  sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/permissions.sql"
+
+  printf 'Creation complete. Create a login script?: '
+  _yes_no
+
+  mkdir -p $BACKEND_ROOT/.benesphere_db
+
+  echo -e "sudo -u postgres psql '$USR_CONNSTRING'" >$BACKEND_ROOT/.benesphere_db/login.sh
+  echo "Created login script for benesphere at $(realpath $BACKEND_ROOT/.benesphere_db/login.sh)"
+
+  echo -e "sudo -u postgres psql '$CONNSTRING'" >$BACKEND_ROOT/.benesphere_db/login-sudo.sh
+  echo "Created login script for benesphere_sudo at $(realpath $BACKEND_ROOT/.benesphere_db/login-sudo.sh)"
+}
+
+main $@

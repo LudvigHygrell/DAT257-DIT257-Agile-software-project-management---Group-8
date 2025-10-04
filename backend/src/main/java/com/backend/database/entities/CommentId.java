@@ -6,14 +6,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="NextCommentId")
+@Table(name="nextcommentid")
 public class CommentId {
 
     @Id
     @Column(name="charity")
     private String charity;
 
-    @Column(name="commentId")
+    @Column(name="commentid")
     private int id;
 
     protected CommentId() {}

@@ -3,9 +3,16 @@ package com.backend.database.adapters;
 import com.backend.database.repositories.*;
 import com.backend.database.entities.*;
 import com.backend.database.entities.keys.*;
-
+import com.backend.database.filtering.Filter;
+import com.backend.database.filtering.FilterBuilder;
+import com.backend.database.filtering.FilteredQuery;
+import com.backend.database.filtering.JsonToFilterConverter;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +26,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CommentsAdapter {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private CommentsRepository commentsRepository;
@@ -81,22 +91,29 @@ public class CommentsAdapter {
     }
 
     /**
-     * 
-     * @param username
-     * @return
+     * Get a list of all comments of a specific user.
+     * @param forUser User to get all comments of.
+     * @return The list of all comments.
      */
-    public ObjectNode comments(String username) {
-        
-        return null;
+    public List<Comment> getComments(String forUser) {
+        return commentsRepository.findAllByUser(forUser);
     }
 
     /**
-     * 
-     * @param username
-     * @return
+     * Get a filtered list of comments.
+     * @param forUser User that sent the comments.
+     * @param filters Filters to apply.
+     * @return The result of the query.
      */
-    public ObjectNode likes(String username) {
+    public List<Comment> getFilteredComments(String forUser, JsonNode filters) {
 
-        return null;
+        FilteredQuery<Comment> query = new FilteredQuery<>(entityManager, Comment.class);
+        FilterBuilder<Comment> fb = query.getFilterBuilder();
+        Filter<Comment> filter = JsonToFilterConverter.filterFromJson(fb, filters);
+
+        return query.runQuery(
+            fb.and(List.of(
+                fb.equalTo("commentUser", forUser),
+                filter)));
     }
 }

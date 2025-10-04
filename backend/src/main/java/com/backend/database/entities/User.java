@@ -1,5 +1,6 @@
 package com.backend.database.entities;
 
+import com.backend.database.PasswordHashUtility;
 import jakarta.persistence.*;
 
 /**
@@ -9,7 +10,7 @@ import jakarta.persistence.*;
  * @since 2025-09-18
  */
 @Entity
-@Table(name="Users")
+@Table(name="users")
 public class User {
 
     public static final String DELETED_USER_NAME = "<deleted user>";
@@ -22,7 +23,7 @@ public class User {
     @Column(name="email", nullable=false)
     private String email;
 
-    @Column(name="password", nullable=false)
+    @Column(name="userpassword", nullable=false)
     private String passwordHash;
 
     protected User() {
@@ -38,13 +39,13 @@ public class User {
      * @param email Email of the user.
      * @param pwHash Hash of the user's password.
      */
-    public User(String uname, String email, String pwHash) {
+    public User(String uname, String email, PasswordHashUtility.Digest pwHash) {
         assert null != uname;
         assert null != email;
         assert null != pwHash;
         this.userName = uname;
         this.email = email;
-        this.passwordHash = pwHash;
+        this.passwordHash = pwHash.toString();
     }
 
     @Override
@@ -62,8 +63,8 @@ public class User {
         this.email = email;
     }
 
-    public void setPasswordHash(String hash) {
-        passwordHash = hash;
+    public void setPasswordHash(PasswordHashUtility.Digest hash) {
+        passwordHash = hash.toString();
     }
 
     public String getUserName() {
@@ -74,11 +75,7 @@ public class User {
         return email;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public static User getCurrent() {
-        throw new UnsupportedOperationException();
+    public PasswordHashUtility.Digest getPasswordHash() {
+        return new PasswordHashUtility.Digest(passwordHash);
     }
 }

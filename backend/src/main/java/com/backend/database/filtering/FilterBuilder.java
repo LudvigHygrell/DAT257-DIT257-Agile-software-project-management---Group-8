@@ -39,6 +39,7 @@ public class FilterBuilder<Entity> {
     public <Value extends Number> Filter<Entity> lessThan(String field, Value value) {
         assert null != field;
         assert null != value;
+//        field = field.toLowerCase();
         return new Filter<>(cb.lt(root.get(field), value), 
             entityClass, 
             FilteringMethod.LESS, 
@@ -55,6 +56,7 @@ public class FilterBuilder<Entity> {
     public <Value extends Number> Filter<Entity> greaterThan(String field, Value value) {
         assert null != field;
         assert null != value;
+//        field = field.toLowerCase();
         return new Filter<>(cb.gt(root.get(field), value),
             entityClass,
             FilteringMethod.GREATER,
@@ -71,6 +73,7 @@ public class FilterBuilder<Entity> {
     public <Value> Filter<Entity> equalTo(String field, Value value) {
         assert null != field;
         assert null != value;
+//        field = field.toLowerCase();
         return new Filter<>(cb.equal(root.get(field), value),
             entityClass,
             FilteringMethod.EQUALS,
@@ -86,6 +89,7 @@ public class FilterBuilder<Entity> {
     public Filter<Entity> like(String field, String value) {
         assert null != field;
         assert null != value;
+//        field = field.toLowerCase();
         return new Filter<>(cb.like(root.get(field), value),
             entityClass,
             FilteringMethod.LIKE,

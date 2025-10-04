@@ -1,8 +1,12 @@
 package com.backend.controllers;
 
-import com.backend.database.adapters.CommentsAdapter;
 import com.backend.database.PasswordHashUtility;
 import com.backend.database.adapters.UserAdapter;
+import com.backend.database.entities.Comment;
+import com.backend.database.entities.CommentBlame;
+import com.backend.database.entities.SearchedCharity;
+import com.backend.database.filtering.FilteredQuery;
+import com.backend.database.filtering.JsonToFilterConverter;
 import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
@@ -22,6 +26,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
 /**
  * The UserController class handles user-related API endpoints such as login and registration.
  * This class contains methods to process incoming requests, validate input data, and interact
@@ -37,8 +48,8 @@ public class UserController {
     @Autowired
     private UserAdapter userAdapter;
 
-    @Autowired
-    private CommentsAdapter commentAdapter;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private UserDetailService userDetailService;
@@ -66,9 +77,8 @@ public class UserController {
 
         String username = json.get("username").asText();
         String password = json.get("password").asText();
-        password = encoder.hashPassword(password);
 
-        if (userAdapter.login(username, password)){
+        if (userAdapter.login(username, password)) {
             final UserDetail user = (UserDetail) this.userDetailService.loadUserByUsername(username);
             final String jwt = jwtUtil.generateToken((UserDetails)user);
             return ResponseEntity.ok().body("{\"token\": \"" + jwt + "\"}"); // Returns the JWT token
@@ -106,8 +116,7 @@ public class UserController {
         if (userAdapter.isEmail(email))
             return ResponseEntity.status(409).body("Email already exists");
         try {
-            String encoded_password = encoder.hashPassword(password);
-            userAdapter.register(username, email, encoded_password);
+            userAdapter.register(username, email, password);
             return ResponseEntity.ok("User registered successfully");
         } catch(Exception e) {
             e.printStackTrace();
@@ -137,13 +146,17 @@ public class UserController {
         String username = json.get("username").asText();
         String old_password = json.get("old").asText();
         String new_password = json.get("new").asText();
+
         if (old_password.equals(new_password))
             return ResponseEntity.badRequest().body("New password must be different from old password");
 
-        if (!userAdapter.login(username, encoder.hashPassword(old_password)))
+        if (userAdapter.getPassword(username)
+                .map((pw) -> pw.equals(encoder.hashPassword(old_password)))
+                .orElse(false)) {
             return ResponseEntity.status(401).body("Invalid username or password");
+        }
         try {
-            userAdapter.changePassword(username, encoder.hashPassword(new_password));
+            userAdapter.changePassword(username, new_password);
             return ResponseEntity.ok("Password changed successfully");
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -161,21 +174,26 @@ public class UserController {
      * <p>500 If there was an error resetting the password</p>
      */
 	@PutMapping("/reset_password")
-    public ResponseEntity<String> reset_password(@RequestBody JsonNode json ) {
-        if(!json.has("email"))
+    public ResponseEntity<String> resetPassword(@RequestBody JsonNode json ) {
+        if (!json.has("email"))
             return ResponseEntity.status(400).body("The email parameter is not set.");
-        if(!json.has("new_password"))
+        if (!json.has("new_password"))
             return ResponseEntity.status(400).body("The new_password parameter is not set.");
-        if(!json.has("verification_code"))
+        if (!json.has("verification_code"))
             return ResponseEntity.status(400).body("The verification_code parameter was not set.");
 
         // TODO: implement the check for verification code
 
         String email = json.get("email").asText();
-        String username = userAdapter.getUsernameFromEmail(email);
+        Optional<String> username = userAdapter.getUsernameFromEmail(email);
         String new_password = json.get("new_password").asText();
+
+        if (username.isEmpty()) {
+            return ResponseEntity.status(500).body("Error in getting username for provided email.");
+        }
+
         try {
-            userAdapter.changePassword(username, new_password);
+            userAdapter.changePassword(username.get(), new_password);
             return ResponseEntity.status(200).body("All went fine. You password is now changed!");
         } catch(Exception e) {
             e.printStackTrace();
@@ -194,31 +212,33 @@ public class UserController {
      * <p>500 If there was an error changing the email</p>
      */
     @PutMapping("/change_email")
-    public ResponseEntity<String> change_email(@RequestBody JsonNode json) {
-        if(!json.has("username"))
+    public ResponseEntity<String> changeEmail(@RequestBody JsonNode json) {
+        if (!json.has("username"))
             return ResponseEntity.status(400).body("The username parameter was not set");
-        if(!json.has("email"))
+        if (!json.has("email"))
             return ResponseEntity.status(400).body("The email parameter was not set.");
-        if(!json.has("password"))
+        if (!json.has("password"))
             return ResponseEntity.status(400).body("The password parameter was not set.");
 
         String username = json.get("username").asText();
         String password = json.get("password").asText();
         String email = json.get("email").asText();
 
-        if(userAdapter.isEmail(email))
+        if (userAdapter.isEmail(email)) {
             return ResponseEntity.status(401).body("The email you set is already a registered email at our site");
-        if(!userAdapter.login(username, encoder.hashPassword(password)))
+        }
+        if (!userAdapter.login(username, password)) {
             return ResponseEntity.status(402).body("The user-credentials provided did not match any account");
-
+        }
         try {
             userAdapter.changeEmail(username, email);
             return ResponseEntity.status(200).body("Your email-address was successfully changed");
         } catch(Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("There was an error at the server - database communication. This is nothing you can do about, but will be fixed in the soon future.");
+            return ResponseEntity.status(500)
+                .body("There was an error at the server - database communication." 
+                + " This is nothing you can do about, but will be fixed in the soon future.");
         }
-
     }
     /**
      * Retrieves the activity for a user, including comments and likes.
@@ -228,31 +248,52 @@ public class UserController {
      * <p>200 If all went well, along with the user's activity data</p>
      * <p>500 If there was an internal server error</p>
      */
-    @PostMapping("/get_activity")
-    public ResponseEntity<JsonNode> get_activity(@RequestBody JsonNode json) {
+    @GetMapping("/get_activity")
+    public ResponseEntity<JsonNode> getActivity(@RequestBody JsonNode json) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode ret_node = factory.objectNode();
 
-        if(!json.has("username")) {
+        if (!json.has("username")) {
             ret_node.put("message", "The username-parameter was not set");
             return ResponseEntity.status(400).body(ret_node);
         }
-        if(!json.has("type")){
+        if (!json.has("type")) {
             ret_node.put("message", "The type-parameter was not set");
             return ResponseEntity.status(400).body(ret_node);
         }
+        if (!json.has("query")) {
+            ret_node.put("message", "The query-parameter was not set.");
+            return ResponseEntity.status(400).body(ret_node);
+        }
 
-        String username = json.get("username").asText();
+        var result = new Object() {
+            public <T> ResponseEntity<JsonNode> get(Class<T> clazz, Function<T, JsonNode> f) {
+                
+                FilteredQuery<T> query = new FilteredQuery<>(entityManager, clazz);
+                List<T> results = JsonToFilterConverter.runQueryFromJson(query, json.get("query"));
+
+                return ResponseEntity.ok().body(factory.objectNode()
+                    .<ObjectNode> set("value", 
+                        factory.arrayNode()
+                            .addAll(results.stream().<JsonNode> map(f).toList()))
+                    .<ObjectNode> set("message", 
+                        factory.textNode("success")));
+            }
+        };
 
         try {
-            ObjectNode comments_node = commentAdapter.comments(username);
-            ObjectNode likes_node = commentAdapter.likes(username);
-
-            // TODO: implement the filters-functionallity
-
-            ret_node.set("likes", likes_node);
-            ret_node.set("comments", comments_node);
-            return ResponseEntity.status(200).body(ret_node);
+            switch (json.get("type").asText())
+            {
+            case "comments":
+                return result.get(Comment.class, c -> c.toJson());
+            case "comment_blame":
+                return result.get(CommentBlame.class, c -> c.toJson());
+            case "searched_charities":
+                return result.get(SearchedCharity.class, c -> c.toJson());
+            default:
+                return ResponseEntity.badRequest().body(factory.objectNode()
+                    .put("message", "Bad type parameter."));
+            }
         } catch(Exception e) {
             e.printStackTrace();
             ret_node.put("message", "There was some internal server error in the database-communication");
@@ -270,9 +311,9 @@ public class UserController {
      */
     @DeleteMapping("/remove")
     public ResponseEntity<String> delete_user(@RequestBody JsonNode json) {
-        if(!json.has("username"))
+        if (!json.has("username")) {
             return ResponseEntity.status(400).body("The username-parameter was not set");
-
+        }
         try {
             String username = json.get("username").asText();
             userAdapter.deleteUser(username);
@@ -281,7 +322,5 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("There was an internal server error with the database-communication");
         }
-
     }
-
 }
