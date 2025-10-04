@@ -22,28 +22,40 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
         setLoading(true); // Set loading state
 
         try {
-            // Determine if input is email or username
-            const isEmail = usernameOrEmail.includes('@');
-
-            // Call the login API with either username or email
+            // Backend expects 'username' field (can accept either username or email)
             const response = await UserAPI.login({
-                username: isEmail ? '' : usernameOrEmail,
-                email: isEmail ? usernameOrEmail : '',
+                username: usernameOrEmail,
                 password
             });
 
-            // Store JWT token in localStorage (or use context/state management)
-            if (response.token) {
-                localStorage.setItem('authToken', response.token);
-                // Store the username (not email) for future use
-                localStorage.setItem('username', isEmail ? '' : usernameOrEmail);
+            // Parse the response to get the token
+            let token;
+            if (typeof response === 'string') {
+                try {
+                    // Response might be JSON string, try to parse it
+                    const parsed = JSON.parse(response);
+                    token = parsed.token;
+                } catch {
+                    // If parsing fails, response might already be the token
+                    token = response;
+                }
+            } else if (response && response.token) {
+                // Response is already an object
+                token = response.token;
             }
 
-            // TODO: Update global auth state (use context or state management)
-            console.log('Login successful:', response);
+            // Store JWT token in localStorage (or use context/state management)
+            if (token) {
+                localStorage.setItem('authToken', token);
+                localStorage.setItem('username', usernameOrEmail);
 
-            // Close modal on successful login
-            onClose();
+                console.log('Login successful! Token stored.');
+
+                // Close modal on successful login
+                onClose();
+            } else {
+                throw new Error('No token received from server');
+            }
         } catch (err) {
             // Display error message to user
             setError(err.message || 'Login failed. Please try again.');

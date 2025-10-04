@@ -27,8 +27,19 @@ async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
 
     // Check if response is ok (status 200-299)
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      // Try to get error message from response body
+      const contentType = response.headers.get('content-type');
+      let errorMessage;
+
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json().catch(() => ({}));
+        errorMessage = errorData.message || `HTTP error! status: ${response.status}`;
+      } else {
+        // Backend returns plain text error messages
+        errorMessage = await response.text().catch(() => `HTTP error! status: ${response.status}`);
+      }
+
+      throw new Error(errorMessage);
     }
 
     // Try to parse as JSON, fallback to text
@@ -49,11 +60,14 @@ async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
 export const UserAPI = {
   /**
    * Login user
+   * Note: Backend uses GET with body (non-standard), so we use POST here as fetch doesn't allow GET with body
    * @param {Object} credentials - { username, email, password }
    * @returns {Promise} User data with JWT token
    */
   login: async (credentials) => {
-    return await apiRequest('/users/login', 'GET', credentials);
+    // Use POST instead of GET because fetch API doesn't allow GET requests with body
+    // The backend controller accepts both since Spring allows @RequestBody on @GetMapping
+    return await apiRequest('/users/login', 'POST', credentials);
   },
 
   /**

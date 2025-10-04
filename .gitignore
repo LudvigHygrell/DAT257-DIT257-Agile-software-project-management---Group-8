@@ -29,7 +29,3 @@ nul
 
 # Log files
 *.log
-
-# Claude Code configuration
-CLAUDE.md
-.claude/
