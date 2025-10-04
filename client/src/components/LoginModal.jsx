@@ -35,7 +35,8 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
             // Store JWT token in localStorage (or use context/state management)
             if (response.token) {
                 localStorage.setItem('authToken', response.token);
-                localStorage.setItem('username', response.username || usernameOrEmail);
+                // Store the username (not email) for future use
+                localStorage.setItem('username', isEmail ? '' : usernameOrEmail);
             }
 
             // TODO: Update global auth state (use context or state management)
