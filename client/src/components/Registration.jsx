@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { UserAPI } from '../services/APIService.js';
 import '../styles/Registration.css';
 
 // isVisible: boolean that controls if modal shows or hides
@@ -6,27 +7,50 @@ import '../styles/Registration.css';
 // onSwitchToLogin: function to switch back to login modal
 function Registration({ isVisible, onClose, onSwitchToLogin }) {
     // Create state variables to store user input
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     // Function that runs when user submits the registration form
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         // Prevent the form from refreshing the page (default browser behavior)
         e.preventDefault();
+        setError(''); // Clear any previous errors
 
         // Basic validation for password confirmation
         if (password !== confirmPassword) {
-            alert('Passwords do not match!');
+            setError('Passwords do not match!');
             return;
         }
 
-        // TODO: Replace this with actual registration logic (API call, validation, etc.)
-        console.log('Registration attempt:', { email, password });
+        setLoading(true); // Set loading state
 
-        // For now, just show success message and close
-        alert('Registration successful! (Not connected to backend yet)');
-        onClose();
+        try {
+            // Call the registration API
+            const response = await UserAPI.create({
+                username,
+                email,
+                password,
+                signed: true
+            });
+
+            console.log('Registration successful:', response);
+
+            // Show success message
+            alert('Registration successful! Please log in.');
+
+            // Switch to login modal
+            onSwitchToLogin();
+        } catch (err) {
+            // Display error message to user
+            setError(err.message || 'Registration failed. Please try again.');
+            console.error('Registration error:', err);
+        } finally {
+            setLoading(false); // Reset loading state
+        }
     };
 
     // Function that runs when user clicks outside the modal content
@@ -54,8 +78,19 @@ function Registration({ isVisible, onClose, onSwitchToLogin }) {
             <div className="registration-content" onClick={(e) => e.stopPropagation()}>
                 {/* Modal title */}
                 <h2>Create Account</h2>
+                {/* Error message display */}
+                {error && <div className="registration-error-message">{error}</div>}
                 {/* Form that handles user input submission */}
                 <form onSubmit={handleSubmit}>
+                    {/* Username input field */}
+                    <input
+                        type="text"               // Text input for username
+                        placeholder="Username"    // Gray text shown when field is empty
+                        className="registration-input-field"   // CSS class for styling
+                        value={username}          // Current value from state
+                        onChange={(e) => setUsername(e.target.value)} // Update state when user types
+                        required                  // Field must be filled before form can submit
+                    />
                     {/* Email input field */}
                     <input
                         type="email"              // Browser validates email format
@@ -84,7 +119,9 @@ function Registration({ isVisible, onClose, onSwitchToLogin }) {
                         required                  // Field must be filled before form can submit
                     />
                     {/* Submit button that triggers handleSubmit function */}
-                    <button type="submit" className="registration-submit-button">Create Account</button>
+                    <button type="submit" className="registration-submit-button" disabled={loading}>
+                        {loading ? 'Creating Account...' : 'Create Account'}
+                    </button>
                 </form>
                 {/* Section with link back to login */}
                 <div className="registration-link-section">
