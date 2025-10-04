@@ -49,11 +49,11 @@ async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
 export const UserAPI = {
   /**
    * Login user
-   * @param {Object} credentials - { username, password }
+   * @param {Object} credentials - { username, email, password }
    * @returns {Promise} User data with JWT token
    */
   login: async (credentials) => {
-    return await apiRequest('/users/login', 'POST', credentials);
+    return await apiRequest('/users/login', 'GET', credentials);
   },
 
   /**

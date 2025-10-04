@@ -7,12 +7,10 @@ import '../styles/LoginModal.css';
 // onSwitchToRegister: function to call when user clicks register
 // onSwitchToForgotPassword: function to call when user clicks forgot password
 function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPassword }) {
-    // Create state variables to store user input for email and password
+    // Create state variables to store user input for username/email and password
     // useState('') creates a variable with empty string as initial value
-    // setEmail is the function to update the email value
-    const [email, setEmail] = useState('');
+    const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [username, setUsername] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -24,17 +22,20 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
         setLoading(true); // Set loading state
 
         try {
-            // Call the login API
+            // Determine if input is email or username
+            const isEmail = usernameOrEmail.includes('@');
+
+            // Call the login API with either username or email
             const response = await UserAPI.login({
-                username,
-                email,
+                username: isEmail ? '' : usernameOrEmail,
+                email: isEmail ? usernameOrEmail : '',
                 password
             });
 
             // Store JWT token in localStorage (or use context/state management)
             if (response.token) {
                 localStorage.setItem('authToken', response.token);
-                localStorage.setItem('username', username);
+                localStorage.setItem('username', response.username || usernameOrEmail);
             }
 
             // TODO: Update global auth state (use context or state management)
@@ -74,22 +75,13 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
                 {error && <div className="error-message">{error}</div>}
                 {/* Form that handles user input submission */}
                 <form onSubmit={handleSubmit}>
-                    {/* Username input field */}
+                    {/* Username or Email input field */}
                     <input
-                        type="text"               // Text input for username
-                        placeholder="Username"    // Gray text shown when field is empty
+                        type="text"               // Text input for username or email
+                        placeholder="Username or Email"    // Gray text shown when field is empty
                         className="input-field"   // CSS class for styling
-                        value={username}          // Current value from state
-                        onChange={(e) => setUsername(e.target.value)} // Update state when user types
-                        required                  // Field must be filled before form can submit
-                    />
-                    {/* Email input field */}
-                    <input
-                        type="email"              // Browser validates email format
-                        placeholder="Email"       // Gray text shown when field is empty
-                        className="input-field"   // CSS class for styling
-                        value={email}             // Current value from state
-                        onChange={(e) => setEmail(e.target.value)} // Update state when user types
+                        value={usernameOrEmail}   // Current value from state
+                        onChange={(e) => setUsernameOrEmail(e.target.value)} // Update state when user types
                         required                  // Field must be filled before form can submit
                     />
                     {/* Password input field */}
