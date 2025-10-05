@@ -71,6 +71,10 @@ public class UserAdapter {
      */
     @Transactional
     public void register(String username, String email, String password) {
+
+        if (username.contains("@"))
+            throw new RuntimeException("Username cannot contain the '@' character.");
+
         userRepository.saveAndFlush(
                 new User(username, email, passwordHasher.hashPassword(password)));
     }

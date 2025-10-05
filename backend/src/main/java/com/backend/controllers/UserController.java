@@ -70,12 +70,25 @@ public class UserController {
      */
     @GetMapping("/login")
     public ResponseEntity<?> login(@RequestBody JsonNode json) {
-        if (!json.has("username"))
-            return ResponseEntity.status(400).body("Missing username");
+        if (!json.has("username") && !json.has("email"))
+            return ResponseEntity.status(400).body("Missing username or email");
         if (!json.has("password"))
             return ResponseEntity.status(400).body("Missing password");
 
-        String username = json.get("username").asText();
+        if (json.has("username") && json.has("email"))
+            return ResponseEntity.status(400).body("Cannot specify both email and username at once.");
+
+        String username;
+        if (json.has("username")) {
+            username = json.get("username").asText();
+        } else {
+            try {
+                username = userAdapter.getUsernameFromEmail(json.get("email").asText())
+                    .orElseThrow();
+            } catch (Exception ex) {
+                return ResponseEntity.status(401).body("Invalid email");
+            }
+        }
         String password = json.get("password").asText();
 
         if (userAdapter.login(username, password)) {
@@ -109,6 +122,9 @@ public class UserController {
         String username = json.get("username").asText();
         String email = json.get("email").asText();
         String password = json.get("password").asText();
+
+        if (username.contains("@"))
+            return ResponseEntity.status(400).body("Usernames cannot contain the '@' character.");
 
         if (userAdapter.isUsername(username))
             return ResponseEntity.status(409).body("Username already exists");

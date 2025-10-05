@@ -3,15 +3,34 @@
     "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api/users/login.schema.json",
     "title": "End point schema /api/users/login",
     "description": "Schema for json arguments accepted by the /api/users/login end point.",
-    "properties": {
-        "username": {
-            "type": "string",
-            "$comment": "Username of the user that is logging in."
+    "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "$comment": "Username of the user that is logging in."
+                },
+                "password": {
+                    "type": "string",
+                    "$comment": "Password specified by the user."
+                }
+            },
+            "required": [ "username", "password" ]
         },
-        "password": {
-            "type": "string",
-            "$comment": "Password specified by the user."
+        {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "$comment": "Email of the user that is logging in."
+                },
+                "password": {
+                    "type": "string",
+                    "$comment": "Password specified by the user."
+                }
+            },
+            "required": [ "email", "password" ]
         }
-    },
-    "required": [ "username", "password" ]
+    ]
 }
