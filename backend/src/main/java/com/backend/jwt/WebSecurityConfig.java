@@ -41,6 +41,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authorize -> authorize // Authenticate all but create and login
                     .requestMatchers("/api/users/login").permitAll()
                     .requestMatchers("/api/users/create").permitAll()
+                    .requestMatchers("/api/email/confirm/**").permitAll()
                     .anyRequest().authenticated())
             .sessionManagement(session -> session // Use stateless sessions
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

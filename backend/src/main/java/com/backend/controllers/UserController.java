@@ -7,6 +7,7 @@ import com.backend.database.entities.CommentBlame;
 import com.backend.database.entities.SearchedCharity;
 import com.backend.database.filtering.FilteredQuery;
 import com.backend.database.filtering.JsonToFilterConverter;
+import com.backend.email.EmailService;
 import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
@@ -31,6 +32,7 @@ import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
@@ -59,6 +61,9 @@ public class UserController {
 
     @Autowired
     private PasswordHashUtility encoder;
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * A basic method for logging into a user. Varifies that the username and password checks against the database. 
@@ -110,35 +115,49 @@ public class UserController {
      * <p>500 If there was an error registering the user</p>
      */
     @PostMapping("/create")
-    public ResponseEntity<String> register(@RequestBody JsonNode json) {
+    public CompletableFuture<ResponseEntity<String>> register(@RequestBody JsonNode json) {
 
         if (!json.has("username"))
-            return ResponseEntity.badRequest().body("Missing username");
+            return CompletableFuture.completedFuture(
+                ResponseEntity.badRequest().body("Missing username"));
         if (!json.has("email"))
-            return ResponseEntity.badRequest().body("Missing email");
+            return CompletableFuture.completedFuture(
+                ResponseEntity.badRequest().body("Missing email"));
         if (!json.has("password"))
-            return ResponseEntity.badRequest().body("Missing password");
+            return CompletableFuture.completedFuture(
+                ResponseEntity.badRequest().body("Missing password"));
 
         String username = json.get("username").asText();
         String email = json.get("email").asText();
         String password = json.get("password").asText();
 
         if (username.contains("@"))
-            return ResponseEntity.status(400).body("Usernames cannot contain the '@' character.");
+            return CompletableFuture.completedFuture(
+                ResponseEntity.status(400).body("Usernames cannot contain the '@' character."));
 
         if (userAdapter.isUsername(username))
-            return ResponseEntity.status(409).body("Username already exists");
+            return CompletableFuture.completedFuture(
+                ResponseEntity.status(409).body("Username already exists"));
         
         if (userAdapter.isEmail(email))
-            return ResponseEntity.status(409).body("Email already exists");
+            return CompletableFuture.completedFuture(
+                ResponseEntity.status(409).body("Email already exists"));
+        
         try {
-            userAdapter.register(username, email, password);
-            return ResponseEntity.ok("User registered successfully");
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-
-        return ResponseEntity.status(500).body("Error registering user");
+            return emailService.sendEmailConfirmation(email)
+                .thenApply(confirmedEmail -> {
+                try {
+                    System.err.println("Email confirmed, attempting to register user " + username);
+                    userAdapter.register(username, confirmedEmail, password);
+                    return ResponseEntity.ok("User registered successfully");
+                } catch(Exception e) {
+                    return ResponseEntity.status(500).body("Error registering user");
+                }
+            });
+        } catch (Exception ex) {
+            return CompletableFuture.completedFuture(
+                ResponseEntity.status(500).body("Failed to confirm email"));
+        } 
     }
 
     /**
