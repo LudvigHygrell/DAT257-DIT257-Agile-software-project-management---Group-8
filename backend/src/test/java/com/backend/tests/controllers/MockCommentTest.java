@@ -2,6 +2,7 @@ package com.backend.tests.controllers;
 
 import com.backend.tests.ResourceLoader;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,7 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-
+@Disabled
+@SuppressWarnings("FIXME: The test below is incorrect. The user should NOT be allowed to comment whithout being logged in,"
+    + " and comments may NOT be referred to using static Json documents (comment_id is dynamically generated).")
 public class MockCommentTest {
     @Autowired
     private MockMvc mockMvc;
