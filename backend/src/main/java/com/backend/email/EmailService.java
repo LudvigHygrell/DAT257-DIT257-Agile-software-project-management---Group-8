@@ -5,13 +5,9 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.mail.Message;
 import jakarta.mail.Multipart;
@@ -35,19 +31,26 @@ public class EmailService {
     //@Value("${spring.mail.username}")
     private String emailUsername = "benesphere";
 
-    @Autowired
-    private TemplateEngine templateEngine;
-
-    // BUGBUG
     private String getConfirmationEmailText(String email, long confirmCode) {
 
-        Context ctx = new Context();
-        ctx.setVariable("email", Base64.getUrlEncoder().encode(email.getBytes()));
-        ctx.setVariable("confirmCode", confirmCode);
+        final String HTML_TEMPLATE = """
+        <!doctype HTML>
+        <html>
+            <head>
+                <title>Confirm email</title>
+            </head>
+            <body>
+                <p>
+                    <a href="%s/email/confirm/%s/%s">Click to confirm email address.</a>
+                </p>
+            </body>
+        </html>""";
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        String path = classLoader.getResource("email/confirmationEmail.html").getPath();
-        return templateEngine.process(path, ctx);
+        return String.format(HTML_TEMPLATE,
+            ServletUriComponentsBuilder.fromCurrentContextPath()
+                .build().toUriString(),
+            new String(Base64.getUrlEncoder().encode(email.getBytes())),
+            Long.toString(confirmCode));
     }
 
     /**
@@ -71,7 +74,6 @@ public class EmailService {
         MimeMessage message = sender.createMimeMessage();
         message.setSubject("Benesphere email confirmation");
 
-        /* 
         String messageBody = getConfirmationEmailText(email, confirmations.addPending(email));
 
         MimeBodyPart body = new MimeBodyPart();
@@ -80,14 +82,7 @@ public class EmailService {
         Multipart mp = new MimeMultipart();
         mp.addBodyPart(body);
 
-        message.setContent(mp);*/
-
-        confirmations.addPending(email);
-
-        MimeMessageHelper h = new MimeMessageHelper(message, false);
-        h.setText("Nothing here for now...");
-
-        message = h.getMimeMessage();
+        message.setContent(mp);
 
         message.setFrom(emailUsername);
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(email));

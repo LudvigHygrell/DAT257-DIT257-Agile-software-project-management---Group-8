@@ -7,6 +7,7 @@ import com.backend.database.entities.CommentBlame;
 import com.backend.database.entities.SearchedCharity;
 import com.backend.database.filtering.FilteredQuery;
 import com.backend.database.filtering.JsonToFilterConverter;
+import com.backend.email.EmailConfirmations;
 import com.backend.email.EmailService;
 import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
@@ -142,22 +143,27 @@ public class UserController {
         if (userAdapter.isEmail(email))
             return CompletableFuture.completedFuture(
                 ResponseEntity.status(409).body("Email already exists"));
-        
+    
+        CompletableFuture<String> fut;
         try {
-            return emailService.sendEmailConfirmation(email)
-                .thenApply(confirmedEmail -> {
-                try {
-                    System.err.println("Email confirmed, attempting to register user " + username);
-                    userAdapter.register(username, confirmedEmail, password);
-                    return ResponseEntity.ok("User registered successfully");
-                } catch(Exception e) {
-                    return ResponseEntity.status(500).body("Error registering user");
-                }
-            });
+            fut = emailService.sendEmailConfirmation(email);
         } catch (Exception ex) {
+            ex.printStackTrace();
             return CompletableFuture.completedFuture(
-                ResponseEntity.status(500).body("Failed to confirm email"));
-        } 
+                ResponseEntity.status(500).body("Failed to send email."));
+        }
+        return fut.thenApply(confirmedEmail -> {
+            try {
+                System.err.println("Email confirmed, attempting to register user " + username);
+                userAdapter.register(username, confirmedEmail, password);
+                return ResponseEntity.ok("User registered successfully");
+            } catch(Exception e) {
+                return ResponseEntity.status(500).body("Error registering user");
+            }
+        }).exceptionally(ex -> {
+            EmailConfirmations.getInstance().abort(email);
+            return ResponseEntity.status(500).body("Failed to confirm email.");
+        });
     }
 
     /**

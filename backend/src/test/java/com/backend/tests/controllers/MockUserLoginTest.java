@@ -32,7 +32,7 @@ import org.springframework.test.web.servlet.MvcResult;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-@Import(MockUserLoginTestConfig.class)
+//@Import(MockUserLoginTestConfig.class)
 public class MockUserLoginTest {
 
   @Autowired
@@ -58,9 +58,9 @@ public class MockUserLoginTest {
     {
         StringBuilder confirmation = new StringBuilder("/api/email/confirm/");
         confirmation
-            .append(new String(Base64.getUrlEncoder().encode("mock.user99@gmail.com".getBytes())))
+            .append(new String(Base64.getUrlEncoder().encode("mock.user99@localhost".getBytes())))
             .append("/")
-            .append(EmailConfirmations.getInstance().getCodeOfPending("mock.user99@gmail.com"));
+            .append(EmailConfirmations.getInstance().getCodeOfPending("mock.user99@localhost"));
 
         mockMvc.perform(post(confirmation.toString()))
             .andExpect(status().isOk());
