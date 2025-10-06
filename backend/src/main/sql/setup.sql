@@ -2,6 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS Users(
     username TEXT
+        CHECK (NOT (username LIKE '%@%'))
         PRIMARY KEY,
     email TEXT
         NOT NULL

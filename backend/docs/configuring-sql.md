@@ -3,8 +3,6 @@
 To set up the initial database, there is a [setup script](../src/main/sql/create) that will set everything up
 for you.
 
-> **_NOTE_**: You may need to `cd` into the `backend/src/main/sql` directory.
-
 There are a few prerequisites to be able to run the setup:
 
 1. You are working on a UNIX system with access to bash.
@@ -14,6 +12,20 @@ There is also an additional optional prerequisite that for when a secure passwor
 for the root user is required:
 
 3. A passphrase file used to decrypt the local password file of the repository.
+
+> **_NOTE_**: You may need to `cd` into the `backend/src/main/sql` directory.
+
+If all you are doing is setting up, or resetting the database, you can simply run `cd backend/src/main/sql && ./create`.
+The script will then prompt for a bunch of options. These are there for when the application eventually contains database
+passwords that need protection. For now, you can simply just enter `y` for any `y/n` prompts and enter nothing for text
+fields. Or you may run `create --quick-setup` instead of `create` in which case, all prompts are skipped.
+
+> **_IMPORTANT_**: Ensure the script has LF line endings and not CRLF. This can be an issue if cloned the repository from
+> Windows, or if you opened the file in VsCode on Windows. If the script won't run, this may be why. The solution is to
+> either explicitly open the file in VsCode, set the ending type to LF (option to the right in the banner at the bottom
+> of the VsCode window) and run again. You may also change the line endings using the `dos2unix` command.
+
+## Details about password protection
 
 Access to the passphrase is available for all team members, but must not be included
 on the remote repository.

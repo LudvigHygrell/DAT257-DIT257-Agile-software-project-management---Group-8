@@ -2,15 +2,20 @@ package com.backend.tests.controllers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
+import java.util.Base64;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
+import com.backend.email.EmailConfirmations;
 import com.backend.tests.ResourceLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,6 +32,7 @@ import org.springframework.test.web.servlet.MvcResult;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 @AutoConfigureMockMvc
+//@Import(MockUserLoginTestConfig.class)
 public class MockUserLoginTest {
 
   @Autowired
@@ -40,11 +46,30 @@ public class MockUserLoginTest {
 
     // Create user.
     //
-    mockMvc.perform(post("/api/users/create")
+    MvcResult createResult = mockMvc.perform(post("/api/users/create")
         .contentType(MediaType.APPLICATION_JSON)
         .content(ResourceLoader.loadJson("register-user-mock.json")
             .toPrettyString()))
-        .andExpect(status().isOk());
+        .andExpect(request().asyncStarted())
+        .andReturn();
+
+    // Manual confirmation override
+    //
+    {
+        StringBuilder confirmation = new StringBuilder("/api/email/confirm/");
+        confirmation
+            .append(new String(Base64.getUrlEncoder().encode("mock.user99@localhost".getBytes())))
+            .append("/")
+            .append(EmailConfirmations.getInstance().getCodeOfPending("mock.user99@localhost"));
+
+        mockMvc.perform(post(confirmation.toString()))
+            .andExpect(status().isOk());
+    }
+
+    {
+        Object result = createResult.getAsyncResult(5000);
+        System.err.println("Result " + result.toString());
+    }
 
     // Log in with new user (and keep auth info).
     //

@@ -42,7 +42,12 @@ public class UserAdapter {
      * @return true if the password hash matched the stored hash for the given user's password.
      */
     public boolean login(String username, String password) {
-        PasswordHashUtility.Digest passwordHash = userRepository.getReferenceById(username).getPasswordHash();
+        PasswordHashUtility.Digest passwordHash;
+        try {
+            passwordHash = userRepository.getReferenceById(username).getPasswordHash();
+        } catch (Exception ex) {
+            return false;
+        }
         return passwordHasher.passwordMatches(passwordHash, password);
     }
 
@@ -71,6 +76,10 @@ public class UserAdapter {
      */
     @Transactional
     public void register(String username, String email, String password) {
+
+        if (username.contains("@"))
+            throw new RuntimeException("Username cannot contain the '@' character.");
+
         userRepository.saveAndFlush(
                 new User(username, email, passwordHasher.hashPassword(password)));
     }
