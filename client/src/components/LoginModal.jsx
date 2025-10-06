@@ -23,6 +23,7 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
 
         try {
             // Backend expects 'username' field (can accept either username or email)
+            // NEEDS USERNAME OR EMAIL, NOT BOTH
             const response = await UserAPI.login({
                 username: usernameOrEmail,
                 password

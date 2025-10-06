@@ -27,7 +27,7 @@ function ForgotPassword({ isVisible, onClose, onSwitchToLogin }) {
         try {
             if (step === 1) {
                 // Step 1: Request password reset (send verification code to email)
-                // Note: Backend doesn't have email sending implemented yet
+                // IMPLEMENT EMAIL SENDING IN BACKEND
                 console.log('Password reset requested for:', email);
                 setSuccess('Verification code sent to your email (check console for development)');
                 setStep(2); // Move to step 2

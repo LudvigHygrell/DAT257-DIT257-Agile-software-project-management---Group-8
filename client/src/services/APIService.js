@@ -1,5 +1,5 @@
 // Base URL for the backend API (using Vite proxy)
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 // Helper function to make API requests with proper headers and error handling
 async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
@@ -60,13 +60,10 @@ async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
 export const UserAPI = {
   /**
    * Login user
-   * Note: Backend uses GET with body (non-standard), so we use POST here as fetch doesn't allow GET with body
    * @param {Object} credentials - { username, email, password }
    * @returns {Promise} User data with JWT token
    */
   login: async (credentials) => {
-    // Use POST instead of GET because fetch API doesn't allow GET requests with body
-    // The backend controller accepts both since Spring allows @RequestBody on @GetMapping
     return await apiRequest('/users/login', 'POST', credentials);
   },
 
