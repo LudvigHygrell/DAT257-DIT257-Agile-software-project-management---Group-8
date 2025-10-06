@@ -27,23 +27,92 @@ _install_gpg_package() {
 
   if [[ $(which apt) ]]; then
     sudo apt update
-    sudo apt install gpg
+    sudo apt install -y gpg
   elif [[ $(which dnf) ]]; then
-    sudo dnf install gnupg2
+    sudo dnf -y install gnupg2
   elif [[ $(which pacman) ]]; then
-    sudo pacman -S gnupg
+    sudo pacman --noconfirm -S gnupg
   elif [[ $(which brew) ]]; then
     brew install gnupg
   fi
 }
 
+_install_psql_package() {
+
+  if [[ $(which apt) ]]; then
+    sudo apt update
+    sudo apt install -y psql
+  elif [[ $(which dnf) ]]; then
+    sudo dnf -y install psql
+  elif [[ $(which pacman) ]]; then
+    sudo pacman --noconfirm -S psql
+  elif [[ $(which brew) ]]; then
+    brew install psql
+  fi
+}
+
+_activate_postgres() {
+
+  if [[ $(which systemctl) ]]; then
+    if [[ "$(systemctl is-active postgresql.service)" != "active" ]]; then
+      echo 'PostgresSQL was not running. (sudo) Attempting to activate it...'
+      sudo systemctl start postgresql.service
+    fi
+  elif [[ $(which service) ]]; then
+    if ! service postgresql status >/dev/null; then
+      echo 'PostgresSQL was not running. (sudo) Attempting to activate it...'
+      sudo service postgresql start
+    fi
+  else
+    echo 'ERROR: Cannot find either systemctl or service.'
+    exit 1
+  fi
+}
+
 main() {
+
+  local QUICK=
+  local FORCE=
+  local OPTIONS=$(getopt --longoptions 'quick-setup,force' --options 'Qf' -- "$@")
+
+  for i in $OPTIONS; do
+    case "$i" in
+      -Q|--quick-setup)
+        shift
+        QUICK=1
+        ;;
+      -f|--force)
+        shift
+        FORCE=1
+        ;;
+      --)
+        break
+        ;;
+      *)
+        echo "Skipping unknown argument: $i"
+        ;;
+    esac
+  done
 
   if [[ -z $(which gpg) ]]; then
     echo 'This script will not run without access to the Gnu Privacy Guard software (gnupg).'
-    printf 'Install package? '
-    _yes_no
+    if ! [[ $QUICK ]]; then
+      printf 'Install package? '
+      _yes_no
+    fi
+    _install_gpg_package
   fi
+
+  if [[ -z $(which psql) ]]; then
+    echo 'Missing psql (PostgresSQL) executable.'
+    if ! [[ $QUICK ]]; then
+      printf 'Install package? '
+      _yes_no
+    fi
+    _install_psql_package
+  fi
+
+  _activate_postgres
 
   echo 'Ensuring access as postgres, you may be prompted for your sudo password here.'
   echo
@@ -51,6 +120,9 @@ main() {
   echo 'the source code before continuing.'
   echo
   sudo -u postgres echo 'Access as user postgres granted.'
+
+  sleep 1
+  clear
 
   echo "  ____                                          "
   echo " |  _ \\                                         "
@@ -68,26 +140,40 @@ main() {
   tee <<EOF
 
 Creation script for the BeneSphere DB.
-    
+
+EOF
+
+  if [[ $QUICK ]]; then
+    echo 'Running quick setup...'
+  fi
+
+  if [[ $FORCE ]]; then
+    echo 'Force specified, will not prompt for confirmation'
+  fi
+
+  local BACKEND_ROOT=$(realpath "../../../")
+  local DEFAULT_PASSPHRASE_FILE=$HOME/.benesphere_db/.secret/benesphere-pw.txt
+  local PASSPHRASE_FILE
+
+  if [[ $FORCE ]]; then
+    echo "Force specified. Continuing anyway..."
+  else
+    tee <<EOF
 OBS!
 
 This script will destroy any existing instance of this database, run at your own risk.
 
 Continue? 
 EOF
-
-  _yes_no
-
-  local BACKEND_ROOT=$(realpath "../../../")
-  local DEFAULT_PASSPHRASE_FILE=$HOME/.benesphere_db/.secret/benesphere-pw.txt
-  local PASSPHRASE_FILE
+    _yes_no
+  fi
 
   echo "Looking for default credentials in $DEFAULT_PASSPHRASE_FILE"
 
   if [ -f $DEFAULT_PASSPHRASE_FILE ]; then
     echo "Found passphrase at default path $DEFAULT_PASSPHRASE_FILE"
     printf "Use it? "
-    if _yes_no; then
+    if [[ $QUICK ]] || _yes_no; then
       PASSPHRASE_FILE=$DEFAULT_PASSPHRASE_FILE
     fi
   else
@@ -97,7 +183,7 @@ EOF
     if [ -f $DEFAULT_PASSPHRASE_FILE ]; then
       echo "Found passphrase at default path $DEFAULT_PASSPHRASE_FILE"
       printf "Use it? "
-      if _yes_no; then
+      if [[ $QUICK ]] || _yes_no; then
         PASSPHRASE_FILE=$DEFAULT_PASSPHRASE_FILE
       fi
     else
@@ -105,7 +191,7 @@ EOF
     fi
   fi
 
-  if [[ -z $PASSPHRASE_FILE ]]; then
+  if ! [[ $QUICK ]] && [[ -z $PASSPHRASE_FILE ]]; then
     read -e -p 'Enter passphrase file (or nothing to use a default password): ' PASSPHRASE_FILE
   fi
 
@@ -136,7 +222,7 @@ EOF
   sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/setup.sql"
 
   printf 'Insert mock data? '
-  if _yes_no; then
+  if [[ $QUICK ]] || _yes_no; then
     echo 'Inserting mock data...'
     sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/mockdata.sql"
   fi
@@ -144,8 +230,13 @@ EOF
   echo 'Setting up permissions for benesphere user.'
   sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/permissions.sql"
 
-  printf 'Creation complete. Create a login script?: '
-  _yes_no
+  printf 'Creation complete.'
+  if ! [[ $QUICK ]]; then
+    printf ' Create a login script? '
+    _yes_no;
+  else
+    echo
+  fi
 
   mkdir -p $BACKEND_ROOT/.benesphere_db
 
