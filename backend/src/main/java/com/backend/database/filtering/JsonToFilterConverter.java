@@ -1,12 +1,10 @@
 package com.backend.database.filtering;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import jakarta.persistence.Column;
 
 /**
  * Helper class for converting Json to @see{Filter}
@@ -30,29 +28,16 @@ public abstract class JsonToFilterConverter {
         };
     }
 
-    private static <Entity> void assertValidField(String field, Class<Entity> entityClass) {
-        for (Field rfield : entityClass.getDeclaredFields()) {
-            rfield.setAccessible(true);
-            if (rfield.isAnnotationPresent(Column.class) && field.equals(rfield.getName())) {
-                return;
-            }
-        }
-        throw new AssertionError(String.format("Field \"%s\" does not exists in the entity class %s.", 
-            field, entityClass.getName()));
-    }
-
     private static <Entity> Filter<Entity> comparisonFilterFromJson(FilterBuilder<Entity> builder, JsonNode json, FilteringMethod method) {
 
         if (!json.has("field"))
             throw new IllegalArgumentException("Missing expected field \"field\"");
 
-        if (!json.has("arguments"))
+        if (!json.has("value"))
             throw new IllegalArgumentException("Missing expected field \"value\"");
 
         String field = json.get("field").asText();
         JsonNode rhs = json.get("value");
-
-        assertValidField(field, builder.getEntityClass());
 
         return switch (method) {
         case LESS
@@ -99,6 +84,14 @@ public abstract class JsonToFilterConverter {
         assert null != builder;
         assert null != json;
 
+        if (json.isArray()) {
+            List<Filter<Entity>> filters = new ArrayList<>();
+            for (JsonNode subnode : json) {
+                filters.add(filterFromJson(builder, subnode));
+            }
+            return builder.and(filters);
+        }
+
         if (!json.has("filter"))
             throw new IllegalArgumentException("Missing required property \"filter\".");
 
@@ -107,5 +100,36 @@ public abstract class JsonToFilterConverter {
             case NOT, OR, AND -> booleanFilterFromJson(builder, json, method);
             default -> comparisonFilterFromJson(builder, json, method);
         };
+    }
+
+    /**
+     * Translate ordering, limits and filters from the specified json and execute the query.
+     * @param <Entity> Entity type to query.
+     * @param query Query to construct.
+     * @param json The json containing the properties of the json to run.
+     * @return The list of results.
+     */
+    public static <Entity> List<Entity> runQueryFromJson(FilteredQuery<Entity> query, JsonNode json) {
+        assert null != query;
+        assert null != json;
+
+        Ordering order;
+        Limits limits;
+        order = json.has("sorting") ? Ordering.fromJson(json.get("sorting")) : Ordering.NONE;
+        
+        int start = 0;
+        int maxResults = Integer.MAX_VALUE;
+
+        if (json.has("first"))
+            start = json.get("first").asInt();
+        if (json.has("max_count"))
+            maxResults = json.get("max_count").asInt();
+
+        limits = new Limits(start, maxResults);
+        
+        if (json.has("filters")) {
+            return query.runQuery(filterFromJson(query.getFilterBuilder(), json.get("filters")), order, limits);
+        }
+        return query.runQuery(order, limits);
     }
 }

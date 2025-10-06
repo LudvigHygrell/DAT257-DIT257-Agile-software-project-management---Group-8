@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Confirm email</title>
+    </head>
+    <body>
+        <p>
+            <a th:href="@{'/api/email/confirm/' + ${email} + '/' + ${confirmCode}}">Click to confirm email address</a>
+        </p>
+    </body>
+</html>

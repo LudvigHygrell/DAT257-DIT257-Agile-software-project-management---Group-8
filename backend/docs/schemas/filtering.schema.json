@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft-07/schema#",
-    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/filtering.schema.json",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/filtering.schema.json",
     "title": "Filter object schema",
     "description": "Json Schema for filters that can be passed from the client to the BeneSphere server.",
     "definitions": {

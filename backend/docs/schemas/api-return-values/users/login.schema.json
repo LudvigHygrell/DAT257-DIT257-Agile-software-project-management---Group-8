@@ -1,0 +1,19 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api-return-values/users/login.schema.json",
+    "title": "End point schema /api/users/login return value",
+    "description": "Schema for json values returned by the /api/users/login end point.",
+    "oneOf": [
+        {
+            "type": "string",
+            "$comment": "Reason why login failed."
+        },
+        {
+            "type": "object",
+            "properties": {
+                "token": { "type": "string", "$comment": "JWT used for authentication." }
+            },
+            "required": [ "token" ]
+        }
+    ]
+}

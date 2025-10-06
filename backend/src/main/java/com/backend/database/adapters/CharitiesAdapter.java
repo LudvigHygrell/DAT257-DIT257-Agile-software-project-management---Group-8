@@ -1,16 +1,14 @@
 package com.backend.database.adapters;
 
 import com.backend.database.repositories.*;
+import com.backend.jwt.user.UserUtil;
 import com.backend.database.entities.*;
 import com.backend.database.entities.keys.CharityVoteKey;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -34,27 +32,21 @@ public class CharitiesAdapter {
     @Autowired
     private AdministratorsRepository administratorsRepository;
 
+    @Autowired
+    private SearchedCharitiesRepository searchedCharities;
 
     protected CharitiesAdapter() {}
 
     /**
-     * List available charities.
-     * @param filters Filters to apply when listing.
-     * @param order_by Ordering of the results.
-     * @return A list 
+     * Find a charity based on it's orgId
+     * @param orgId Identfier of the charity organization.
+     * @return The resulting charity.
+     * @throws Exception Thrown if getting the charity fails.
      */
-    public List<String> list(String[] filters, String order_by, int pageSize, int pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber,pageSize); //TODO Implement sorting
-        Page<Charity> charitiesPage = charityRepository.findAll(pageable);
-        return charitiesPage.getContent().stream().map(Charity::getOrgID).toList();
+    public Charity get(String orgId) throws Exception {
+        return charityRepository.findById(orgId)
+            .orElseThrow(() -> new Exception("Error getting charity."));
     }
-
-    /**
-     * Returns a charity given its organization ID
-     * @param identity the charity that is to be returned
-     * @return True if the charity was found
-     */
-    public boolean get(String identity) {return true;} //TODO what are we returning since the table only contains orgID?
 
     /**
      * Registers a vote from the user on the charity.
@@ -63,8 +55,8 @@ public class CharitiesAdapter {
      * @return True if the vote was inserted.
      */
     public boolean vote(String charity, boolean value) {
-        try{
-            scoresRepository.save(new CharityVote(User.getCurrent().getUserName(), charity, value));        
+        try {
+            scoresRepository.save(new CharityVote(UserUtil.getUsername(), charity, value));        
         } catch (Exception e){
             return false;
         }
@@ -79,7 +71,7 @@ public class CharitiesAdapter {
      */
     public boolean editVote(String charity, boolean value) {
         try {
-            scoresRepository.save(new CharityVote(User.getCurrent().getUserName(), charity, value));
+            scoresRepository.save(new CharityVote(UserUtil.getUsername(), charity, value));
         } catch (Exception ex) {
             return false;
         }
@@ -93,7 +85,7 @@ public class CharitiesAdapter {
      */
     public boolean deleteVote(String charity) {
         try {
-            scoresRepository.deleteById(new CharityVoteKey(User.getCurrent().getUserName(), charity));
+            scoresRepository.deleteById(new CharityVoteKey(UserUtil.getUsername(), charity));
         } catch (Exception ex) {
             return false;
         }
@@ -101,13 +93,16 @@ public class CharitiesAdapter {
     }
 
     /**
-     * Mark a charity as "paused" (only possible if User.getCurrent() is admin).
+     * Mark a charity as "paused" (only possible if UserUtil is admin).
      * @param charity_id Charity to pause.
      * @return True if successful.
      */
     public boolean pause(String charity_id) {
         try {
-            pausedCharitiesRepository.save(new PausedCharity(charity_id, User.getCurrent().getUserName()));            
+            Optional<Administrator> admin = administratorsRepository.findById(UserUtil.getUsername());
+            if (admin.isEmpty() || admin.get().getLevel() < Administrator.PAUSE_CHARITY_LEVEL)
+                return false;
+            pausedCharitiesRepository.save(new PausedCharity(charity_id, UserUtil.getUsername()));            
         } catch (Exception ex) {
             return false;
         }
@@ -115,14 +110,14 @@ public class CharitiesAdapter {
     }
 
     /**
-     * Resumes usage of a specified charity (only possible if User.getCurrent() is admin).
+     * Resumes usage of a specified charity (only possible if UserUtil is admin).
      * @param charity_id Charity to resume use of.
      * @return True if successful.
      */
     public boolean resume(String charity_id) {
         try {
             // NOTE: There will most likely be a trigger for this eventually, however we are still checking just to be sure.
-            Optional<Administrator> admin = administratorsRepository.findById(User.getCurrent().getUserName());
+            Optional<Administrator> admin = administratorsRepository.findById(UserUtil.getUsername());
             if (admin.isEmpty() || admin.get().getLevel() < Administrator.PAUSE_CHARITY_LEVEL)
                 return false;
             pausedCharitiesRepository.deleteById(charity_id);
@@ -130,5 +125,25 @@ public class CharitiesAdapter {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Register search entries for a charities searched by a user (but not visited).
+     * @param charities Charities to add to the search entry.
+     */
+    public void addSkimSearchEntries(Collection<Charity> charities) {
+        assert null != charities;
+        searchedCharities.saveAll(charities.stream()
+            .map(c -> new SearchedCharity(UserUtil.getUsername(), c.getOrgID()))
+            .toList());
+    }
+
+    /**
+     * Register a new search entry into the charities visited, and viewed by a user.
+     * @param charity Charity to add.
+     */
+    public void addSearchEntry(Charity charity) {
+        assert null != charity;
+        searchedCharities.save(new SearchedCharity(UserUtil.getUsername(), charity.getOrgID(), true));
     }
 }

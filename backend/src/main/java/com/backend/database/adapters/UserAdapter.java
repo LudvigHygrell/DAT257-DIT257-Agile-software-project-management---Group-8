@@ -42,8 +42,13 @@ public class UserAdapter {
      * @return true if the password hash matched the stored hash for the given user's password.
      */
     public boolean login(String username, String password) {
-        return passwordHasher.passwordMatches(
-                userRepository.getReferenceById(username).getPasswordHash(), password);
+        PasswordHashUtility.Digest passwordHash;
+        try {
+            passwordHash = userRepository.getReferenceById(username).getPasswordHash();
+        } catch (Exception ex) {
+            return false;
+        }
+        return passwordHasher.passwordMatches(passwordHash, password);
     }
 
     /**
@@ -56,20 +61,42 @@ public class UserAdapter {
         return userRepository.existsById(name);
     }
 
+    /**
+     * True if email exists in the db.
+     */
     public boolean isEmail(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 
+    /**
+     * Adds a new user to the db.
+     * @param username Name of the user.
+     * @param email Email of the user.
+     * @param password Password string (not digest) of the user.
+     */
     @Transactional
     public void register(String username, String email, String password) {
+
+        if (username.contains("@"))
+            throw new RuntimeException("Username cannot contain the '@' character.");
+
         userRepository.saveAndFlush(
                 new User(username, email, passwordHasher.hashPassword(password)));
     }
 
+    /**
+     * Deletes a user from the db.
+     * @param user Username of the user to delete.
+     */
     public void deleteUser(String user) {
         userRepository.deleteById(user);
     }
 
+    /**
+     * Changes the password of a user in the db.
+     * @param username Name of the user.
+     * @param newPassword Password string (not digest) of the password to set.
+     */
     public void changePassword(String username, String newPassword) {
         Optional<User> user = userRepository.findById(username);
         if (user.isEmpty())
@@ -78,15 +105,32 @@ public class UserAdapter {
         userRepository.save(user.get());
     }
 
-    public String getUsernameFromEmail(String email) {
-        return null;
+    /**
+     * Gets the user associated with the specified email address.
+     * @param email Email of the user.
+     * @return The user with the specified email, or Optional.empty()
+     */
+    public Optional<String> getUsernameFromEmail(String email) {
+        return userRepository.findByEmail(email).map(User::getEmail);
     }
 
+    /**
+     * Edit the email of a user in the db.
+     * @param username Username of the user to edit the email of.
+     * @param email New email of the user.
+     */
     public void changeEmail(String username, String email) {
-        
+        User user = userRepository.getReferenceById(username);
+        user.setEmail(email);
+        userRepository.saveAndFlush(user);
     }
 
-    public String getPassword(String username) {
-        return null;
+    /**
+     * Gets the stored password digest of a specified user.
+     * @param username Username of the user to get the password digest of.
+     * @return The digest (or hash) of the password, or Optional.empty().
+     */
+    public Optional<PasswordHashUtility.Digest> getPassword(String username) {
+        return userRepository.findById(username).map(User::getPasswordHash);
     }
 }

@@ -1,0 +1,17 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/LudvigHygrell/DAT257-DIT257-Agile-software-project-management---Group-8/backend/docs/schemas/api/charities/edit_vote.schema.json",
+    "title": "End point schema /api/charities/edit_vote",
+    "description": "Schema for json arguments accepted by the /api/charities/edit_vote end point.",
+    "properties": {
+        "charity": {
+            "type": "string",
+            "$comment": "orgId of the charity to edit a vote in."
+        },
+        "up": {
+            "type": "boolean",
+            "$comment": "Value to change the vote to: True -> vote for, False -> vote against."
+        }
+    },
+    "required": [ "charity", "up" ]
+}

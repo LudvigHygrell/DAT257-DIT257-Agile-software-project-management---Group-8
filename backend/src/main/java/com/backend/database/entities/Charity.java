@@ -1,5 +1,8 @@
 package com.backend.database.entities;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
 import jakarta.persistence.*;
 
 /**
@@ -10,10 +13,11 @@ import jakarta.persistence.*;
  */
 
 @Entity
-@Table(name="Charities")
+@Table(name="charities")
 public class Charity {
+    
     @Id
-    @Column(name = "orgId")
+    @Column(name = "orgid")
     private String orgId;
 
     protected Charity() {}
@@ -36,4 +40,8 @@ public class Charity {
 
     public String getOrgID() { return this.orgId; }
 
+    public JsonNode toJson() {
+        return JsonNodeFactory.instance.objectNode()
+            .put("orgId", orgId);
+    }
 }

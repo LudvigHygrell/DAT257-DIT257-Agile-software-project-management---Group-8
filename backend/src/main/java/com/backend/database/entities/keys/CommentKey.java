@@ -1,10 +1,8 @@
 package com.backend.database.entities.keys;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Composite primary key type for the Comments table.
@@ -12,17 +10,16 @@ import java.io.Serializable;
  * @version 1.0
  * @since 2025-09-18
  */
-@Embeddable
 public class CommentKey implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1;
 
-    @Column(name="commentId")
-    private int commentId;
+    private Integer commentId;
 
-    @Column(name="charity")
     private String charity;
+
+    protected CommentKey() {}
 
     /**
      * Create a new comment key.
@@ -50,5 +47,22 @@ public class CommentKey implements Serializable {
     public void setCharity(String charity) {
         assert null != charity;
         this.charity = charity;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("CommentKey(id=%d, charity=%s)", commentId, charity);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof CommentKey &&
+            ((CommentKey)object).commentId == commentId &&
+            ((CommentKey)object).charity.equals(charity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(commentId, charity);
     }
 }

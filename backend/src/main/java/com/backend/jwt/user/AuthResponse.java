@@ -1,7 +1,8 @@
 package com.backend.jwt.user;
 
 public class AuthResponse {
-    private String jwt;
+    
+    private final String jwt;
 
     public AuthResponse(String jwt) {
         this.jwt = jwt;
