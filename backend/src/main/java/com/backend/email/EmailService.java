@@ -9,6 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.backend.config.EmailProperties;
+
 import jakarta.mail.Message;
 import jakarta.mail.Multipart;
 import jakarta.mail.internet.InternetAddress;
@@ -28,8 +30,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender sender;
 
-    //@Value("${spring.mail.username}")
-    private String emailUsername = "benesphere";
+    private final EmailProperties emailProperties;
 
     private String getConfirmationEmailText(String email, long confirmCode) {
 
@@ -51,6 +52,10 @@ public class EmailService {
                 .build().toUriString(),
             new String(Base64.getUrlEncoder().encode(email.getBytes())),
             Long.toString(confirmCode));
+    }
+
+    public EmailService(EmailProperties properties) {
+        emailProperties = properties;
     }
 
     /**
@@ -84,7 +89,7 @@ public class EmailService {
 
         message.setContent(mp);
 
-        message.setFrom(emailUsername);
+        message.setFrom(emailProperties.getUsername());
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
 
         sender.send(message);

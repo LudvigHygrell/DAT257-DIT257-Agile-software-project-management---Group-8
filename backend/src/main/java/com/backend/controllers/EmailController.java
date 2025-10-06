@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.config.EmailProperties;
 import com.backend.email.EmailConfirmations;
 
 /**
@@ -19,7 +20,13 @@ import com.backend.email.EmailConfirmations;
 @RestController
 @RequestMapping("/api/email")
 public class EmailController {
+
+    private final EmailProperties emailProperties;
     
+    public EmailController(EmailProperties props) {
+        emailProperties = props;
+    }
+
     /**
      * Accepts email confirmation links.
      * @param email Email address (encoded in URL-B64) to confirm.  
@@ -30,6 +37,9 @@ public class EmailController {
     public ResponseEntity<String> confirm(
         @PathVariable(value="email", required=true) String email,
         @PathVariable(value="confirmCode", required=true) Long confirmCode) {
+
+        if (!emailProperties.isVerified())
+            return ResponseEntity.status(403).body("Email host is disabled.");
 
         if (null == email)
             return ResponseEntity.status(400).body("Expected a confirmation email.");

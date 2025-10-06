@@ -1,0 +1,260 @@
+#!/usr/bin/env bash
+
+set -e
+
+GIT_ROOT=$(git rev-parse --show-toplevel)
+BENESPHERE_VERSION=1.0.0-SNAPSHOT
+
+_ensure_jq_installed() {
+
+    if [[ $(which jq) ]]; then
+        return 0
+    fi
+
+    echo 'Missing dependency jq. Attempting to install...'
+
+    if [[ $(which apt) ]]; then
+        sudo apt update
+        sudo apt install -y jq
+    elif [[ $(which dnf) ]]; then
+        sudo -y dnf install jq
+    elif [[ $(which pacman) ]]; then
+        sudo pacman --noconfirm -S jq
+    elif [[ $(which brew) ]]; then
+        brew install jq
+    fi
+}
+
+_args2json() {
+
+    local ARGLIST=()
+    local i
+    
+    for i in $@; do
+        local ARGVALUE=${i#*=}
+        local ARGNAME=${i%%=*}
+        ARGLIST+=" --arg $ARGNAME $ARGVALUE"
+    done
+    jq -n $ARGLIST '$ARGS.named | map_values(try fromjson catch .)'
+}
+
+_call_endpoint() {
+
+    local METHOD=$1
+    shift
+
+    local ENDPOINT=$1
+    shift
+
+    ENDPOINT=${ENDPOINT#/}
+
+    if ! [[ $ENDPOINT = api/* ]]; then
+        ENDPOINT="api/$ENDPOINT"
+    fi
+
+    if ! [[ $METHOD ]]; then
+        echo "Expected an HTTP method"
+        return 1
+    fi
+
+    if ! [[ $ENDPOINT ]]; then
+        echo "Expected an HTTP endpoint"
+        return 1
+    fi
+
+    local URL="http://$BENESPHERE_HOST:$BENESPHERE_PORT/$ENDPOINT"
+
+    local OPTIONS=$(getopt --longoptions '' --options '' -- "$@")
+    local i
+    for i in $OPTIONS; do
+        case "$i" in
+            --)
+                break
+                ;;
+            *)
+                echo "Skipping unknown option: $i" 
+                ;;
+        esac
+    done
+
+    local JSON=$(_args2json $@)
+    local CONTENT_TYPE="Content-Type: application/json"
+    local AUTHORIZATION="Authorization: "
+
+    if [[ $BENESPHERE_JWT ]]; then
+        AUTHORIZATION="Authorization: Bearer $BENESPHERE_JWT"
+    fi
+
+    local HTTP_CODE
+    local CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{http_code}" -H "$CONTENT_TYPE" -H "$AUTHORIZATION" -d "$JSON" &> /dev/stdout)
+
+    CONTENTS=(${CONTENTS[@]})
+    HTTP_CODE=${CONTENTS[-1]}
+    CONTENTS="${CONTENTS[@]::${#CONTENTS[@]}-1}"
+
+    echo "Request: $METHOD $URL"
+    echo "Request body: $JSON"
+    echo "Status: $HTTP_CODE"
+    echo "Contents:"
+    echo "$CONTENTS"
+
+    local JWT=$(echo "$CONTENTS" | jq -r '.token' 2> /dev/null)
+    if [[ $JWT ]]; then
+        BENESPHERE_JWT=$JWT
+        echo "Setting JWT to $BENESPHERE_JWT"
+    fi
+}
+
+_launch_benesphere() {
+    echo "Launching benesphere on http://${BENESPHERE_HOST}:${BENESPHERE_PORT}"
+    cd "$GIT_ROOT/backend" && mvn clean package
+    java -jar "$GIT_ROOT/backend/target/app.benesphere-${BENESPHERE_VERSION}.jar"\
+        "--server.port=${BENESPHERE_PORT}"\
+        "--server.host=${BENESPHERE_HOST}"
+    exit 0
+}
+
+_print_help() {
+
+    tee <<EOF
+test-endpoint
+
+test-endpoint is a tool for verifying endpoint communication with the benesphere server. The tool utilizes curl to
+send requests via http to the various endpoints in the back-end server. test-endpoint will also automatically keep
+track of JWTs after each login, meaning you do not need to specify it manually.
+
+There are two modes of operation, you can either use the tool to launch benesphere with a specific configuration, or
+you may use the tool for sending requests to the launched instance.
+
+EOF
+
+    echo "Usage:"
+    echo "$0"
+    echo "  [--port|-p <port-number>]"
+    echo "  [--host|-h <target-host>]"
+    echo "  --launch"
+    echo ""
+    echo "$0"
+    echo "  [--port|-p <port-number>]"
+    echo "  [--host|-h <target-host>]"
+
+    tee <<EOF
+
+=== Launch mode ===
+
+When launching the tool will first build the application using mvn and it will then launch the application and provide
+the specified port in --server.port and host in --server.host on the program command line.
+
+After launching, the tool is effectively replaced with the server instance, so further tests need to be made from a separate
+shell.
+
+Example of a launch mode run:
+
+    ./tools/test-endpoint --port 1234 --launch
+
+The snippet above launches benesphere and sets it to communicate on the 1234 port.
+
+=== Test mode ===
+
+The test mode is the standard mode of operation for the tool. This mode is an abstraction layer on top of curl that automatically
+configures the HTTP headers and perform som translations on the absolute URL.
+
+This mode is an interactive process where you will enter the requests you wish to send to the server. A request command starts with
+the HTTP method (GET, POST, PUT, or DELETE), followed by the endpoint (/api is prepended to the endpoint if it was not provided) and
+then followed by a set of JSON fields to set in the request body.
+
+Example:
+
+    ./tools/test-endpoint --port 1234
+    --(api)--> GET users/login username="myuser" password="password123"
+    Request: GET http://127.0.0.1:1234/api/users/login
+    Request body: {
+        "username": "myuser",
+        "password": "password123"
+    }
+    Status: 200
+    Contents: {
+        "token": "<jwt here...>"
+    }
+    Setting JWT to <jwt here...>
+
+To set a JSON field, you need to specify a field name, followed by the '=' character, followed by the JSON value to set it to. Do also
+note that the above command will _automatically_ detect whenever a login request succeeds and returns a JWT and then also apply that
+JWT for all subsequent commands.
+
+When in the test mode, you can always exit by entering exit, quit or q into the prompt, or by sending an interrupt (Ctrl+C).
+
+EOF
+
+    exit 0
+}
+
+main() {
+
+    _ensure_jq_installed
+
+    local LAUNCH
+    local OPTIONS=$(getopt --longoptions 'host:,port:,launch,help' --options 'h:p:e' -- "$@")
+    eval set -- "$OPTIONS"
+
+    while :; do
+        case "$1" in
+            --help)
+                shift
+                _print_help $@
+                ;;
+
+            --host|-h)
+                shift
+                BENESPHERE_HOST=$1
+                shift
+                ;;
+            --port|-p)
+                shift
+                BENESPHERE_PORT=$1
+                shift
+                ;;
+            --launch|-e)
+                shift
+                LAUNCH=1
+                ;;
+            --)
+                shift
+                break
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    if ! [[ $BENESPHERE_HOST ]]; then
+        BENESPHERE_HOST=127.0.0.1
+    fi
+
+    if ! [[ $BENESPHERE_PORT ]]; then
+        BENESPHERE_PORT=8080
+    fi
+
+    if [[ $LAUNCH ]]; then
+        _launch_benesphere
+    fi
+
+    local LINE
+    while true; do
+        read -p '--(api)--> ' LINE
+        case "$LINE" in
+            exit|q|quit)
+                return 0
+                ;;
+            *)
+                set +e
+                _call_endpoint $LINE
+                set -e
+                ;;
+        esac
+    done
+}
+
+main $@
+

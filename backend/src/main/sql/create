@@ -75,6 +75,7 @@ main() {
   local FORCE=
   local OPTIONS=$(getopt --longoptions 'quick-setup,force' --options 'Qf' -- "$@")
 
+  local i
   for i in $OPTIONS; do
     case "$i" in
       -Q|--quick-setup)

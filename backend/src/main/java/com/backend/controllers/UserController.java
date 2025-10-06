@@ -1,17 +1,9 @@
 package com.backend.controllers;
 
-import com.backend.database.PasswordHashUtility;
-import com.backend.database.adapters.UserAdapter;
-import com.backend.database.entities.Comment;
-import com.backend.database.entities.CommentBlame;
-import com.backend.database.entities.SearchedCharity;
-import com.backend.database.filtering.FilteredQuery;
-import com.backend.database.filtering.JsonToFilterConverter;
-import com.backend.email.EmailConfirmations;
-import com.backend.email.EmailService;
-import com.backend.jwt.JwtUtil;
-import com.backend.jwt.user.UserDetail;
-import com.backend.jwt.user.UserDetailService;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,17 +16,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.ApplicationProperties;
+import com.backend.database.PasswordHashUtility;
+import com.backend.database.adapters.UserAdapter;
+import com.backend.database.entities.Comment;
+import com.backend.database.entities.CommentBlame;
+import com.backend.database.entities.SearchedCharity;
+import com.backend.database.filtering.FilteredQuery;
+import com.backend.database.filtering.JsonToFilterConverter;
+import com.backend.email.EmailConfirmations;
+import com.backend.email.EmailService;
+import com.backend.jwt.JwtUtil;
+import com.backend.jwt.user.UserDetail;
+import com.backend.jwt.user.UserDetailService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 /**
  * The UserController class handles user-related API endpoints such as login and registration.
@@ -65,6 +65,14 @@ public class UserController {
 
     @Autowired
     private EmailService emailService;
+
+    private final ApplicationProperties props;
+
+    public UserController(ApplicationProperties props) {
+        this.props = props;
+        assert null != props;
+        assert null != props.getEmailProperties();
+    }
 
     /**
      * A basic method for logging into a user. Varifies that the username and password checks against the database. 
@@ -143,27 +151,38 @@ public class UserController {
         if (userAdapter.isEmail(email))
             return CompletableFuture.completedFuture(
                 ResponseEntity.status(409).body("Email already exists"));
-    
-        CompletableFuture<String> fut;
-        try {
-            fut = emailService.sendEmailConfirmation(email);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return CompletableFuture.completedFuture(
-                ResponseEntity.status(500).body("Failed to send email."));
-        }
-        return fut.thenApply(confirmedEmail -> {
+
+        if (props.getEmailProperties().isVerified()) {
+            CompletableFuture<String> fut;
             try {
-                System.err.println("Email confirmed, attempting to register user " + username);
-                userAdapter.register(username, confirmedEmail, password);
-                return ResponseEntity.ok("User registered successfully");
-            } catch(Exception e) {
-                return ResponseEntity.status(500).body("Error registering user");
+                fut = emailService.sendEmailConfirmation(email);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return CompletableFuture.completedFuture(
+                    ResponseEntity.status(500).body("Failed to send email."));
             }
-        }).exceptionally(ex -> {
-            EmailConfirmations.getInstance().abort(email);
-            return ResponseEntity.status(500).body("Failed to confirm email.");
-        });
+            return fut.thenApply(confirmedEmail -> {
+                try {
+                    System.err.println("Email confirmed, attempting to register user " + username);
+                    userAdapter.register(username, confirmedEmail, password);
+                    return ResponseEntity.ok("User registered successfully");
+                } catch(Exception e) {
+                    return ResponseEntity.status(500).body("Error registering user");
+                }
+            }).exceptionally(ex -> {
+                EmailConfirmations.getInstance().abort(email);
+                return ResponseEntity.status(500).body("Failed to confirm email.");
+            });
+        } else {
+            try {
+                userAdapter.register(username, email, password);
+                return CompletableFuture.completedFuture(
+                    ResponseEntity.ok("User registered successfully"));
+            } catch(Exception e) {
+                return CompletableFuture.completedFuture(
+                    ResponseEntity.status(500).body("Error registering user"));
+            }
+        }
     }
 
     /**
