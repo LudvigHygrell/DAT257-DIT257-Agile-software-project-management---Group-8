@@ -23,3 +23,9 @@ node_modules
 #
 benesphere.key
 
+# Windows nul files
+nul
+**/nul
+
+# Log files
+*.log

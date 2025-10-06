@@ -15,11 +15,13 @@
 /* Login content box in the center of the overlay */
 .popup-content {
     background-color: white;                      /* background color */
-    padding: 2rem;                                  /* Space inside the box (32px) */
+    padding: 2rem;                                  /* Space inside the box */
     border-radius: 10px;                            /* Rounded corners */
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);      /* drop shadow for depth */
     position: relative;                             /* allow positioning of child elements */
     min-width: 300px;                               /* minimum width to prevent too narrow box */
+    max-width: 450px;                               /* maximum width to prevent too wide box */
+    width: 90%;                                     /* responsive width on small screens */
     color: #333;                                  /* text color */
 }
 
@@ -29,6 +31,18 @@
     margin-bottom: 1.5rem;      /* Space below title */
     text-align: center;         /* Center the title text */
     color: #333;              /* Text color */
+}
+
+/* Error message styling */
+.error-message {
+    background-color: #f8d7da;  /* Background color */
+    color: #721c24;             /* Text color */
+    padding: 0.75rem;           /* Padding inside the error box */
+    border-radius: 5px;         /* Rounded corners */
+    margin-bottom: 1rem;        /* Space below error message */
+    border: 1px solid #f5c6cb;  /* Border color */
+    font-size: 0.9rem;          /* Font size */
+    text-align: center;         /* Center the error text */
 }
 
 /* Style for email and password input fields */
@@ -45,8 +59,8 @@
 /* Style when user clicks/focuses on input field */
 .input-field:focus {
     outline: none;                                    /* Remove default browser focus outline */
-    border-color: #28a745;                          /* Change border to brand blue color */
-    box-shadow: 0 0 0 1px #00fc04;                  /* glow effect */
+    border-color: #28a745;                          /* Border color on focus */
+    box-shadow: 0 0 0 1px #00fc04;                  /* Glow effect */
 }
 
 /* Style for the "Sign In" submit button */
@@ -65,7 +79,7 @@
 
 /* Button color change when mouse hovers over it */
 .submit-button:hover {
-    background-color: #218838; /* color when hovering */
+    background-color: #218838; /* Background color on hover */
 }
 
 /* Container for "Register" and "Forgot Password?" links */
@@ -77,9 +91,9 @@
 
 /* Style for "Register" and "Forgot Password?" links */
 .link {
-    color: #28a745;           /* text-color */
+    color: #28a745;           /* Text color */
     text-decoration: none;    /* Remove default underline */
-    font-size: 0.9rem;        /* text-size */
+    font-size: 0.9rem;        /* Font size */
 }
 
 /* Link appearance when mouse hovers over them */
@@ -90,17 +104,17 @@
 /* X button positioned in top-right corner of Login modal */
 .close-button {
     position: absolute;         /* Position relative to popup-content */
-    top: 10px;                  /* margin from top edge */
-    right: 15px;                /* margin from right edge */
-    background-color: transparent; /* No background color */
+    top: 10px;                  /* Distance from top edge */
+    right: 15px;                /* Distance from right edge */
+    background-color: transparent; /* Background color */
     border: none;            /* Remove default button border */
-    font-size: 1.5rem;       /* text-size */
+    font-size: 1.5rem;       /* Font size */
     cursor: pointer;         /* Show hand cursor when hovering */
-    color: #666;             /* text-color */
+    color: #666;             /* Text color */
     transition: color 0.2s;  /* Smooth color change on hover */
 }
 
 /* X button color change when mouse hovers over it */
 .close-button:hover {
-    color: #333;             /* text-color */
+    color: #333;             /* Text color on hover */
 }
