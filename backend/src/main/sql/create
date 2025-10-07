@@ -64,8 +64,7 @@ _activate_postgres() {
       sudo service postgresql start
     fi
   else
-    echo 'ERROR: Cannot find either systemctl or service.'
-    exit 1
+    echo "Could not find a suitable daemon manager, please ensure Postgres is started yourself."
   fi
 }
 
