@@ -15,6 +15,10 @@ GRANT SELECT
     TO benesphere;
 
 GRANT SELECT
+    ON TABLE public.CharityInfo
+    TO benesphere;
+
+GRANT SELECT
     ON TABLE public.PausedCharities
     TO benesphere;
 

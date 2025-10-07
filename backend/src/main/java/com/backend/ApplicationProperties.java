@@ -9,6 +9,8 @@ import com.backend.config.EmailProperties;
 @ConfigurationProperties(prefix="benesphere")
 public class ApplicationProperties {
 
+    private boolean debug = false;
+
     private final EmailProperties email;
 
     public ApplicationProperties(EmailProperties emailProps) {
@@ -17,5 +19,13 @@ public class ApplicationProperties {
 
     public EmailProperties getEmailProperties() {
         return email;
+    }
+
+    public boolean inDebug() {
+        return debug;
+    }
+
+    public boolean inRelease() {
+        return !debug;
     }
 }

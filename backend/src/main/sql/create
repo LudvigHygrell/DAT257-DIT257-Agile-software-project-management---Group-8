@@ -64,8 +64,7 @@ _activate_postgres() {
       sudo service postgresql start
     fi
   else
-    echo 'ERROR: Cannot find either systemctl or service.'
-    exit 1
+    echo "Could not find a suitable daemon manager, please ensure Postgres is started yourself."
   fi
 }
 
@@ -73,7 +72,8 @@ main() {
 
   local QUICK=
   local FORCE=
-  local OPTIONS=$(getopt --longoptions 'quick-setup,force' --options 'Qf' -- "$@")
+  local USEME
+  local OPTIONS=$(getopt --longoptions 'quick-setup,force,use-me' --options 'Qf' -- "$@")
 
   local i
   for i in $OPTIONS; do
@@ -85,6 +85,10 @@ main() {
       -f|--force)
         shift
         FORCE=1
+        ;;
+      --use-me)
+        shift
+        USEME=1
         ;;
       --)
         break
@@ -120,7 +124,10 @@ main() {
   echo 'If you are unsure about continuing this script press CTRL+C to exit here and inspect'
   echo 'the source code before continuing.'
   echo
-  sudo -u postgres echo 'Access as user postgres granted.'
+
+  if ! [[ $USEME ]]; then 
+    sudo -u postgres echo 'Access as user postgres granted.'
+  fi
 
   sleep 1
   clear
@@ -217,15 +224,25 @@ EOF
   local USR_CONNSTRING=postgresql://benesphere:J2-3%2F5=941Adv@localhost:5432/benesphere_db
 
   echo 'Creating database...'
-  sudo -u postgres psql -v benesphere_password=$PASS -f "$(dirname "$0")/user-db-setup.sql"
-
+  if [[ $USEME ]]; then
+    psql -U $(whoami) -v benesphere_password=$PASS -f "$(dirname "$0")/user-db-setup.sql"
+  else
+    sudo -u postgres psql -v benesphere_password=$PASS -f "$(dirname "$0")/user-db-setup.sql"
+  fi
   echo 'Creating tables...'
-  sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/setup.sql"
-
+  if [[ $USEME ]]; then
+    psql -U $(whoami) $CONNSTRING -f "$(dirname $0)/setup.sql"
+  else
+    sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/setup.sql"
+  fi
   printf 'Insert mock data? '
   if [[ $QUICK ]] || _yes_no; then
     echo 'Inserting mock data...'
-    sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/mockdata.sql"
+    if [[ $USEME ]]; then
+      psql -U $(whoami) $CONNSTRING -f "$(dirname $0)/mockdata.sql"
+    else
+      sudo -u postgres psql $CONNSTRING -f "$(dirname $0)/mockdata.sql"
+    fi
   fi
 
   echo 'Setting up permissions for benesphere user.'
@@ -241,10 +258,18 @@ EOF
 
   mkdir -p $BACKEND_ROOT/.benesphere_db
 
-  echo -e "sudo -u postgres psql '$USR_CONNSTRING'" >$BACKEND_ROOT/.benesphere_db/login.sh
+  if [[ $USEME ]]; then
+    echo -e "psql -U $(whoami) '$USR_CONNSTRING'" >$BACKEND_ROOT/.benesphere_db/login.sh
+  else
+    echo -e "sudo -u postgres psql '$USR_CONNSTRING'" >$BACKEND_ROOT/.benesphere_db/login.sh
+  fi
   echo "Created login script for benesphere at $(realpath $BACKEND_ROOT/.benesphere_db/login.sh)"
 
-  echo -e "sudo -u postgres psql '$CONNSTRING'" >$BACKEND_ROOT/.benesphere_db/login-sudo.sh
+  if [[ $USEME ]]; then
+    echo -e "psql -U $(whoami) '$CONNSTRING'" >$BACKEND_ROOT/.benesphere_db/login-sudo.sh
+  else
+    echo -e "sudo -u postgres psql '$CONNSTRING'" >$BACKEND_ROOT/.benesphere_db/login-sudo.sh
+  fi
   echo "Created login script for benesphere_sudo at $(realpath $BACKEND_ROOT/.benesphere_db/login-sudo.sh)"
 }
 

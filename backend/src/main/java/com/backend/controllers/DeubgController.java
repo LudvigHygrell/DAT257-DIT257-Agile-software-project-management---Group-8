@@ -1,0 +1,65 @@
+package com.backend.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.backend.ApplicationProperties;
+import com.backend.database.debug.MockUserUtils;
+import com.backend.jwt.JwtUtil;
+import com.backend.jwt.user.UserDetail;
+import com.backend.jwt.user.UserDetailService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
+/**
+ * Controller for endpoints that are only available during the debug build. 
+ */
+@RestController
+@RequestMapping("/api/debug")
+public class DeubgController {
+    
+    @Autowired
+    private MockUserUtils mockUserUtils;
+
+    @Autowired
+    private UserDetailService userDetailService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private ApplicationProperties properties;
+
+    /**
+     * Logs in (and registeres if not present) a mock user that can be used to debug endpoint functions.
+     * @return Same as /api/users/login
+     */
+    @GetMapping("/mock/login")
+    public ResponseEntity<JsonNode> loginMockUser() {
+
+        if (properties.inRelease()) {
+            return ResponseEntity.status(403).body(JsonNodeFactory.instance.objectNode()
+                .put("message", "Debug build is disabled"));
+        }
+
+        String jwt;
+        try {
+            mockUserUtils.ensureMockUserRegistered();
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(JsonNodeFactory.instance.objectNode()
+                .put("message", "Failed to register mock user."));
+        }
+        try {
+            UserDetail details = (UserDetail)userDetailService.loadUserByUsername(MockUserUtils.MOCK_USER_USERNAME);
+            jwt = jwtUtil.generateToken(details);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body(JsonNodeFactory.instance.objectNode()
+                .put("message", "Failed to authenticate mock user."));
+        }
+        return ResponseEntity.ok().body(JsonNodeFactory.instance.objectNode()
+            .put("token", jwt));
+    }
+}
