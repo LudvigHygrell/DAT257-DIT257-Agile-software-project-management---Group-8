@@ -2,35 +2,38 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080/api";
 
-/**
- * Generic API request wrapper using axios.
- */
-async function apiRequest(endpoint, method = "GET", body = null, token = null) {
-  const headers = { "Content-Type": "application/json" };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+// ==================== AXIOS INSTANCE ====================
 
-  try {
-    const response = await axios({
-      url: `${API_BASE_URL}${endpoint}`,
-      method,
-      headers,
-      data: body,
-    });
-    return response.data;
-  } catch (error) {
-    console.error(`API request to ${endpoint} failed:`, error);
-    if (error.response) {
-      throw new Error(error.response.data?.message || error.response.data || "Unknown server error");
-    } else {
-      throw new Error("Network error");
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Automatically add token from localStorage
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
-  }
-}
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-/**
- * Builds a properly structured query object for filtering, sorting, and pagination.
- * This matches the backend’s expected schema for advanced queries.
- */
+// Optional global error handler
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error);
+    return Promise.reject(error);
+  }
+);
+
+// ==================== HELPER FUNCTIONS ====================
+
 export function buildQuery({
   first = 0,
   max_count = 50,
@@ -38,85 +41,58 @@ export function buildQuery({
   sorting = null,
 } = {}) {
   const query = { first, max_count };
-
-  if (filters && filters.length > 0) query.filters = filters;
-  if (sorting && sorting.field) query.sorting = sorting;
-
+  if (filters?.length > 0) query.filters = filters;
+  if (sorting?.field) query.sorting = sorting;
   return query;
 }
 
-/**
- * Builds a single filter object.
- * 
- * @param {string} filter - One of: less|greater|equal|like|not|or|and
- * @param {string} [field] - The field name to filter on
- * @param {*} [value] - The value for comparison filters
- * @param {Array} [arguments_] - Optional sub-filters for logical filters (and/or/not)
- */
 export function createFilter({ filter, field = null, value = null, arguments_ = [] }) {
   const obj = { filter };
   if (field) obj.field = field;
   if (value !== null) obj.value = value;
-  if (arguments_ && arguments_.length > 0) obj.arguments = arguments_;
+  if (arguments_?.length > 0) obj.arguments = arguments_;
   return obj;
 }
 
-//
 // ==================== USER ENDPOINTS ====================
-//
+
 export const UserAPI = {
-  login: (credentials) => apiRequest("/users/login", "GET", credentials),
-
-  create: (userData) => apiRequest("/users/create", "POST", userData),
-
-  changePassword: (data) => apiRequest("/users/change_password", "PUT", data),
-
-  resetPassword: (data) => apiRequest("/users/reset_password", "PUT", data),
-
-  changeEmail: (data) => apiRequest("/users/change_email", "PUT", data),
-
-  getActivity: (data) => apiRequest("/users/get_activity", "GET", data),
-
-  remove: (data) => apiRequest("/users/remove", "DELETE", data),
+  login: (credentials) => api.post("/users/login", credentials),
+  create: (userData) => api.post("/users/create", userData),
+  changePassword: (data) => api.put("/users/change_password", data),
+  resetPassword: (data) => api.put("/users/reset_password", data),
+  changeEmail: (data) => api.put("/users/change_email", data),
+  getActivity: (data) => api.post("/users/get_activity", data),
+  remove: (data) => api.delete("/users/remove", { data }),
 };
 
-//
 // ==================== CHARITY ENDPOINTS ====================
-//
+
 export const CharityAPI = {
-  listCharities: (query) => apiRequest("/charities/list", "GET", query),
-
-  getCharity: (orgId) => apiRequest("/charities/get", "GET", { orgId }),
-
-  vote: (data) => apiRequest("/charities/vote", "POST", data),
-
-  editVote: (data) => apiRequest("/charities/edit_vote", "PUT", data),
-
-  removeVote: (data) => apiRequest("/charities/remove_vote", "DELETE", data),
-
-  pauseCharity: (data) => apiRequest("/charities/pause", "POST", data),
-
-  resumeCharity: (data) => apiRequest("/charities/resume", "DELETE", data),
-
-  getPaused: () => apiRequest("/charities/get_paused", "GET"),         
+  listCharities: (query) => api.post("/charities/list", query),
+  getCharity: (orgId) => api.post("/charities/get", { orgId }),
+  vote: (data) => api.post("/charities/vote", data),
+  editVote: (data) => api.put("/charities/edit_vote", data),
+  removeVote: (data) => api.delete("/charities/remove_vote", { data }),
+  pauseCharity: (data) => api.post("/charities/pause", data),
+  resumeCharity: (data) => api.post("/charities/resume", data),
+  getPaused: () => api.get("/charities/get_paused"),
 };
 
-//
 // ==================== COMMENT ENDPOINTS ====================
-//
+
 export const CommentAPI = {
-  listComments: (query) => apiRequest("/comments/list", "GET", query),   // query = { first, max_count, filters, sorting }
+  listComments: (query) => api.post("/comments/list", query),       // query = { first, max_count, filters, sorting }
 
-  addComment: (data) => apiRequest("/comments/add", "POST", data),         // data = { text, charity, name }
+  addComment: (data) => api.post("/comments/add", data),            // data = { text, charity, name }
 
-  removeComment: (data) => apiRequest("/comments/remove", "DELETE", data),      // data = { commentId, charityId } 
+  removeComment: (data) => api.delete("/comments/remove", { data }), // data = { commentId, charityId }
 
-  blameComment: (data) => apiRequest("/comments/blame", "POST", data),        // data = { commentId, charityId reason }
+  blameComment: (data) => api.post("/comments/blame", data),        // data = { commentId, charityId, reason }
 };
 
-//
 // ==================== EXPORT ALL ====================
-//
+
 const API = {
   UserAPI,
   CharityAPI,
@@ -126,3 +102,4 @@ const API = {
 };
 
 export default API;
+export { api };
