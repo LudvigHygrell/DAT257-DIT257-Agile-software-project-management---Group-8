@@ -53,9 +53,9 @@ function CharityPage({ charities }) {
   const getSortedComments = () => {
   return [...comments].sort((a, b) => {
     switch (sortOrder) {
-      case "newest":
+      case "newest": "descending"
         return new Date(b.date) - new Date(a.date);
-      case "oldest":
+      case "oldest": "ascending"
         return new Date(a.date) - new Date(b.date);
       default:
         return 0; // no sorting
