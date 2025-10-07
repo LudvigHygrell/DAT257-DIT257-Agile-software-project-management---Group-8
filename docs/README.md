@@ -41,4 +41,13 @@ by running the command: `git pull --ff-only`
 
 #### rebase
 
-The second way of merging your work with the work on the remote, is to _rebase_, meaning perform the 
+The second way of merging your work with the work on the remote, is to _rebase_. Rebase is just another form of _merge_ that
+instead of starting a new commit for the merge itself, `git rebase` will try to merge your commit history into the remote branch.
+This means that the branch tree itself is cleaner, however it also means it is riskier, as it overwrites history. Changes made by
+`git rebase` can therefore be _**unrecoverable**_ in some instances.
+
+It is still however recommended to use `git pull --rebase` (`git fetch` + `git rebase`) instead of merging the two histories using
+`git merge` because it keeps the history cleaner.
+
+`git rebase` is just basically another form of `git merge` meaning you will need to resolve merge conflicts. These are typically
+easiest to manage through your IDE, however you can also manage them through git by
