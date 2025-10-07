@@ -44,10 +44,52 @@ by running the command: `git pull --ff-only`
 The second way of merging your work with the work on the remote, is to _rebase_. Rebase is just another form of _merge_ that
 instead of starting a new commit for the merge itself, `git rebase` will try to merge your commit history into the remote branch.
 This means that the branch tree itself is cleaner, however it also means it is riskier, as it overwrites history. Changes made by
-`git rebase` can therefore be _**unrecoverable**_ in some instances.
+`git rebase` can therefore be _**unrecoverable**_ in some instances (mostly a problem when rebasing from external branches).
 
 It is still however recommended to use `git pull --rebase` (`git fetch` + `git rebase`) instead of merging the two histories using
 `git merge` because it keeps the history cleaner.
 
 `git rebase` is just basically another form of `git merge` meaning you will need to resolve merge conflicts. These are typically
-easiest to manage through your IDE, however you can also manage them through git by
+easiest to manage through your IDE, however you can also manage them through git by manually staging the changes you want and
+(`git add`) and then running `git rebase --continue`.
+
+You can always abort a conflicting rebase using `git rebase --abort`. If the rebase continues without prompting, it means the merge
+could occur without conflict, meaning you should have nothing to worry about.
+
+## Testing
+
+When testing, it is important to remember that the purpose of the test is to prove that the application behaves the way it is expected
+to behave. Therefore it is important that tests are written with that idea in mind, as tests that do the opposite often cause devs
+to make wrong assuptions about the state of the application.
+
+### Unit tests - design philosophy
+
+Each test should be small, and predictable. Having to debug a test is not an ideal circumstance, as it means that not only do you not
+know the state of the application, the tool used to test the applications ready-state is faulty. If you can, write the test for only
+a single small case, and write it to be only a few lines long.
+
+Unit tests are also run by default when building the project, so it is important that the test is _reproducible_. That means that
+for the next build of the application, given that the code the unit test tested is the same, the test should always show the same
+result as the previous run.
+
+Unit tests can be thought of as a part of the build process itself. Should the test fail, it should be treated in the same way a
+compilation error is treated: refactor the code until the test passes.
+
+### Integration testing
+
+Integration testing is the joint test of a group of components in the application. This is typically done as a test that can be
+separately launched whenever a certain real-time aspect of the application is to be tested.
+
+Integration tests can be longer than unit tests, and may require specific setups, but the quality of the test is still important.
+If an integration test fails, that should tell us that the application is not ready for release, not that the test is faulty. For
+this reason, it is recommended that the tests start off simple, and grow in complexity as more and more aspects of the application
+are ready for release.
+
+In general, you should only integration test code that has been unit tested, and complex integration tests should only be run on
+code that has been integration tested using simple tests.
+
+### System testing
+
+System testing is testing the system as a whole. This will typically be done last, and consists of running the application in it's
+entirety and testing all aspects at once. For us, this will be launching the front-end and back-end at once and attempting to run the
+entire site through a browser on the local machine.
