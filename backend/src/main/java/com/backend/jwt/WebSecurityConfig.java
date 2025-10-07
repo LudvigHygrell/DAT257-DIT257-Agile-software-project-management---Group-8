@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.backend.ApplicationProperties;
+
 /**
  * Security configuration for incoming requests.
  */
@@ -26,6 +28,9 @@ public class WebSecurityConfig {
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
+
+    @Autowired
+    private ApplicationProperties properties;
 
     private final Logger log = LoggerFactory.getLogger(WebSecurityConfig.class);
 
@@ -38,11 +43,20 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(authorize -> authorize // Authenticate all but create and login
-                    .requestMatchers("/api/users/login").permitAll()
-                    .requestMatchers("/api/users/create").permitAll()
-                    .requestMatchers("/api/email/confirm/**").permitAll()
-                    .anyRequest().authenticated())
+            .authorizeHttpRequests(authorize -> {
+                    authorize // Authenticate all but create and login
+                        .requestMatchers("/api/users/login").permitAll()
+                        .requestMatchers("/api/users/create").permitAll()
+                        .anyRequest().authenticated();
+                    
+                    if (properties.getEmailProperties().isVerified()) {
+                        authorize.requestMatchers("/api/email/confirm/**").permitAll();
+                    }
+
+                    if (properties.inDebug()) {
+                        authorize.requestMatchers("/api/debug/**").permitAll();
+                    }
+                })
             .sessionManagement(session -> session // Use stateless sessions
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exceptionHandling -> // Report denied access to log output

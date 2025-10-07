@@ -8,6 +8,7 @@ import java.util.Base64;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
+import com.backend.ApplicationProperties;
 import com.backend.email.EmailConfirmations;
 import com.backend.tests.ResourceLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -38,6 +38,9 @@ public class MockUserLoginTest {
   @Autowired
   private MockMvc mockMvc;
 
+  @Autowired
+  private ApplicationProperties properties;
+
   /**
    * Validate that we can register, log in and delete a user.
    */
@@ -55,7 +58,7 @@ public class MockUserLoginTest {
 
     // Manual confirmation override
     //
-    {
+    if (properties.getEmailProperties().isVerified()) {
         StringBuilder confirmation = new StringBuilder("/api/email/confirm/");
         confirmation
             .append(new String(Base64.getUrlEncoder().encode("mock.user99@localhost".getBytes())))
