@@ -125,7 +125,7 @@ public abstract class JsonToFilterConverter {
         if (json.has("max_count"))
             maxResults = json.get("max_count").asInt();
 
-        limits = new Limits(start, maxResults);
+        limits = new Limits(maxResults, start);
         
         if (json.has("filters")) {
             return query.runQuery(filterFromJson(query.getFilterBuilder(), json.get("filters")), order, limits);

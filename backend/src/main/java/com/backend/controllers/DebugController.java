@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  */
 @RestController
 @RequestMapping("/api/debug")
-public class DeubgController {
+public class DebugController {
     
     @Autowired
     private MockUserUtils mockUserUtils;

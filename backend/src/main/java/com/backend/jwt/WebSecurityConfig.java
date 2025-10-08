@@ -47,7 +47,7 @@ public class WebSecurityConfig {
                     authorize // Authenticate all but create and login
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/create").permitAll()
-                        .anyRequest().authenticated();
+                        .requestMatchers("/api/charities/**").permitAll();
                     
                     if (properties.getEmailProperties().isVerified()) {
                         authorize.requestMatchers("/api/email/confirm/**").permitAll();
@@ -56,6 +56,7 @@ public class WebSecurityConfig {
                     if (properties.inDebug()) {
                         authorize.requestMatchers("/api/debug/**").permitAll();
                     }
+                    authorize.anyRequest().authenticated();
                 })
             .sessionManagement(session -> session // Use stateless sessions
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
