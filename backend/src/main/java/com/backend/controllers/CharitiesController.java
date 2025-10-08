@@ -1,5 +1,19 @@
 package com.backend.controllers;
 
+import java.util.Base64;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.backend.database.adapters.CharitiesAdapter;
 import com.backend.database.entities.Charity;
 import com.backend.database.entities.CharityData;
@@ -13,13 +27,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
-import java.util.Base64;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/charities")
@@ -78,7 +85,17 @@ public class CharitiesController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<JsonNode> get(@RequestBody JsonNode json) {
+    public ResponseEntity<JsonNode> get(@RequestParam(defaultValue = "", name = "query") String userQuery) {
+
+        JsonNode json;
+        try {
+            json = new ObjectMapper().readTree(
+            new String(Base64.getUrlDecoder().decode(userQuery.getBytes())));
+        } catch (Exception ex) {
+            return ResponseEntity
+                .status(422).body(jb.objectNode()
+                    .put("message", "Expecting json encoded as base64 as the query parameter."));
+        }
         if (!json.has("identity")) {
             return ResponseEntity.badRequest().body(
                 jb.objectNode().put("message", "Missing Org ID"));
