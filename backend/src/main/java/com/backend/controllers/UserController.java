@@ -1,5 +1,6 @@
 package com.backend.controllers;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.ApplicationProperties;
@@ -30,6 +32,7 @@ import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -78,7 +81,17 @@ public class UserController {
      * <p>200 If all went well, along with JWT data</p>
      */
     @GetMapping("/login")
-    public ResponseEntity<?> login(@RequestBody JsonNode json) {
+    public ResponseEntity<?> login(@RequestParam(defaultValue = "", name = "query") String userQuery) {
+
+        JsonNode json;
+        try {
+            json = new ObjectMapper().readTree(
+            new String(Base64.getUrlDecoder().decode(userQuery.getBytes())));
+        } catch (Exception ex) {
+            return ResponseEntity
+                .status(422).body("Expecting json encoded as base64 as the query parameter.");
+        }
+
         if (!json.has("username") && !json.has("email"))
             return ResponseEntity.status(400).body("Missing username or email");
         if (!json.has("password"))
@@ -304,8 +317,19 @@ public class UserController {
      * <p>500 If there was an internal server error</p>
      */
     @GetMapping("/get_activity")
-    public ResponseEntity<JsonNode> getActivity(@RequestBody JsonNode json) {
+    public ResponseEntity<JsonNode> getActivity(@RequestParam(defaultValue = "", name = "query") String userQuery) {
+
         JsonNodeFactory factory = JsonNodeFactory.instance;
+        JsonNode json;
+        try {
+            json = new ObjectMapper().readTree(
+            new String(Base64.getUrlDecoder().decode(userQuery.getBytes())));
+        } catch (Exception ex) {
+            return ResponseEntity
+                .status(422).body(factory.objectNode()
+                    .put("message", "Expecting json encoded as base64 as the query parameter."));
+        }
+
         ObjectNode ret_node = factory.objectNode();
 
         if (!json.has("username")) {

@@ -6,6 +6,7 @@ import com.backend.database.filtering.FilteredQuery;
 import com.backend.database.filtering.JsonToFilterConverter;
 import com.backend.jwt.user.UserUtil;
 
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import jakarta.persistence.EntityManager;
@@ -54,11 +56,21 @@ public class CommentsController {
     }
 
     @GetMapping("/list")
-    @SuppressWarnings("deprecation")
-    public ResponseEntity<JsonNode> list(@RequestBody JsonNode json) {
+    public ResponseEntity<JsonNode> list(@RequestParam(defaultValue = "", name = "query") String userQuery) {
+        
+        JsonNode json;
+        try {
+            json = new ObjectMapper().readTree(
+            new String(Base64.getUrlDecoder().decode(userQuery.getBytes())));
+        } catch (Exception ex) {
+            return ResponseEntity
+                .status(422).body(jb.objectNode()
+                    .put("message", "Expecting json encoded as base64 as the query parameter."));
+        }
+
         if (!json.isObject())
             return ResponseEntity.badRequest().body(
-                jb.objectNode().put("message", jb.textNode("Expected a Json object.")));
+                jb.objectNode().set("message", jb.textNode("Expected a Json object.")));
         
         List<Comment> results;
         try {
