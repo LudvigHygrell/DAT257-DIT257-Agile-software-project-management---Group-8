@@ -1,6 +1,5 @@
 package com.backend.controllers;
 
-import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import com.backend.database.filtering.JsonToFilterConverter;
 import com.backend.database.repositories.CharityDataRepository;
 import com.backend.jwt.user.UserUtil;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import jakarta.persistence.EntityManager;
@@ -41,20 +39,11 @@ public class CharitiesController {
     @Autowired
     private CharityDataRepository charityData;
 
-    private JsonNodeFactory jb = JsonNodeFactory.instance;
+    private final JsonNodeFactory jb = JsonNodeFactory.instance;
 
-    @GetMapping("/list")
-    public ResponseEntity<JsonNode> list(@RequestParam(defaultValue = "", name = "query") String userQuery) {
+    @PostMapping("/list")
+    public ResponseEntity<JsonNode> list(@RequestBody JsonNode json) {
 
-        JsonNode json;
-        try {
-            json = new ObjectMapper().readTree(
-            new String(Base64.getUrlDecoder().decode(userQuery.getBytes())));
-        } catch (Exception ex) {
-            return ResponseEntity
-                .status(422).body(jb.objectNode()
-                    .put("message", "Expecting json encoded as base64 as the query parameter."));
-        }
         if (!json.isObject())
             return ResponseEntity.badRequest().body(
                 jb.objectNode().set("message", jb.textNode("Expected a Json object.")));
@@ -85,23 +74,10 @@ public class CharitiesController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<JsonNode> get(@RequestParam(defaultValue = "", name = "query") String userQuery) {
+    public ResponseEntity<JsonNode> get(@RequestParam(defaultValue = "", name = "charity") String orgId) {
 
-        JsonNode json;
         try {
-            json = new ObjectMapper().readTree(
-            new String(Base64.getUrlDecoder().decode(userQuery.getBytes())));
-        } catch (Exception ex) {
-            return ResponseEntity
-                .status(422).body(jb.objectNode()
-                    .put("message", "Expecting json encoded as base64 as the query parameter."));
-        }
-        if (!json.has("identity")) {
-            return ResponseEntity.badRequest().body(
-                jb.objectNode().put("message", "Missing Org ID"));
-        }
-        try {
-            Charity charity = charitiesAdapter.get(json.get("identity").asText());
+            Charity charity = charitiesAdapter.get(orgId);
             charitiesAdapter.addSearchEntry(charity);
             return ResponseEntity.ok()
                 .body(jb.objectNode()

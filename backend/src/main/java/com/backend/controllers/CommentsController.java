@@ -1,20 +1,21 @@
 package com.backend.controllers;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.backend.database.adapters.CommentsAdapter;
 import com.backend.database.entities.Comment;
 import com.backend.database.filtering.FilteredQuery;
 import com.backend.database.filtering.JsonToFilterConverter;
 import com.backend.jwt.user.UserUtil;
-
-import java.util.Base64;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import jakarta.persistence.EntityManager;
@@ -55,18 +56,8 @@ public class CommentsController {
         return ResponseEntity.status(500).body("Error posting comment");
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<JsonNode> list(@RequestParam(defaultValue = "", name = "query") String userQuery) {
-        
-        JsonNode json;
-        try {
-            json = new ObjectMapper().readTree(
-            new String(Base64.getUrlDecoder().decode(userQuery.getBytes())));
-        } catch (Exception ex) {
-            return ResponseEntity
-                .status(422).body(jb.objectNode()
-                    .put("message", "Expecting json encoded as base64 as the query parameter."));
-        }
+    @PostMapping("/list")
+    public ResponseEntity<JsonNode> list(@RequestBody JsonNode json) {
 
         if (!json.isObject())
             return ResponseEntity.badRequest().body(

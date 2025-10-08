@@ -3,9 +3,9 @@ package com.backend.controllers;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.database.entities.Comment;
@@ -34,16 +34,9 @@ public class UserActivityController {
 
     private final JsonNodeFactory factory = JsonNodeFactory.instance;
 
-    private <T extends GetMappedEntity> ResponseEntity<JsonNode> applyQuery(String userQuery, Class<T> clazz) {
+    private <T extends GetMappedEntity> ResponseEntity<JsonNode> applyQuery(JsonNode json, Class<T> clazz) {
 
         String userField = ControllerHelper.getUserColumnName(clazz).orElseThrow(); // Should not throw, as long as you use it carefully
-
-        JsonNode json;
-        try {
-            json = ControllerHelper.getJsonArguments(userQuery).orElseThrow();
-        } catch (Exception ex) {
-            return ControllerHelper.messageJsonResponse(422, "Expected query as base64url encoded JSON");
-        }
 
         FilteredQuery<T> query = new FilteredQuery<>(entityManager, clazz);
         List<T> results = JsonToFilterConverter.runQueryFromJson(query, json.get("query"), 
@@ -56,24 +49,24 @@ public class UserActivityController {
     /**
      * Lists comments made by this user.
      */
-    @GetMapping("comments")
-    public ResponseEntity<JsonNode> comments(@RequestParam(defaultValue = "", name = "query") String userQuery) {
-        return applyQuery(userQuery, Comment.class);
+    @PostMapping("comments")
+    public ResponseEntity<JsonNode> comments(@RequestBody JsonNode json) {
+        return applyQuery(json, Comment.class);
     }
 
     /**
      * Lists comment blamed by user.
      */
-    @GetMapping("comment_blame")
-    public ResponseEntity<JsonNode> commentBlame(@RequestParam(defaultValue = "", name = "query") String userQuery) {
-        return applyQuery(userQuery, CommentBlame.class);
+    @PostMapping("comment_blame")
+    public ResponseEntity<JsonNode> commentBlame(@RequestBody JsonNode json) {
+        return applyQuery(json, CommentBlame.class);
     }
 
     /**
      * Lists charities searched by user. 
      */
-    @GetMapping("searched_charities")
-    public ResponseEntity<JsonNode> searchedCharities(@RequestParam(defaultValue = "", name = "query") String userQuery) {
-        return applyQuery(userQuery, SearchedCharity.class);
+    @PostMapping("searched_charities")
+    public ResponseEntity<JsonNode> searchedCharities(@RequestBody JsonNode json) {
+        return applyQuery(json, SearchedCharity.class);
     }
 }
