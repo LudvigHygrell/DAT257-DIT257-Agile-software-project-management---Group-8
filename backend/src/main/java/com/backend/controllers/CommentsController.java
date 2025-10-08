@@ -71,7 +71,7 @@ public class CommentsController {
         }
         return ResponseEntity.ok().body(jb.objectNode()
             .put("message", "success")
-            .put("value", jb.arrayNode()
+            .set("value", jb.arrayNode()
                 .addAll(results.stream()
                     .map(c -> c.toJson()).toList())));
     }

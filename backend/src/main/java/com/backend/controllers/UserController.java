@@ -66,13 +66,8 @@ public class UserController {
     @Autowired
     private EmailService emailService;
 
-    private final ApplicationProperties props;
-
-    public UserController(ApplicationProperties props) {
-        this.props = props;
-        assert null != props;
-        assert null != props.getEmailProperties();
-    }
+    @Autowired
+    private ApplicationProperties props;
 
     /**
      * A basic method for logging into a user. Varifies that the username and password checks against the database. 

@@ -79,14 +79,14 @@ _call_endpoint() {
 
     local JSON=$(_args2json $@)
     local CONTENT_TYPE="Content-Type: application/json"
-    local AUTHORIZATION="Authorization: "
+    local AUTHORIZATION=()
 
-    if [[ $BENESPHERE_JWT ]]; then
-        AUTHORIZATION="Authorization: Bearer $BENESPHERE_JWT"
+    if [[ $BENESPHERE_JWT ]] && [[ $BENESPHERE_JWT != 'null' ]]; then
+        AUTHORIZATION="-H \"Authorization: Bearer $BENESPHERE_JWT\""
     fi
 
     local HTTP_CODE
-    local CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{http_code}" -H "$CONTENT_TYPE" -H "$AUTHORIZATION" -d "$JSON" &> /dev/stdout)
+    local CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{http_code}" -H "$CONTENT_TYPE" $AUTHORIZATION -d "$JSON" &> /dev/stdout)
 
     CONTENTS=(${CONTENTS[@]})
     HTTP_CODE=${CONTENTS[-1]}

@@ -2,8 +2,10 @@ package com.backend.controllers;
 
 import com.backend.database.adapters.CharitiesAdapter;
 import com.backend.database.entities.Charity;
+import com.backend.database.entities.CharityData;
 import com.backend.database.filtering.FilteredQuery;
 import com.backend.database.filtering.JsonToFilterConverter;
+import com.backend.jwt.user.UserUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RestController
 @RequestMapping("/api/charities")
 public class CharitiesController {
 
@@ -34,25 +37,32 @@ public class CharitiesController {
             return ResponseEntity.badRequest().body(
                 jb.objectNode().put("message", jb.textNode("Expected a Json object.")));
         
-        List<Charity> results;
+        List<CharityData> results;
         try {
-            FilteredQuery<Charity> query = new FilteredQuery<>(entityManager, Charity.class);
+            FilteredQuery<CharityData> query = new FilteredQuery<>(entityManager, CharityData.class);
             results = JsonToFilterConverter.runQueryFromJson(query, json);
-            charitiesAdapter.addSkimSearchEntries(results);
+
+            if (UserUtil.isAuthenticated()) {
+                charitiesAdapter.addSkimSearchEntries(results.stream().map(c -> new Charity(c.getCharity())).toList());
+            }
         } catch (Exception ex) {
             return ResponseEntity.status(500)
                 .body(jb.objectNode()
                 .put("message", "Error fetching results."));
         }
-        return ResponseEntity.ok().body(jb.objectNode()
+
+        JsonNode values = jb.arrayNode()
+            .addAll(results.stream()
+                .map(c -> c.toJson()).toList());
+
+        JsonNode result = jb.objectNode()
             .put("message", "success")
-            .put("value", jb.arrayNode()
-                .addAll(results.stream()
-                    .map(c -> c.toJson()).toList())));
+            .set("value", values);
+
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("/get")
-    @SuppressWarnings("deprecation")
     public ResponseEntity<JsonNode> get(@RequestBody JsonNode json) {
         if (!json.has("identity")) {
             return ResponseEntity.badRequest().body(
@@ -64,7 +74,7 @@ public class CharitiesController {
             return ResponseEntity.ok()
                 .body(jb.objectNode()
                     .put("message", "success")
-                    .put("value", charity.toJson()));
+                    .set("value", charity.toJson()));
         } catch (Exception ex) {
             return ResponseEntity.status(500)
                 .body(jb.objectNode().put("message", "Error fetching charity."));

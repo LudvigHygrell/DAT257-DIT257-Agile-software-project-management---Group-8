@@ -31,10 +31,10 @@ public class CharityData {
     @Column(name="positivescore")
     private long positiveScore;
 
-    @Column(name="negativeScore")
+    @Column(name="negativescore")
     private long negativeScore;
 
-    @Column(name="totalScore")
+    @Column(name="totalscore")
     private long totalScore;
 
     protected CharityData() {}
