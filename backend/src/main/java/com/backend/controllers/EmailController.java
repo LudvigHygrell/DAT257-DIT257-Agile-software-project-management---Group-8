@@ -2,13 +2,14 @@ package com.backend.controllers;
 
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.config.EmailProperties;
+import com.backend.ApplicationProperties;
 import com.backend.email.EmailConfirmations;
 
 /**
@@ -21,11 +22,8 @@ import com.backend.email.EmailConfirmations;
 @RequestMapping("/api/email")
 public class EmailController {
 
-    private final EmailProperties emailProperties;
-    
-    public EmailController(EmailProperties props) {
-        emailProperties = props;
-    }
+    @Autowired
+    private ApplicationProperties props;
 
     /**
      * Accepts email confirmation links.
@@ -38,7 +36,7 @@ public class EmailController {
         @PathVariable(value="email", required=true) String email,
         @PathVariable(value="confirmCode", required=true) Long confirmCode) {
 
-        if (!emailProperties.isVerified())
+        if (!props.getEmailProperties().isVerified())
             return ResponseEntity.status(403).body("Email host is disabled.");
 
         if (null == email)

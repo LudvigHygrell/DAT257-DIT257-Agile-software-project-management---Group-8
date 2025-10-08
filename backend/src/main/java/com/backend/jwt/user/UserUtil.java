@@ -2,6 +2,11 @@ package com.backend.jwt.user;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.security.core.Authentication;
 
 /**
@@ -25,5 +30,16 @@ public abstract class UserUtil {
         // returning nothing clear by returning value of type Optional or throw an exception.
         //
         throw new RuntimeException("Failed to get named user authentication.");
+    }
+
+    public static boolean isAuthenticated() {
+
+        RequestAttributes  attrs = RequestContextHolder.getRequestAttributes();
+        if (!(attrs instanceof ServletRequestAttributes)) {
+            return false;
+        }
+        HttpServletRequest req = ((ServletRequestAttributes)attrs).getRequest();
+        String auth = req.getHeader("Authorization");
+        return auth != null && auth.startsWith("Bearer ");
     }
 }

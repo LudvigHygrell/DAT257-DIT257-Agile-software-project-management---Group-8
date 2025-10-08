@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS CommentScores(
             ON DELETE SET DEFAULT,
     upDown BOOLEAN
         NOT NULL,
-    PRIMARY KEY (comment, charity),
+    PRIMARY KEY (comment, charity, scoreUser),
     FOREIGN KEY (comment, charity)
         REFERENCES Comments(commentId, charity)
             ON DELETE CASCADE
@@ -150,6 +150,15 @@ CREATE TABLE IF NOT EXISTS CharityClasses(
         PRIMARY KEY
 );
 
+CREATE TABLE IF NOT EXISTS CharityClassifications(
+    charity TEXT
+        REFERENCES Charities(orgId),
+    class TEXT
+        NOT NULL
+        REFERENCES CharityClasses(className),
+    PRIMARY KEY (charity, class)
+);
+
 CREATE TABLE IF NOT EXISTS CharityInfo(
     charity TEXT
         PRIMARY KEY
@@ -157,15 +166,37 @@ CREATE TABLE IF NOT EXISTS CharityInfo(
             ON DELETE CASCADE,
     humanName TEXT
         NOT NULL UNIQUE,
-    class TEXT
-        NOT NULL
-        REFERENCES CharityClasses(className)
-            ON DELETE CASCADE,
     homePageUrl TEXT
         NOT NULL,
     charityDescriptionFile TEXT
+        NOT NULL,
+    charityImageFile TEXT
         NOT NULL
 );
+
+CREATE OR REPLACE VIEW CharityData AS SELECT
+        ci.charity AS charity,
+        humanName,
+        homePageUrl,
+        charityDescriptionFile,
+        charityImageFile,
+        positiveScore,
+        negativeScore,
+        (positiveScore - negativeScore) AS totalScore
+    FROM
+        (SELECT * FROM CharityInfo) ci
+    INNER JOIN
+        (SELECT COUNT(1) AS positiveScore, charity
+        FROM CharityScores
+            WHERE CharityScores.vote
+            GROUP BY charity) ps
+        ON (ci.charity=ps.charity)
+    INNER JOIN
+        (SELECT COUNT(1) AS negativeScore, charity
+        FROM CharityScores
+            WHERE NOT CharityScores.vote
+            GROUP BY charity) ns
+        ON (ci.charity=ps.charity);
 
 CREATE OR REPLACE VIEW NextCommendId(charity) AS SELECT MAX(commentId)+1
     FROM Comments
