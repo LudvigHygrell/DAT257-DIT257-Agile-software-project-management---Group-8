@@ -89,14 +89,21 @@ _call_endpoint() {
   local CONTENTS
 
   if [[ $METHOD != 'GET' ]]; then
-    CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{http_code}" -H "$CONTENT_TYPE" $AUTHORIZATION -d "$JSON" &>/dev/stdout)
+    CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{response_code}" -H "$CONTENT_TYPE" $AUTHORIZATION -d "$JSON" &>/dev/stdout)
   else
     JSON=$(echo "$JSON" | basenc --base64url)
-    CONTENTS=$(curl "$URL?query=$JSON" -s -w -X "$METHOD" -H "$CONTENT_TYPE" $AUTHORIZATION &>/dev/stdout)
+    CONTENTS=$(curl "$URL?query=$JSON" -s -w "\n%{response_code}" -X "$METHOD" -H "$CONTENT_TYPE" $AUTHORIZATION &>/dev/stdout)
   fi
+
+
+  echo "$CONTENTS"
+  echo ""
+  echo "==========="
+  echo ""
 
   CONTENTS=(${CONTENTS[@]})
   HTTP_CODE=${CONTENTS[-1]}
+
   CONTENTS="${CONTENTS[@]::${#CONTENTS[@]}-1}"
 
   echo "Request: $METHOD $URL"
@@ -106,7 +113,7 @@ _call_endpoint() {
   echo "$CONTENTS"
 
   local JWT=$(echo "$CONTENTS" | jq -r '.token' 2>/dev/null)
-  if [[ $JWT ]]; then
+  if [[ $JWT ]] && [[ $JWT != 'null' ]]; then
     BENESPHERE_JWT=$JWT
     echo "Setting JWT to $BENESPHERE_JWT"
   fi
