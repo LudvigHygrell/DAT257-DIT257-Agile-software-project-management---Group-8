@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
@@ -40,6 +42,9 @@ public class MockUserLoginTest {
 
   @Autowired
   private ApplicationProperties properties;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   /**
    * Validate that we can register, log in and delete a user.
@@ -97,4 +102,21 @@ public class MockUserLoginTest {
             .toPrettyString()))
         .andExpect(status().isOk());
   }
+    @Test
+    public void testLoginWithValidUsernameAndPassword() throws Exception {
+        // Create login JSON
+        Map<String, String> loginData = new HashMap<>();
+        loginData.put("username", "testuser");
+        loginData.put("password", "testpassword");
+
+        // Encode to Base64
+        String jsonString = objectMapper.writeValueAsString(loginData);
+        String base64Query = Base64.getUrlEncoder().encodeToString(jsonString.getBytes());
+
+        // Perform GET request to /login?query=<base64>
+        mockMvc.perform(get("/login")
+                        .param("query", base64Query)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }

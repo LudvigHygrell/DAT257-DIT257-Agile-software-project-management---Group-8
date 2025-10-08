@@ -3,6 +3,7 @@ package com.backend.tests.controllers;
 import com.backend.tests.ResourceLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import org.glassfish.jaxb.core.v2.TODO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,24 +13,22 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.io.IOException;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @Transactional
-
-public class MockCommentTest {
+public class MockCharitiesTest {
     @Autowired
     private MockMvc mockMvc;
-
-    private String jwtToken;
-
+    String jwtToken;
 
     @BeforeEach
     public void setUp() throws Exception {
+
         //TODO We need to be able to create a charity for the database to run tests on
 
         //Register a user
@@ -53,42 +52,41 @@ public class MockCommentTest {
                         .getContentAsString())
                 .get("token").asText();
 
-        // Create a mock comment before each test
-        MvcResult result = mockMvc.perform(post("/api/comments/add")
+    }
+    @Test
+    public void testVoteSuccess() throws Exception {
+        mockMvc.perform(post("/api/charities/vote")
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("add-comment-mock.json").toPrettyString()))
+                        .content(ResourceLoader.loadJson(("vote-success-mock.json")).toPrettyString()))
                 .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(content().string("Vote posted successfully"));
     }
     @Test
-    public void addCommentTest() throws Exception {
-        mockMvc.perform(post("/api/comments/add")
+    public void testVoteMissingCharityField() throws Exception {
+        mockMvc.perform(post("/api/charities/vote")
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("add-comment-mock.json")
-                                .toPrettyString()))
-                .andExpect(status().isOk());
+                        .content(ResourceLoader.loadJson(("vote-missing-charity-mock.json")).toPrettyString()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Missing charity"));
+    }
+    @Test
+    public void testVoteMissingUpField() throws Exception {
+        mockMvc.perform(post("/api/charities/vote")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(ResourceLoader.loadJson(("vote-missing-up-mock.json")).toPrettyString()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Missing up field"));
+    }
 
-    }
+    /**
+     * Test to see if we get an error when trying to vote on a non-existent charity
+     */
     @Test
-    public void removeCommentTest() throws Exception {
-        mockMvc.perform(delete("/api/comments/remove")
-                        .header("Authorization", "Bearer " + jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("remove-comment-mock.json")
-                                .toPrettyString()))
-                .andExpect(status().isOk());
-    }
+    public void testVoteInvalidCharity() throws Exception {
 
-    @Test
-    public void blameCommentTest() throws Exception {
-        mockMvc.perform(post("/api/comments/blame")
-                        .header("Authorization", "Bearer " + jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("blame-comment-mock.json")
-                                .toPrettyString()))
-                .andExpect(status().isOk());
     }
 
 }
