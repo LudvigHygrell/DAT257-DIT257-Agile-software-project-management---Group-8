@@ -4,7 +4,7 @@ import "../styles/CommentSection.css";
 import thumbsUp from "../assets/thumbs-up.png";
 import thumbsDown from "../assets/thumbs-down.png";
 
-import APIService from "../services/APIServiceAxios.js";
+import APIService from "../services/APIService.js";
 import { QueryHelpers } from "../services/QueryHelpers.js";
 
 function CommentSection({ orgId }) {

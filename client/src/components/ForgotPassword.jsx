@@ -53,8 +53,17 @@ function ForgotPassword({ isVisible, onClose, onSwitchToLogin }) {
                 }, 2000);
             }
         } catch (err) {
-            // Display error message to user
-            setError(err.message || 'Failed to reset password. Please try again.');
+            // Handle axios error response
+            if (err.response) {
+                // Server responded with error status
+                setError(err.response.data || 'Failed to reset password. Please try again.');
+            } else if (err.request) {
+                // Request made but no response
+                setError('Network error. Please check your connection.');
+            } else {
+                // Other error
+                setError(err.message || 'Failed to reset password. Please try again.');
+            }
             console.error('Password reset error:', err);
         } finally {
             setLoading(false);

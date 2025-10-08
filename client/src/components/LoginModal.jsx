@@ -29,25 +29,12 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
                 password
             });
 
-            // Parse the response to get the token
-            let token;
-            if (typeof response === 'string') {
-                try {
-                    // Response might be JSON string, try to parse it
-                    const parsed = JSON.parse(response);
-                    token = parsed.token;
-                } catch {
-                    // If parsing fails, response might already be the token
-                    token = response;
-                }
-            } else if (response && response.token) {
-                // Response is already an object
-                token = response.token;
-            }
+            // Axios returns response in response.data
+            const token = response.data.token;
 
-            // Store JWT token in localStorage (or use context/state management)
+            // Store JWT token in localStorage
             if (token) {
-                localStorage.setItem('authToken', token);
+                localStorage.setItem('token', token);  // Must be 'token' to match axios interceptor
                 localStorage.setItem('username', usernameOrEmail);
 
                 console.log('Login successful! Token stored.');
@@ -58,8 +45,17 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
                 throw new Error('No token received from server');
             }
         } catch (err) {
-            // Display error message to user
-            setError(err.message || 'Login failed. Please try again.');
+            // Handle axios error response
+            if (err.response) {
+                // Server responded with error status
+                setError(err.response.data || 'Login failed. Please check your credentials.');
+            } else if (err.request) {
+                // Request made but no response
+                setError('Network error. Please check your connection.');
+            } else {
+                // Other error
+                setError(err.message || 'Login failed. Please try again.');
+            }
             console.error('Login error:', err);
         } finally {
             setLoading(false); // Reset loading state

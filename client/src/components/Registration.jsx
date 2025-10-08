@@ -45,8 +45,17 @@ function Registration({ isVisible, onClose, onSwitchToLogin }) {
             // Switch to login modal
             onSwitchToLogin();
         } catch (err) {
-            // Display error message to user
-            setError(err.message || 'Registration failed. Please try again.');
+            // Handle axios error response
+            if (err.response) {
+                // Server responded with error status
+                setError(err.response.data || 'Registration failed. Please try again.');
+            } else if (err.request) {
+                // Request made but no response
+                setError('Network error. Please check your connection.');
+            } else {
+                // Other error
+                setError(err.message || 'Registration failed. Please try again.');
+            }
             console.error('Registration error:', err);
         } finally {
             setLoading(false); // Reset loading state
