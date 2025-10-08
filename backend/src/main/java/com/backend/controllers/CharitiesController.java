@@ -5,6 +5,7 @@ import com.backend.database.entities.Charity;
 import com.backend.database.entities.CharityData;
 import com.backend.database.filtering.FilteredQuery;
 import com.backend.database.filtering.JsonToFilterConverter;
+import com.backend.database.repositories.CharityDataRepository;
 import com.backend.jwt.user.UserUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -27,6 +28,9 @@ public class CharitiesController {
 
     @Autowired
     private CharitiesAdapter charitiesAdapter;
+
+    @Autowired
+    private CharityDataRepository charityData;
 
     private JsonNodeFactory jb = JsonNodeFactory.instance;
 
@@ -74,7 +78,8 @@ public class CharitiesController {
             return ResponseEntity.ok()
                 .body(jb.objectNode()
                     .put("message", "success")
-                    .set("value", charity.toJson()));
+                    .set("value", 
+                        charityData.getReferenceById(charity.getOrgID()).toJson()));
         } catch (Exception ex) {
             return ResponseEntity.status(500)
                 .body(jb.objectNode().put("message", "Error fetching charity."));
