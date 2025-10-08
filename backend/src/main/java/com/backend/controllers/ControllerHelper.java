@@ -1,23 +1,58 @@
 package com.backend.controllers;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.servlet.HandlerMapping;
 
+import com.backend.interfaces.ThrowingSupplier;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public abstract class ControllerHelper {
 
-    public static <T> ResponseEntity<T> orElseResponse(Supplier<T> attempt, T valueElse) {
+    public static String getRemainingPath(HttpServletRequest request) {
+                
+        String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        String bestMatchPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+
+        AntPathMatcher apm = new AntPathMatcher();
+        String remainingPath = apm.extractPathWithinPattern(bestMatchPattern, path);
+
+        return remainingPath;
+    }
+
+    public static String sanitizePathSuffix(String path) {
+        try {
+            path = URLDecoder.decode(path, StandardCharsets.UTF_8.name())
+                .replace("..", "/")
+                .replace("\\", "/")
+                .replace("~", "/")
+                .replace("$", "/");
+            
+            while (path.contains("//"))
+                path = path.replace("//", "/");
+
+            return path;
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static <T> ResponseEntity<T> orElseResponse(ThrowingSupplier<T> attempt, T valueElse) {
         try {
             return ResponseEntity.ok().body(attempt.get());
         } catch (Exception e) {
@@ -25,7 +60,7 @@ public abstract class ControllerHelper {
         }
     }
     
-    public static <T> ResponseEntity<T> orElseResponse(Supplier<T> attempt, int code, T valueElse) {
+    public static <T> ResponseEntity<T> orElseResponse(ThrowingSupplier<T> attempt, int code, T valueElse) {
         try {
             return ResponseEntity.ok().body(attempt.get());
         } catch (Exception e) {
@@ -33,7 +68,7 @@ public abstract class ControllerHelper {
         }
     }
 
-    public static <T> CompletableFuture<ResponseEntity<T>> orElseFutureResponse(Supplier<T> attempt, T valueElse) {
+    public static <T> CompletableFuture<ResponseEntity<T>> orElseFutureResponse(ThrowingSupplier<T> attempt, T valueElse) {
         try {
             ResponseEntity<T> response = ResponseEntity.ok().body(attempt.get());
             return CompletableFuture.completedFuture(response);
@@ -44,7 +79,7 @@ public abstract class ControllerHelper {
         }
     }
 
-    public static <T> CompletableFuture<ResponseEntity<T>> orElseFutureResponse(Supplier<T> attempt, int code, T valueElse) {
+    public static <T> CompletableFuture<ResponseEntity<T>> orElseFutureResponse(ThrowingSupplier<T> attempt, int code, T valueElse) {
         try {
             ResponseEntity<T> response = ResponseEntity.ok().body(attempt.get());
             return CompletableFuture.completedFuture(response);

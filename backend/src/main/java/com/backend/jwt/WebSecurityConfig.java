@@ -47,7 +47,8 @@ public class WebSecurityConfig {
                     authorize // Authenticate all but create and login
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/create").permitAll()
-                        .requestMatchers("/api/charities/**").permitAll();
+                        .requestMatchers("/api/charities/**").permitAll()
+                        .requestMatchers("/api/files/public/**").permitAll();
                     
                     if (properties.getEmailProperties().isVerified()) {
                         authorize.requestMatchers("/api/email/confirm/**").permitAll();

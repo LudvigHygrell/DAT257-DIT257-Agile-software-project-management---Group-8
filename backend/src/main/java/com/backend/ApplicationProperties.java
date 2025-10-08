@@ -11,6 +11,60 @@ public class ApplicationProperties {
 
     private EmailProperties email;
 
+    private FileProperties file = new FileProperties();
+
+    public static class FileProperties {
+
+        private DirectoryProperties publicDirectories = new DirectoryProperties("public");
+        private DirectoryProperties privateDirectories = new DirectoryProperties("private");
+
+        public static class DirectoryProperties {
+
+            private String writeDirectory = "writeable";
+
+            private String readDirectory = "readable";
+
+            public DirectoryProperties() {}
+
+            public DirectoryProperties(String root) {
+                readDirectory = root + "/readable";
+                writeDirectory = root + "/writeable";
+            }
+
+            public String getWriteDirectory() {
+                return writeDirectory;
+            }
+
+            public String getReadDirectory() {
+                return readDirectory;
+            }
+
+            public void setWriteDirectory(String directory) {
+                writeDirectory = directory;
+            }
+
+            public void setReadDirectory(String directory) {
+                readDirectory = directory;
+            }
+        }
+
+        public DirectoryProperties getPublicDirectories() {
+            return publicDirectories;
+        }
+
+        public DirectoryProperties getPrivateDirectories() {
+            return privateDirectories;
+        }
+
+        public void setPublicDirectories(DirectoryProperties props) {
+            publicDirectories = props;
+        }
+
+        public void setPrivateDirectories(DirectoryProperties props) {
+            privateDirectories = props;
+        }
+    }
+
     public static class EmailProperties {
 
         private String username = "benesphere";
@@ -63,5 +117,17 @@ public class ApplicationProperties {
 
     public boolean inRelease() {
         return !debug;
+    }
+
+    public FileProperties getFileProperties() {
+        return file;
+    }
+
+    public FileProperties getFile() {
+        return file;
+    }
+
+    public void setFile(FileProperties props) {
+        file = props;
     }
 }
