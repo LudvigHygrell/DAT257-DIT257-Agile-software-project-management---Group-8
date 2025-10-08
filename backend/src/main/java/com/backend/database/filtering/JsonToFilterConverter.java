@@ -2,6 +2,7 @@ package com.backend.database.filtering;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -16,8 +17,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @version 1.0
  */
 public abstract class JsonToFilterConverter {
-
-    private JsonToFilterConverter() {}
 
     private static Object jsonValue(JsonNode json) {
         return switch (json.getNodeType()) {
@@ -129,6 +128,47 @@ public abstract class JsonToFilterConverter {
         
         if (json.has("filters")) {
             return query.runQuery(filterFromJson(query.getFilterBuilder(), json.get("filters")), order, limits);
+        }
+        return query.runQuery(order, limits);
+    }
+
+        /**
+     * Translate ordering, limits and filters from the specified json and execute the query.
+     * @param <Entity> Entity type to query.
+     * @param query Query to construct.
+     * @param json The json containing the properties of the json to run.
+     * @param rootFilter Filter to and with all other filters.
+     * @return The list of results.
+     */
+    public static <Entity> List<Entity> runQueryFromJson(
+        FilteredQuery<Entity> query, JsonNode json, 
+        Function<FilterBuilder<Entity>, Filter<Entity>> rootFilterGetter) {
+    
+        assert null != query;
+        assert null != json;
+        assert null != rootFilterGetter;
+
+        Ordering order;
+        Limits limits;
+        order = json.has("sorting") ? Ordering.fromJson(json.get("sorting")) : Ordering.NONE;
+        
+        int start = 0;
+        int maxResults = Integer.MAX_VALUE;
+
+        if (json.has("first"))
+            start = json.get("first").asInt();
+        if (json.has("max_count"))
+            maxResults = json.get("max_count").asInt();
+
+        limits = new Limits(maxResults, start);
+        
+        if (json.has("filters")) {
+            FilterBuilder<Entity> builder = query.getFilterBuilder();
+            return query.runQuery(
+                builder.and(List.of(
+                    rootFilterGetter.apply(builder), 
+                    filterFromJson(builder, json.get("filters")))),
+                order, limits);
         }
         return query.runQuery(order, limits);
     }

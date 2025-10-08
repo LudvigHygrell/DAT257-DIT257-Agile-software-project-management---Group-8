@@ -27,15 +27,31 @@ _ensure_jq_installed() {
 
 _args2json() {
 
-  local ARGLIST=()
-  local i
+  local VALS=()
+  local ARGS=()
+  local INPUT=$@
 
-  for i in $@; do
-    local ARGVALUE=${i#*=}
-    local ARGNAME=${i%%=*}
-    ARGLIST+=" --arg $ARGNAME $ARGVALUE"
+  local JSONVALUERX='([a-zA-Z0-9_]+)=((\{[^}]*\})|("[^"]*")|(\[[^}]*\]+)|([^[:space:]]+))'
+  while [[ $INPUT =~ $JSONVALUERX ]]; do
+    local ARGNAME=${BASH_REMATCH[1]}
+    local ARGVALUE=${BASH_REMATCH[2]}
+
+    INPUT=${INPUT#*"${ARGNAME}=${ARGVALUE}"}
+    ARGS+=( "$ARGNAME" )
+    VALS+=( "$ARGVALUE" )
   done
-  jq -n $ARGLIST '$ARGS.named | map_values(try fromjson catch .)'
+
+  echo '{'
+  local i
+  for i in "${!ARGS[@]}"; do
+    if [[ $i != 0 ]]; then
+      printf ","
+    fi
+    echo ''
+    printf "  \"${ARGS[$i]}\": ${VALS[$i]}"
+  done
+  echo ''
+  echo '}'
 }
 
 _call_endpoint() {
@@ -87,12 +103,14 @@ _call_endpoint() {
 
   local HTTP_CODE
   local CONTENTS
+  local REQBODY="$JSON"
 
   if [[ $METHOD != 'GET' ]]; then
     CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{response_code}" -H "$CONTENT_TYPE" $AUTHORIZATION -d "$JSON" &>/dev/stdout)
   else
     JSON=$(echo "$JSON" | basenc --base64url)
-    CONTENTS=$(curl "$URL?query=$JSON" -s -w "\n%{response_code}" -X "$METHOD" -H "$CONTENT_TYPE" $AUTHORIZATION &>/dev/stdout)
+    URL="$URL?query=$JSON"
+    CONTENTS=$(curl "$URL" -s -w "\n%{response_code}" -X "$METHOD" -H "$CONTENT_TYPE" $AUTHORIZATION &>/dev/stdout)
   fi
 
 
@@ -107,7 +125,7 @@ _call_endpoint() {
   CONTENTS="${CONTENTS[@]::${#CONTENTS[@]}-1}"
 
   echo "Request: $METHOD $URL"
-  echo "Request body: $JSON"
+  echo "Request body: $REQBODY"
   echo "Status: $HTTP_CODE"
   echo "Contents:"
   echo "$CONTENTS"

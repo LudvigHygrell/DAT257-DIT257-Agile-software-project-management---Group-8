@@ -20,8 +20,10 @@ import jakarta.persistence.TemporalType;
 @Entity
 @IdClass(SearchedCharityKey.class)
 @Table(name="searchedcharities")
-public class SearchedCharity {
+public class SearchedCharity implements GetMappedEntity {
     
+    public static final String USER_COLUMN_NAME = "username";
+
     @Id
     @Column(name="username")
     private String username;
@@ -122,6 +124,7 @@ public class SearchedCharity {
     /**
      * Convert a searched charity entry to it's json representation.
      */
+    @Override
     public JsonNode toJson() {
         return JsonNodeFactory.instance.objectNode()
             .put("username", username)

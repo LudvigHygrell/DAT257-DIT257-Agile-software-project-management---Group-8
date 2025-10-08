@@ -174,30 +174,41 @@ CREATE TABLE IF NOT EXISTS CharityInfo(
         NOT NULL
 );
 
-CREATE OR REPLACE VIEW CharityData AS SELECT
+CREATE OR REPLACE VIEW CharityPositiveScores AS SELECT
+    c1.orgId AS charity,
+    COALESCE(SUM(CASE WHEN vote THEN 1 ELSE 0 END), 0) AS score
+    FROM
+        Charities c1
+    LEFT JOIN
+        CharityScores c2 ON (c1.orgId=c2.charity)
+    GROUP BY c1.orgId;
+
+CREATE OR REPLACE VIEW CharityNegativeScores AS SELECT
+    c1.orgId AS charity,
+    COALESCE(SUM(CASE WHEN vote THEN 0 ELSE 1 END), 0) AS score
+    FROM
+        Charities c1
+    LEFT JOIN
+        CharityScores c2 ON (c1.orgId=c2.charity)
+    GROUP BY c1.orgId;
+
+CREATE OR REPLACE VIEW CharityData AS SELECT DISTINCT
         ci.charity AS charity,
         humanName,
         homePageUrl,
         charityDescriptionFile,
         charityImageFile,
-        positiveScore,
-        negativeScore,
-        (positiveScore - negativeScore) AS totalScore
+        cps.score AS positiveScore,
+        cns.score AS negativeScore,
+        (cps.score - cns.score) AS totalScore
     FROM
-        (SELECT * FROM CharityInfo) ci
-    INNER JOIN
-        (SELECT COUNT(1) AS positiveScore, charity
-        FROM CharityScores
-            WHERE CharityScores.vote
-            GROUP BY charity) ps
-        ON (ci.charity=ps.charity)
-    INNER JOIN
-        (SELECT COUNT(1) AS negativeScore, charity
-        FROM CharityScores
-            WHERE NOT CharityScores.vote
-            GROUP BY charity) ns
-        ON (ci.charity=ps.charity);
-
+        CharityInfo ci
+    LEFT JOIN
+        CharityPositiveScores cps
+        ON (ci.charity=cps.charity) 
+    LEFT JOIN
+        CharityNegativeScores cns
+        ON (ci.charity=cns.charity);
 CREATE OR REPLACE VIEW NextCommendId(charity) AS SELECT MAX(commentId)+1
     FROM Comments
     WHERE Comments.charity=charity;

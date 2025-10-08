@@ -1,6 +1,6 @@
 package com.backend.database.entities;
 
-import com.backend.database.entities.keys.*;
+import com.backend.database.entities.keys.CommentBlameKey;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -19,7 +19,9 @@ import jakarta.persistence.Table;
 @Entity
 @IdClass(CommentBlameKey.class)
 @Table(name="commentblame")
-public class CommentBlame {
+public class CommentBlame implements GetMappedEntity {
+
+    public static final String USER_COLUMN_NAME = "reporter";
 
     @Id
     @Column(name="commentid")
@@ -57,6 +59,7 @@ public class CommentBlame {
         this.reason = reason;
     }
 
+    @Override
     public JsonNode toJson() {
         return JsonNodeFactory.instance.objectNode()
             .put("commentId", commentId)

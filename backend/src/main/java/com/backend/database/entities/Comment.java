@@ -3,8 +3,7 @@ package com.backend.database.entities;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-import com.backend.database.entities.keys.*;
-
+import com.backend.database.entities.keys.CommentKey;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +26,9 @@ import jakarta.persistence.TemporalType;
 @Entity
 @IdClass(CommentKey.class)
 @Table(name="comments")
-public class Comment {
+public class Comment implements GetMappedEntity {
+
+    public static final String USER_COLUMN_NAME = "commentuser";
 
     @Id
     @Column(name="charity")
@@ -109,6 +110,7 @@ public class Comment {
         this.commentUser = user;
     }
 
+    @Override
     public JsonNode toJson() {
         return JsonNodeFactory.instance.objectNode()
             .put("charity", charity)

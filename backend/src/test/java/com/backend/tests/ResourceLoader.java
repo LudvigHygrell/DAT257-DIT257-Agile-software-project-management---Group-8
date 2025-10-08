@@ -1,10 +1,11 @@
 package com.backend.tests;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Helper class for loading files from the resources directory.
@@ -30,5 +31,9 @@ public abstract class ResourceLoader {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readTree(is);
         }
+    }
+
+    public static String loadBase64urlJson(String path) throws IOException {
+        return new String(Base64.getUrlEncoder().encodeToString(loadJson(path).toString().getBytes()));
     }
 }

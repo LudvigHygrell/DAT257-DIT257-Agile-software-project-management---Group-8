@@ -2,6 +2,7 @@ package com.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +56,7 @@ public class DebugController {
         try {
             UserDetail details = (UserDetail)userDetailService.loadUserByUsername(MockUserUtils.MOCK_USER_USERNAME);
             jwt = jwtUtil.generateToken(details);
-        } catch (Exception ex) {
+        } catch (UsernameNotFoundException ex) {
             return ResponseEntity.status(500).body(JsonNodeFactory.instance.objectNode()
                 .put("message", "Failed to authenticate mock user."));
         }

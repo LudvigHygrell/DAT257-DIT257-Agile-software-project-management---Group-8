@@ -1,26 +1,27 @@
 package com.backend.tests.controllers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.backend.ApplicationProperties;
 import com.backend.email.EmailConfirmations;
 import com.backend.tests.ResourceLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 /**
  * Tests basic user login functionality.
@@ -82,9 +83,7 @@ public class MockUserLoginTest {
     // Log in with new user (and keep auth info).
     //
     MvcResult result = mockMvc.perform(get("/api/users/login")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(ResourceLoader.loadJson("login-user-mock.json")
-            .toPrettyString()))
+        .param("query", ResourceLoader.loadBase64urlJson("login-user-mock.json")))
         .andExpect(status().isOk())
         .andReturn();
 
