@@ -49,7 +49,7 @@ public class UserActivityController {
     /**
      * Lists comments made by this user.
      */
-    @PostMapping("comments")
+    @PostMapping("/comments")
     public ResponseEntity<JsonNode> comments(@RequestBody JsonNode json) {
         return applyQuery(json, Comment.class);
     }
@@ -57,7 +57,7 @@ public class UserActivityController {
     /**
      * Lists comment blamed by user.
      */
-    @PostMapping("comment_blame")
+    @PostMapping("/comment_blame")
     public ResponseEntity<JsonNode> commentBlame(@RequestBody JsonNode json) {
         return applyQuery(json, CommentBlame.class);
     }
@@ -65,7 +65,7 @@ public class UserActivityController {
     /**
      * Lists charities searched by user. 
      */
-    @PostMapping("searched_charities")
+    @PostMapping("/searched_charities")
     public ResponseEntity<JsonNode> searchedCharities(@RequestBody JsonNode json) {
         return applyQuery(json, SearchedCharity.class);
     }

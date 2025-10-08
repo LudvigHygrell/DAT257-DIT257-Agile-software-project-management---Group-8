@@ -1,0 +1,25 @@
+
+Endpoint,                              HTTP method,  Accepts JSON body,   Query params
+
+/api/users/login,                             POST,                yes,           none
+/api/users/create,                            POST,                yes,           none
+/api/users/change_email,                       PUT,                yes,           none
+/api/users/change_password,                    PUT,                yes,           none
+/api/users/reset_password,                     PUT,                yes,           none
+/api/users/change_email,                       PUT,                yes,           none
+/api/users/remove,                          DELETE,                yes,           none
+/api/users/get_activity/comments,             POST,                yes,           none
+/api/users/get_activity/comment_blame,        POST,                yes,           none
+/api/users/get_activity/searched_charities,   POST,                yes,           none
+/api/charities/list,                          POST,                yes,           none
+/api/charities/get,                            GET,                 no, charity:string
+/api/charities/vote,                          POST,                yes,           none
+/api/charities/edit_vote,                      PUT,                yes,           none
+/api/charities/remove_vote,                 DELETE,                yes,           none
+/api/comments/add,                            POST,                yes,           none
+/api/comments/list,                           POST,                yes,           none
+/api/comments/remove,                       DELETE,                yes,           none
+/api/comments/blame,                          POST,                yes,           none
+/api/email/confirm/{email}/{confirmCode},     POST,                 no,           none
+/api/debug/mock/login,                         GET,                 no,           none
+

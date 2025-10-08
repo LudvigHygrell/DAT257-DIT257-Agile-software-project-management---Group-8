@@ -285,6 +285,7 @@ public class UserController {
      */
     @PutMapping("/change_email")
     public ResponseEntity<String> changeEmail(@RequestBody JsonNode json) {
+        
         if (!json.has("username")) {
             return ResponseEntity.status(400).body("The username parameter was not set");
         }
