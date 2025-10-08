@@ -8,11 +8,13 @@ import com.backend.database.filtering.JsonToFilterConverter;
 import com.backend.database.repositories.CharityDataRepository;
 import com.backend.jwt.user.UserUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +36,21 @@ public class CharitiesController {
 
     private JsonNodeFactory jb = JsonNodeFactory.instance;
 
-    @SuppressWarnings("deprecation")
     @GetMapping("/list")
-    public ResponseEntity<JsonNode> list(@RequestBody JsonNode json) {
+    public ResponseEntity<JsonNode> list(@RequestParam(defaultValue = "", name = "query") String userQuery) {
+
+        JsonNode json;
+        try {
+            json = new ObjectMapper().readTree(
+            new String(Base64.getUrlDecoder().decode(userQuery.getBytes())));
+        } catch (Exception ex) {
+            return ResponseEntity
+                .status(422).body(jb.objectNode()
+                    .put("message", "Expecting json encoded as base64 as the query parameter."));
+        }
         if (!json.isObject())
             return ResponseEntity.badRequest().body(
-                jb.objectNode().put("message", jb.textNode("Expected a Json object.")));
+                jb.objectNode().set("message", jb.textNode("Expected a Json object.")));
         
         List<CharityData> results;
         try {
