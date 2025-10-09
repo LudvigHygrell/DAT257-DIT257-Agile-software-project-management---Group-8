@@ -15,6 +15,7 @@
     top: 0;                                     /* Stick to top of screen */
     left: 0;                                    /* Align to left edge */
     right: 0;                                   /* Stretch to right edge */
+    z-index: 1000;                              /* Keep navbar above page content */
 }
 
 /* Container for logo and title on left side of navbar */

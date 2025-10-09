@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
 // Custom hook to manage all modal states and their handlers
-export function useModals() {
+// onLoginSuccess: callback function to call when login is successful
+export function useModals(onLoginSuccess) {
   // State to control whether login modal is visible or hidden
   const [showLogin, setShowLogin] = useState(false);
   // State to control whether registration modal is visible or hidden
@@ -66,5 +67,7 @@ export function useModals() {
     closeRegistration,
     handleSwitchToLogin,
     closeForgotPassword,
+    // Callback for successful login
+    onLoginSuccess,
   };
 }

@@ -12,7 +12,8 @@ function Modals({
   handleSwitchToForgotPassword,
   closeRegistration,
   handleSwitchToLogin,
-  closeForgotPassword
+  closeForgotPassword,
+  onLoginSuccess
 }) {
   return (
     <>
@@ -22,6 +23,7 @@ function Modals({
         onClose={closeLogin}
         onSwitchToRegister={handleSwitchToRegister}
         onSwitchToForgotPassword={handleSwitchToForgotPassword}
+        onLoginSuccess={onLoginSuccess}
       />
       {/* Registration modal, only visible when showRegistration is true */}
       <Registration

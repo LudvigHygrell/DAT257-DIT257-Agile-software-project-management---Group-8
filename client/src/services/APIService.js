@@ -33,6 +33,20 @@ api.interceptors.response.use(
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
       console.error("API Error:", error.response.status, error.response.data);
+
+      // Handle expired/invalid JWT tokens
+      if (error.response.status === 401 || error.response.status === 403) {
+        // Check if error is related to JWT
+        const errorMessage = error.response.data?.message || error.response.data || "";
+        if (typeof errorMessage === "string" &&
+            (errorMessage.includes("JWT") || errorMessage.includes("token") || errorMessage.includes("expired"))) {
+          console.warn("JWT token expired or invalid - clearing token from localStorage");
+          localStorage.removeItem("token");
+
+          // Optionally reload the page to reset the app state
+          // window.location.reload();
+        }
+      }
     } else if (error.request) {
       // The request was made but no response was received
       console.error("Network Error:", error.request);

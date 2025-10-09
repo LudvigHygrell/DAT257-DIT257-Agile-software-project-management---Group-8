@@ -125,7 +125,8 @@ For an exact schema on these returned objects, refer to the `backend/docs/schema
 Return:
 ```jsonc
 {
-    "token": "jwt"
+    "token": "jwt",
+    "username": "NameOfUser"
 }
 ```
 or:

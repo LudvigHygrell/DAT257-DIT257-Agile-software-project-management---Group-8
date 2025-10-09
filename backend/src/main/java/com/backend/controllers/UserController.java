@@ -98,7 +98,7 @@ public class UserController {
         if (userAdapter.login(username, password)) {
             final UserDetail user = (UserDetail) this.userDetailService.loadUserByUsername(username);
             final String jwt = jwtUtil.generateToken((UserDetails) user);
-            return ResponseEntity.ok().body("{\"token\": \"" + jwt + "\"}"); // Returns the JWT token
+            return ResponseEntity.ok().body("{\"token\": \"" + jwt + "\", \"username\": \"" + username + "\"}"); // Returns the JWT token and username
         }
 
         return ResponseEntity.status(401).body("Invalid username or password");

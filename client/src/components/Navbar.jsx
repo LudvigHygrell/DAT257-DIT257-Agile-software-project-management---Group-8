@@ -1,10 +1,13 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import UserMenu from './UserMenu';
 import '../styles/Navbar.css';
 import logo from '../assets/sample_logo.png';
 
 // onLoginClick: function to call when user clicks the login button
-function Navbar({ onLoginClick }) {
+// isAuthenticated: boolean to check if user is logged in
+// username: current logged-in username
+// onLogout: function to call when user logs out
+function Navbar({ onLoginClick, isAuthenticated, username, onLogout }) {
     const navigate = useNavigate();
 
     const handleTitleClick = () => {
@@ -21,8 +24,12 @@ function Navbar({ onLoginClick }) {
                 {/* Logo image  */}
                 <img src={logo} className="logo-image" />
             </div>
-            {/* Right side: Login button that calls parent's function when clicked */}
-            <button className="login-button" onClick={onLoginClick}>Login</button>
+            {/* Right side: Show user menu if authenticated, otherwise show login button */}
+            {isAuthenticated ? (
+                <UserMenu username={username} onLogout={onLogout} />
+            ) : (
+                <button className="login-button" onClick={onLoginClick}>Login</button>
+            )}
         </nav>
     );
 }

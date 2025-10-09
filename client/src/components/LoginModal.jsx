@@ -6,7 +6,8 @@ import '../styles/LoginModal.css';
 // onClose: function to call when user wants to close the modal
 // onSwitchToRegister: function to call when user clicks register
 // onSwitchToForgotPassword: function to call when user clicks forgot password
-function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPassword }) {
+// onLoginSuccess: function to call when login is successful
+function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPassword, onLoginSuccess }) {
     // Create state variables to store user input for username/email and password
     // useState('') creates a variable with empty string as initial value
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
@@ -33,18 +34,21 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
 
             // Axios returns response in response.data
             const token = response.data.token;
+            const username = response.data.username;
 
-            // Store JWT token in localStorage
-            if (token) {
-                localStorage.setItem('token', token);  // Must be 'token' to match axios interceptor
-                localStorage.setItem('username', usernameOrEmail);
-
+            // Store JWT token in localStorage and update auth state
+            if (token && username) {
                 console.log('Login successful! Token stored.');
+
+                // Update authentication state via callback
+                if (onLoginSuccess) {
+                    onLoginSuccess(token, username);
+                }
 
                 // Close modal on successful login
                 onClose();
             } else {
-                throw new Error('No token received from server');
+                throw new Error('No token or username received from server');
             }
         } catch (err) {
             // Handle axios error response

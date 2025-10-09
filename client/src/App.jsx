@@ -7,20 +7,37 @@ import CharityPage from './pages/CharityPage.jsx';
 import Modals from './components/Modals.jsx';
 import { fake_charities } from './Dummydata.jsx';
 import { useModals } from './hooks/useModals.js';
+import { useAuth } from './hooks/useAuth.js';
 
 import './styles/App.css';
 
 
 // Main App component that contains all other components
 function App() {
+  // Use custom hook to manage authentication state
+  const { isAuthenticated, username, login, logout } = useAuth();
+
+  // Handle logout
+  const handleLogout = () => {
+    logout();
+    // Optionally reload the page to reset state
+    window.location.reload();
+  };
+
   // Use custom hook to manage all modal state and handlers
-  const modalProps = useModals();
+  // Pass login function to modals so LoginModal can update auth state
+  const modalProps = useModals(login);
 
   return (
     // main cointainer with padding
     <div className="app-container">
-      {/* Navigation bar at top - receuves function to show login modal */}
-      <Navbar onLoginClick={modalProps.handleLoginClick} />
+      {/* Navigation bar at top - receives function to show login modal and auth state */}
+      <Navbar
+        onLoginClick={modalProps.handleLoginClick}
+        isAuthenticated={isAuthenticated}
+        username={username}
+        onLogout={handleLogout}
+      />
 
       <Routes>
         {/* Main page with two columns layout */}
