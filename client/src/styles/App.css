@@ -1,9 +1,8 @@
 /* Reset default browser styles and set up full-height layout */
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
   width: 100%;
   font-family: 'Segoe UI', Arial, sans-serif;
   background: #f5f6fa;

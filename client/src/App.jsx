@@ -4,6 +4,7 @@ import Navbar from './components/Navbar.jsx';
 import CharityList from './components/CharityList.jsx';
 import TopCharities from './components/TopCharities.jsx';
 import CharityPage from './pages/CharityPage.jsx';
+import AccountSettings from './pages/AccountSettings.jsx';
 import Modals from './components/Modals.jsx';
 import { fake_charities } from './Dummydata.jsx';
 import { useModals } from './hooks/useModals.js';
@@ -45,7 +46,7 @@ function App() {
           path="/"
           element={
             <div className="main-content" style={{ display: "flex", gap: "1rem", padding: "1rem" }}>
-              
+
               { /* Left column: shows top rated charities (1/3 of page width) */}
               <div className="panel" style={{ flex: 1 }}>
                 <TopCharities charities={fake_charities} />
@@ -62,6 +63,11 @@ function App() {
         <Route
           path="/:orgId"
           element={<CharityPage charities={fake_charities} />}
+        />
+        {/* Account Settings page */}
+        <Route
+          path="/settings"
+          element={<AccountSettings username={username} onLogout={handleLogout} />}
         />
       </Routes>
 

@@ -164,7 +164,7 @@ export const UserAPI = {
 
 export const CharityAPI = {
   listCharities: (query) => api.post("/charities/list", query),
-  getCharity: (orgId) => api.post("/charities/get", { orgId }),
+  getCharity: (orgId) => api.get("/charities/get", { params: { charity: orgId } }),
   vote: (data) => api.post("/charities/vote", data),
   editVote: (data) => api.put("/charities/edit_vote", data),
   removeVote: (data) => api.delete("/charities/remove_vote", { data }),
@@ -178,11 +178,11 @@ export const CharityAPI = {
 export const CommentAPI = {
   listComments: (query) => api.post("/comments/list", query),       // query = { first, max_count, filters, sorting }
 
-  addComment: (data) => api.post("/comments/add", data),            // data = { text, charity, name }
+  addComment: (data) => api.post("/comments/add", data),            // data = { comment, charity }
 
-  removeComment: (data) => api.delete("/comments/remove", { data }), // data = { commentId, charityId }
+  removeComment: (data) => api.delete("/comments/remove", { data }), // data = { comment_id, charity }
 
-  blameComment: (data) => api.post("/comments/blame", data),        // data = { commentId, charityId, reason }
+  blameComment: (data) => api.post("/comments/blame", data),        // data = { comment_id, charity, reason }
 };
 
 // ==================== EXPORT ALL ====================
