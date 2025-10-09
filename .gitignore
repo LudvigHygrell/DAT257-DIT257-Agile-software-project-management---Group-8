@@ -29,3 +29,7 @@ nul
 
 # Log files
 *.log
+
+# Docker (for local development - optional for Windows users)
+docker-compose.yml
+docker-compose.*.yml
