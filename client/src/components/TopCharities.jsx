@@ -1,7 +1,44 @@
 import '../styles/CharityList.css';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { CharityAPI } from '../services/APIService.js';
 
-function TopCharities({ charities }) {
+function TopCharities() {
+  const [charities, setCharities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCharities = async () => {
+      setLoading(true);
+      try {
+        const query = {}; 
+        const response = await CharityAPI.listCharities(query);
+
+        const mapped = response.data.value.map(c => ({
+          orgId: c.charity,
+          name: c.humanName,
+          logo: c.charityImageFile,
+          descriptionFile: c.charityDescritpionFile,
+          homepage: c.homePageUrl,
+          score: c.totalScore,
+          category: '' 
+        }));
+
+        setCharities(mapped);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load charities');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCharities();
+  }, []);
+
+  if (loading) return <p>Loading top charities...</p>;
+  if (error) return <p>{error}</p>;
 
   const topCharities = [...charities]
     .sort((a, b) => b.score - a.score)
@@ -13,7 +50,6 @@ function TopCharities({ charities }) {
       <div className="charity-list">
         {topCharities.map(c => (
           <div key={c.orgId} className="charity-card">
-            {/* left part: logo + info */}
             <div className="charity-info">
               <img
                 src={c.logo ? `/${c.logo}` : `https://via.placeholder.com/50?text=${c.name.charAt(0)}`}
@@ -25,8 +61,6 @@ function TopCharities({ charities }) {
                 <p className="charity-category">{c.category}</p>
               </div>
             </div>
-
-            {/* right part: points + button */}
             <div className="charity-actions">
               <span className="charity-score">{c.score}</span>
               <Link to={`/${c.orgId}`} className="show-more-btn">
