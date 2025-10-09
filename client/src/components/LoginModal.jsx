@@ -22,12 +22,14 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToForgotPa
         setLoading(true); // Set loading state
 
         try {
-            // Backend expects 'username' field (can accept either username or email)
-            // NEEDS USERNAME OR EMAIL, NOT BOTH
-            const response = await UserAPI.login({
-                username: usernameOrEmail,
-                password
-            });
+            // Backend expects EITHER 'username' OR 'email', not both
+            // Check if input contains @ to determine if it's an email
+            const isEmail = usernameOrEmail.includes('@');
+            const loginData = isEmail
+                ? { email: usernameOrEmail, password }
+                : { username: usernameOrEmail, password };
+
+            const response = await UserAPI.login(loginData);
 
             // Axios returns response in response.data
             const token = response.data.token;

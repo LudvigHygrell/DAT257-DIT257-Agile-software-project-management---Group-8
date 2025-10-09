@@ -106,12 +106,12 @@ public class UserAdapter {
     }
 
     /**
-     * Gets the user associated with the specified email address.
+     * Gets the username associated with the specified email address.
      * @param email Email of the user.
-     * @return The user with the specified email, or Optional.empty()
+     * @return The username with the specified email, or Optional.empty()
      */
     public Optional<String> getUsernameFromEmail(String email) {
-        return userRepository.findByEmail(email).map(User::getEmail);
+        return userRepository.findByEmail(email).map(User::getUserName);
     }
 
     /**
