@@ -18,7 +18,7 @@ import jakarta.persistence.*;
 public class CharityVote {
     
     @Id
-    @Column(name="user")
+    @Column(name="ratinguser")
     private String user;
 
     @Id
