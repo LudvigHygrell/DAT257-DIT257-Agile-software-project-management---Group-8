@@ -110,9 +110,8 @@ function AccountSettings({ username, onLogout }) {
     setDeleteLoading(true);
 
     try {
-      // Delete account (backend will handle auth check via JWT)
-
-      await UserAPI.remove({ username: username });
+      // Delete account (backend requires password verification)
+      await UserAPI.remove({ username: username, password: deletePassword });
 
       // Logout and redirect
       alert('Your account has been deleted successfully.');

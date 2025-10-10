@@ -61,7 +61,7 @@ function App() {
         {/* Charity detail page */}
         <Route
           path="/:orgId"
-          element={<CharityPage charities={fake_charities} />}
+          element={<CharityPage />}
         />
         {/* Account Settings page */}
         <Route

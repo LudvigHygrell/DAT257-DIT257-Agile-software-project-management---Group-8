@@ -12,18 +12,18 @@
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   background-color: transparent;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #333;
+  color: var(--text-secondary);
   transition: all 0.2s ease;
 }
 
 .user-menu-button:hover {
-  background-color: #f5f5f5;
-  border-color: #ccc;
+  background-color: var(--bg-hover);
+  border-color: var(--border-color);
 }
 
 /* User avatar (circular) */
@@ -31,11 +31,11 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-accent-purple-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--bg-card);
   font-weight: bold;
   font-size: 0.9rem;
   flex-shrink: 0;
@@ -47,6 +47,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text-light);
 }
 
 /* Dropdown arrow */
@@ -65,8 +66,8 @@
   top: calc(100% + 0.5rem);
   right: 0;
   min-width: 260px;
-  background-color: white;
-  border: 1px solid #e0e0e0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-lighter);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   z-index: 9999;
@@ -93,7 +94,7 @@
 /* Dropdown divider */
 .dropdown-divider {
   height: 1px;
-  background-color: #e0e0e0;
+  background-color: var(--border-lighter);
   margin: 0;
 }
 
@@ -109,30 +110,30 @@
   text-align: left;
   cursor: pointer;
   font-size: 0.9rem;
-  color: #333;
+  color: var(--text-secondary);
   transition: background-color 0.15s ease;
 }
 
 .dropdown-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--bg-hover);
 }
 
 /* Dropdown icons */
 .dropdown-icon {
   flex-shrink: 0;
-  color: #666;
+  color: var(--text-tertiary);
 }
 
 /* Username header section */
 .username-header {
   padding: 0.75rem 1rem;
-  background-color: white;
+  background-color: var(--bg-card);
 }
 
 .username-display {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #333;
+  color: var(--text-secondary);
 }
 
 /* Toggle switch for dark mode */
@@ -156,7 +157,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: var(--border-color);
   border-radius: 20px;
   transition: 0.3s;
 }
@@ -168,13 +169,13 @@
   width: 16px;
   left: 2px;
   bottom: 2px;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 50%;
   transition: 0.3s;
 }
 
 .toggle-switch input:checked + label {
-  background-color: #667eea;
+  background-color: var(--color-accent-purple);
 }
 
 .toggle-switch input:checked + label::before {

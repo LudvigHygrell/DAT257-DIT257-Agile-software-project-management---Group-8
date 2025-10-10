@@ -4,9 +4,9 @@
     justify-content: space-between;             /* push content to opposite ends */
     align-items: center;                        /* center items vertically within box */
     padding: 1rem 2rem;                         /* Space inside navbar (top/bottom), (left/right) */
-    background-color: #538AF7;                /* background color */
-    color: #000000;                           /* text-color*/
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);    /* Subtle shadow color below navbar */
+    background-color: var(--color-primary);    /* background color */
+    color: var(--text-black);                  /* text-color*/
+    box-shadow: var(--shadow-navbar);          /* Subtle shadow color below navbar */
     border-radius: 10px;                        /* Rounded corners */
     margin: 5px 16px;                          /* Space around navbar - reduced top margin from 10px to 5px */
     width: calc(100% - 34px);                   /* Full width minus left/right margins */
@@ -34,22 +34,22 @@
 /* Styling for the "BeneSphere" title text */
 .title {
     font-weight: bold;                  /* text-bold */
-    color: #D9F0E7;                   /* text color */
+    color: var(--bg-panel);            /* text color */
     font-size: 2.5rem;                  /* text-size */
     margin: 0;                       /* Remove default heading margins */
-    transition: background-color 0.2s;  /* Smooth color change on hover */
+    transition: color var(--transition-normal);  /* Smooth color change on hover */
 }
 
 .title:hover {
-    color: #7AB4E8;                  /* different color on hover */
+    color: var(--color-primary-light);  /* different color on hover */
     cursor: pointer;                 /* Show hand cursor when hovering */
 }
 
 /* Styling for the "Login" button on right side of navbar */
 .login-button {
-    background-color: #28a745;       /* background-color */
-    border: 1px solid #ffffff;       /* border color around button */
-    color: #ffffff;                  /* text color */
+    background-color: var(--btn-success-bg);  /* background-color */
+    border: 1px solid var(--text-light);      /* border color around button */
+    color: var(--btn-success-text);           /* text color */
     padding: 0.5rem 1rem;           /* Space inside button (top/bottom), (left/right) */
     border-radius: 10px;            /* rounded corners */
     cursor: pointer;                /* Show hand cursor when hovering */
@@ -58,6 +58,6 @@
 }
 
 .login-button:hover {
-    background-color: #218838;      /* color difference on hover */
-    border-color: #ffffff;          /* Keep border color on hover */
+    background-color: var(--btn-success-hover);  /* color difference on hover */
+    border-color: var(--text-light);             /* Keep border color on hover */
 }

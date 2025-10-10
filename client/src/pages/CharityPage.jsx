@@ -1,12 +1,15 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { CharityAPI } from "../services/APIService.js";
 import "../styles/CharityPage.css";
 import thumbsUp from "../assets/thumbs-up.png";
 import thumbsDown from "../assets/thumbs-down.png";
 
-function CharityPage({ charities }) {
+function CharityPage() {
   const { orgId } = useParams();
-  const charity = charities.find((c) => c.orgId === orgId);
+  const [charity, setCharity] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [comments, setComments] = useState([
     { name: "Mari", text: "Wonderful initiative!", date: "2025-09-24", vote: "like" },
@@ -30,8 +33,56 @@ function CharityPage({ charities }) {
 
   const [newComment, setNewComment] = useState("");
 
-  if (!charity) {
-    return <div className="charity-not-found">Charity not found</div>;
+  // Fetch charity data from API
+  useEffect(() => {
+    const fetchCharity = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        console.log('Fetching charity with orgId:', orgId);
+        const response = await CharityAPI.getCharity(orgId);
+        console.log('Charity API response:', response);
+        console.log('Response data:', response.data);
+
+        if (!response.data || !response.data.value) {
+          console.error('Invalid response format - response.data:', response.data);
+          throw new Error('Invalid response format');
+        }
+
+        const charityData = response.data.value;
+        console.log('Charity data:', charityData);
+
+        const mappedCharity = {
+          orgId: charityData.charity,
+          name: charityData.humanName,
+          logo: charityData.charityImageFile,
+          description: charityData.charityDescritpionFile || "No description available.",
+          homepage: charityData.homePageUrl,
+          score: charityData.totalScore,
+          category: charityData.category || "General"
+        };
+        console.log('Mapped charity:', mappedCharity);
+        setCharity(mappedCharity);
+      } catch (err) {
+        console.error('Error loading charity:', err);
+        console.error('Error details:', err.response);
+        setError('Failed to load charity details: ' + (err.message || 'Unknown error'));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (orgId) {
+      fetchCharity();
+    }
+  }, [orgId]);
+
+  if (loading) {
+    return <div className="charity-not-found">Loading charity details...</div>;
+  }
+
+  if (error || !charity) {
+    return <div className="charity-not-found">{error || "Charity not found"}</div>;
   }
 
   const handleSubmit = (e) => {

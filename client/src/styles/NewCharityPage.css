@@ -4,13 +4,13 @@
 .charity-page {
   display: flex;
   gap: 2rem;
-  width: 90%;            
-  height: 85vh;          
+  width: 90%;
+  height: 85vh;
   margin: 2rem auto;
   padding: 2rem;
-  background: #D9F0E7; 
+  background: var(--bg-panel);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+  box-shadow: var(--shadow-md);
 }
 
 /* ===============================
@@ -37,26 +37,26 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  border: 3px solid #28a745; 
+  border: 3px solid var(--color-success);
   object-fit: cover;
 }
 
 .charity-title h2 {
   margin: 0;
   font-size: 2rem;
-  color: #28a745;
+  color: var(--color-success);
 }
 
 .charity-page-category {
   font-size: 1rem;
-  color: #666; 
+  color: var(--text-tertiary);
   margin-top: 0.2rem;
 }
 
 .charity-page-score {
   font-weight: bold;
   margin-top: 0.5rem;
-  color: #333;
+  color: var(--text-secondary);
 }
 
 /* ===============================
@@ -66,7 +66,7 @@
 .charity-photos-section {
   width: 100%;
   padding: 1.2rem;
-  background: #f9f9f9; 
+  background: var(--bg-card-alt);
   border-radius: 12px;
   box-sizing: border-box;
 }
@@ -74,13 +74,13 @@
 .charity-description-section h3,
 .charity-photos-section h3 {
   margin-top: 0;
-  color: #28a745; 
+  color: var(--color-success);
 }
 
 .charity-description {
   font-size: 1rem;
   line-height: 1.6;
-  color: #333;
+  color: var(--text-secondary);
 }
 
 /* Activities photos grid */

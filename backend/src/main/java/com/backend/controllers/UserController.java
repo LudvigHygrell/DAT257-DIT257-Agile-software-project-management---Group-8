@@ -1,8 +1,5 @@
 package com.backend.controllers;
 
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,11 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.ApplicationProperties;
 import com.backend.database.PasswordHashUtility;
 import com.backend.database.adapters.UserAdapter;
-import com.backend.email.EmailConfirmations;
-import com.backend.email.EmailService;
 import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
@@ -48,12 +42,6 @@ public class UserController {
 
     @Autowired
     private PasswordHashUtility encoder;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private ApplicationProperties props;
 
     /**
      * A basic method for logging into a user. Varifies that the username and
@@ -120,19 +108,16 @@ public class UserController {
      * 500 If there was an error registering the user</p>
      */
     @PostMapping("/create")
-    public CompletableFuture<ResponseEntity<String>> register(@RequestBody JsonNode json) {
+    public ResponseEntity<String> register(@RequestBody JsonNode json) {
 
         if (!json.has("username")) {
-            return CompletableFuture.completedFuture(
-                    ResponseEntity.badRequest().body("Missing username"));
+            return ResponseEntity.badRequest().body("Missing username");
         }
         if (!json.has("email")) {
-            return CompletableFuture.completedFuture(
-                    ResponseEntity.badRequest().body("Missing email"));
+            return ResponseEntity.badRequest().body("Missing email");
         }
         if (!json.has("password")) {
-            return CompletableFuture.completedFuture(
-                    ResponseEntity.badRequest().body("Missing password"));
+            return ResponseEntity.badRequest().body("Missing password");
         }
 
         String username = json.get("username").asText();
@@ -140,40 +125,18 @@ public class UserController {
         String password = json.get("password").asText();
 
         if (username.contains("@")) {
-            return CompletableFuture.completedFuture(
-                    ResponseEntity.status(400).body("Usernames cannot contain the '@' character."));
+            return ResponseEntity.status(400).body("Usernames cannot contain the '@' character.");
         }
 
         if (userAdapter.isUsername(username)) {
-            return CompletableFuture.completedFuture(
-                    ResponseEntity.status(409).body("Username already exists"));
+            return ResponseEntity.status(409).body("Username already exists");
         }
 
         if (userAdapter.isEmail(email)) {
-            return CompletableFuture.completedFuture(
-                    ResponseEntity.status(409).body("Email already exists"));
+            return ResponseEntity.status(409).body("Email already exists");
         }
 
-        if (props.getEmailProperties().isVerified()) {
-            CompletableFuture<String> fut;
-            try {
-                fut = emailService.sendEmailConfirmation(email);
-            } catch (Exception ex) {
-                return CompletableFuture.completedFuture(
-                        ResponseEntity.status(500).body("Failed to send email."));
-            }
-            return fut.thenApply(confirmedEmail -> {
-                return ControllerHelper.orElseResponse(() -> {
-                    userAdapter.register(username, confirmedEmail, password);
-                    return "User registered successfully.";
-                }, "Error registering user.");
-            }).exceptionally(ex -> {
-                EmailConfirmations.getInstance().abort(email);
-                return ResponseEntity.status(500).body("Failed to confirm email.");
-            });
-        }
-
-        return ControllerHelper.orElseFutureResponse(() -> {
+        return ControllerHelper.orElseResponse(() -> {
             userAdapter.register(username, email, password);
             return "User registered successfully";
         }, "Error registering user.");
@@ -224,46 +187,6 @@ public class UserController {
             userAdapter.changePassword(username, new_password);
             return "Password changed successfully";
         }, "Error changing password.");
-    }
-
-    /**
-     * Resets the password for a user using a verification code.
-     *
-     * @param json The input object for this REST controller. Must contain
-     * "email", "new_password", and "verification_code".
-     * @return One of the following HTTP-packets:
-     * <p>
-     * 400 If there was some parameter missing (specified in the body) </p>
-     * <p>
-     * 200 If all went well, and the password was reset</p>
-     * <p>
-     * 500 If there was an error resetting the password</p>
-     */
-    @PutMapping("/reset_password")
-    public ResponseEntity<String> resetPassword(@RequestBody JsonNode json) {
-        if (!json.has("email")) {
-            return ResponseEntity.status(400).body("The email parameter is not set.");
-        }
-        if (!json.has("new_password")) {
-            return ResponseEntity.status(400).body("The new_password parameter is not set.");
-        }
-        if (!json.has("verification_code")) {
-            return ResponseEntity.status(400).body("The verification_code parameter was not set.");
-        }
-
-        // TODO: implement the check for verification code
-        String email = json.get("email").asText();
-        Optional<String> username = userAdapter.getUsernameFromEmail(email);
-        String new_password = json.get("new_password").asText();
-
-        if (username.isEmpty()) {
-            return ResponseEntity.status(500).body("Error in getting username for provided email.");
-        }
-
-        return ControllerHelper.orElseResponse(() -> {
-            userAdapter.changePassword(username.get(), new_password);
-            return "All went fine. You password is now changed!";
-        }, "There was something wrong at the server->database communication.");
     }
 
     /**

@@ -1,0 +1,191 @@
+/**
+ * BeneSphere Theme System
+ *
+ * This file contains all color definitions for the application.
+ * To change the color scheme, simply update the values in :root.
+ * For dark mode support, update the [data-theme="dark"] section.
+ *
+ * Usage: var(--color-primary) in any CSS file
+ */
+
+:root {
+  /* ==================== PRIMARY BRAND COLORS ==================== */
+  --color-primary: #538AF7;              /* Main blue - navbar, buttons, accents */
+  --color-primary-hover: #4a7cd9;        /* Darker blue for hover states */
+  --color-primary-light: #7AB4E8;        /* Light blue for hover effects */
+
+  --color-secondary: #81D5C4;            /* Teal/turquoise accent */
+  --color-secondary-light: #eaf6f3;      /* Very light teal background */
+
+  --color-success: #28a745;              /* Green for success states */
+  --color-success-dark: #218838;         /* Darker green for hover */
+  --color-success-light: #d4f8e8;        /* Light green background */
+  --color-success-bg: #d4edda;           /* Success message background */
+  --color-success-border: #c3e6cb;       /* Success message border */
+  --color-success-text: #155724;         /* Success message text */
+
+  --color-danger: #dc3545;               /* Red for danger/delete */
+  --color-danger-dark: #c82333;          /* Darker red for hover */
+  --color-danger-bg: #f8d7da;            /* Error message background */
+  --color-danger-border: #f5c6cb;        /* Error message border */
+  --color-danger-text: #721c24;          /* Error message text */
+
+  /* Error/Success message colors (aliases for convenience) */
+  --bg-error: #f8d7da;                   /* Error message background */
+  --border-error: #f5c6cb;               /* Error message border */
+
+  --color-accent-purple: #667eea;        /* Purple accent (profile avatars, buttons) */
+  --color-accent-purple-dark: #5568d3;   /* Darker purple for hover */
+  --color-accent-purple-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  /* ==================== BACKGROUND COLORS ==================== */
+  --bg-app: #f5f6fa;                     /* Main app background */
+  --bg-panel: #D9F0E7;                   /* Panel/card container background (light green) */
+  --bg-card: #ffffff;                    /* White card background */
+  --bg-card-alt: #f9f9f9;                /* Alternative card background (slightly gray) */
+  --bg-hover: #f5f5f5;                   /* Hover state background */
+  --bg-input: #eaf6f3;                   /* Input field background */
+
+  /* ==================== TEXT COLORS ==================== */
+  --text-primary: #1a1a1a;               /* Primary text (headings, important text) */
+  --text-secondary: #333;                /* Secondary text (body text) */
+  --text-tertiary: #666;                 /* Tertiary text (muted, less important) */
+  --text-light: #ffffff;                 /* White text */
+  --text-black: #000000;                 /* Pure black text */
+
+  /* ==================== BORDER COLORS ==================== */
+  --border-color: #ccc;                  /* Standard border */
+  --border-light: #ddd;                  /* Light border */
+  --border-lighter: #e0e0e0;             /* Even lighter border */
+
+  /* ==================== SHADOW DEFINITIONS ==================== */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-2xl: 0 4px 24px rgba(0, 0, 0, 0.10);
+
+  /* Colored shadows for specific elements */
+  --shadow-primary: 0 4px 12px rgba(102, 126, 234, 0.3);
+  --shadow-success: 0 1px 4px rgba(40, 167, 69, 0.08);
+  --shadow-danger: 0 4px 12px rgba(220, 53, 69, 0.3);
+  --shadow-navbar: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-text: 2px 2px 8px rgba(37, 99, 235, 0.15);
+
+  /* ==================== BUTTON COLORS ==================== */
+  --btn-primary-bg: #538AF7;
+  --btn-primary-hover: #0056b3;
+  --btn-primary-text: #ffffff;
+
+  --btn-secondary-bg: #007bff;
+  --btn-secondary-hover: #0056b3;
+  --btn-secondary-text: #ffffff;
+
+  --btn-success-bg: #28a745;
+  --btn-success-hover: #218838;
+  --btn-success-text: #ffffff;
+
+  --btn-danger-bg: #dc3545;
+  --btn-danger-hover: #c82333;
+  --btn-danger-text: #ffffff;
+
+  /* ==================== TRANSITION TIMING ==================== */
+  --transition-fast: 0.15s;
+  --transition-normal: 0.2s;
+  --transition-slow: 0.3s;
+}
+
+/* ==================== DARK MODE THEME ==================== */
+[data-theme="dark"] {
+  /* Primary brand colors - adjusted for dark mode */
+  --color-primary: #6b9fff;
+  --color-primary-hover: #5a8eff;
+  --color-primary-light: #8ab4ff;
+
+  --color-secondary: #90dfcc;
+  --color-secondary-light: #2d4a45;
+
+  --color-success: #3dcc5a;
+  --color-success-dark: #32b84b;
+  --color-success-light: #2d4a35;
+  --color-success-bg: #1e3a26;
+  --color-success-border: #2d4a35;
+  --color-success-text: #7aff94;
+
+  --color-danger: #ff5566;
+  --color-danger-dark: #ee4455;
+  --color-danger-bg: #4a2d30;
+  --color-danger-border: #6b3d42;
+  --color-danger-text: #ffb3bd;
+
+  --color-accent-purple: #8a9bff;
+  --color-accent-purple-dark: #7a8bef;
+  --color-accent-purple-gradient: linear-gradient(135deg, #8a9bff 0%, #9a6bc2 100%);
+
+  /* Background colors for dark mode */
+  --bg-app: #121212;
+  --bg-panel: #1e1e1e;
+  --bg-card: #2d2d2d;
+  --bg-card-alt: #252525;
+  --bg-hover: #333333;
+  --bg-input: #2a2a2a;
+
+  /* Text colors for dark mode */
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-tertiary: #b0b0b0;
+  --text-light: #ffffff;
+  --text-black: #ffffff;
+
+  /* Border colors for dark mode */
+  --border-color: #404040;
+  --border-light: #353535;
+  --border-lighter: #2a2a2a;
+
+  /* Shadows adjusted for dark mode */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 4px 12px rgba(0, 0, 0, 0.7);
+  --shadow-2xl: 0 4px 24px rgba(0, 0, 0, 0.8);
+
+  --shadow-primary: 0 4px 12px rgba(107, 159, 255, 0.3);
+  --shadow-success: 0 1px 4px rgba(61, 204, 90, 0.3);
+  --shadow-danger: 0 4px 12px rgba(255, 85, 102, 0.3);
+  --shadow-navbar: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --shadow-text: 2px 2px 8px rgba(107, 159, 255, 0.2);
+
+  /* Button colors for dark mode */
+  --btn-primary-bg: #6b9fff;
+  --btn-primary-hover: #5a8eff;
+  --btn-primary-text: #000000;
+
+  --btn-secondary-bg: #5a8eff;
+  --btn-secondary-hover: #4a7eef;
+  --btn-secondary-text: #000000;
+
+  --btn-success-bg: #3dcc5a;
+  --btn-success-hover: #32b84b;
+  --btn-success-text: #000000;
+
+  --btn-danger-bg: #ff5566;
+  --btn-danger-hover: #ee4455;
+  --btn-danger-text: #000000;
+}
+
+/* ==================== SMOOTH THEME TRANSITIONS ==================== */
+* {
+  transition: background-color var(--transition-normal),
+              color var(--transition-normal),
+              border-color var(--transition-normal);
+}
+
+/* Disable transitions for elements that shouldn't animate */
+*:focus,
+input,
+textarea,
+select {
+  transition: none;
+}

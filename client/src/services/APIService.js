@@ -111,19 +111,6 @@ export const UserAPI = {
   changePassword: (data) => api.put("/users/change_password", data),
 
   /**
-   * Reset password (forgot password flow)
-   * @param {Object} data - { email, new_password, verification_code }
-   * @returns {Promise<string>} Status message
-   * @example
-   * UserAPI.resetPassword({
-   *   email: "john@example.com",
-   *   new_password: "newpass456",
-   *   verification_code: 1234
-   * });
-   */
-  resetPassword: (data) => api.put("/users/reset_password", data),
-
-  /**
    * Change email (requires authentication)
    * @param {Object} data - { username, email, password }
    * @returns {Promise<string>} Status message

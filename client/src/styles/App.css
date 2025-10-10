@@ -5,7 +5,7 @@ html, body, #root {
   padding: 0;
   width: 100%;
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #f5f6fa;
+  background: var(--bg-app);
 }
 
 /* Main app container */
@@ -29,10 +29,10 @@ html, body, #root {
 .left-panel {
   flex: 1;
   padding: 20px;
-  background-color: #D9F0E7;
+  background-color: var(--bg-panel);
   overflow: hidden;
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Individual panel styling */
@@ -40,9 +40,9 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   padding: 20px;
-  background-color: #D9F0E7;
+  background-color: var(--bg-panel);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
   height: 100%;
 }
@@ -50,6 +50,6 @@ html, body, #root {
 
 /* Optional: Add a subtle hover effect */
 .panel:hover, .left-panel:hover {
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-  transition: box-shadow 0.2s;
+  box-shadow: var(--shadow-2xl);
+  transition: box-shadow var(--transition-normal);
 }

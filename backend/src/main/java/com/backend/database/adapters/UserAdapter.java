@@ -1,9 +1,10 @@
 package com.backend.database.adapters;
 
-import com.backend.database.repositories.*;
-import com.backend.database.entities.*;
-import com.backend.database.*;
+import com.backend.database.PasswordHashUtility;
+import com.backend.database.entities.User;
+import com.backend.database.repositories.UserRepository;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,10 @@ public class UserAdapter {
     @Autowired
     private PasswordHashUtility passwordHasher;
 
-    @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     /**
      * Construct a new adapter.
@@ -86,9 +89,64 @@ public class UserAdapter {
 
     /**
      * Deletes a user from the db.
+     * This method manually updates all related records to reference '<deleted>' user
+     * before deleting the user to avoid foreign key constraint violations.
      * @param user Username of the user to delete.
      */
+    @Transactional
     public void deleteUser(String user) {
+        // Ensure the <deleted> placeholder user exists
+        // This user is required for foreign key references
+        entityManager.createNativeQuery(
+            "INSERT INTO users (username, email, userpassword) " +
+            "VALUES ('<deleted>', 'benesphere@blackhole.mx', '2bh1jkb34334') " +
+            "ON CONFLICT (username) DO NOTHING")
+            .executeUpdate();
+
+        // Update all tables that reference this user to point to '<deleted>' instead
+        // This is necessary because ON DELETE SET DEFAULT doesn't work in PostgreSQL
+        // when the row being deleted is the one triggering the constraint check
+
+        // Update searchedcharities
+        entityManager.createNativeQuery(
+            "UPDATE searchedcharities SET username = '<deleted>' WHERE username = :username")
+            .setParameter("username", user)
+            .executeUpdate();
+
+        // Update charityscores (votes)
+        entityManager.createNativeQuery(
+            "UPDATE charityscores SET ratinguser = '<deleted>' WHERE ratinguser = :username")
+            .setParameter("username", user)
+            .executeUpdate();
+
+        // Update comments
+        entityManager.createNativeQuery(
+            "UPDATE comments SET commentuser = '<deleted>' WHERE commentuser = :username")
+            .setParameter("username", user)
+            .executeUpdate();
+
+        // Update commentscores
+        entityManager.createNativeQuery(
+            "UPDATE commentscores SET scoreuser = '<deleted>' WHERE scoreuser = :username")
+            .setParameter("username", user)
+            .executeUpdate();
+
+        // Update commentblame
+        entityManager.createNativeQuery(
+            "UPDATE commentblame SET reporter = '<deleted>' WHERE reporter = :username")
+            .setParameter("username", user)
+            .executeUpdate();
+
+        // Update charityblame
+        entityManager.createNativeQuery(
+            "UPDATE charityblame SET reporter = '<deleted>' WHERE reporter = :username")
+            .setParameter("username", user)
+            .executeUpdate();
+
+        // Flush changes to ensure they're committed before deletion
+        entityManager.flush();
+
+        // Now delete the user - all foreign key references have been updated
         userRepository.deleteById(user);
     }
 
@@ -97,6 +155,7 @@ public class UserAdapter {
      * @param username Name of the user.
      * @param newPassword Password string (not digest) of the password to set.
      */
+    @Transactional
     public void changePassword(String username, String newPassword) {
         Optional<User> user = userRepository.findById(username);
         if (user.isEmpty())
@@ -119,6 +178,7 @@ public class UserAdapter {
      * @param username Username of the user to edit the email of.
      * @param email New email of the user.
      */
+    @Transactional
     public void changeEmail(String username, String email) {
         User user = userRepository.getReferenceById(username);
         user.setEmail(email);

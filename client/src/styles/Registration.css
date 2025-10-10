@@ -14,14 +14,14 @@
 
 /* Registration content box in the center of the overlay */
 .registration-content {
-    background-color: white;                      /* Background color */
-    padding: 2rem;                                /* Space inside the box */
-    border-radius: 10px;                          /* Rounded corners */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);    /* Drop shadow for depth */
-    position: relative;                           /* Allow positioning of child elements */
-    min-width: 300px;                             /* Minimum width to prevent too narrow box */
-    max-width: 400px;                             /* Maximum width for better appearance */
-    color: #333;                                  /* Text color */
+    background-color: var(--bg-card);         /* Background color */
+    padding: 2rem;                            /* Space inside the box */
+    border-radius: 10px;                      /* Rounded corners */
+    box-shadow: var(--shadow-lg);             /* Drop shadow for depth */
+    position: relative;                       /* Allow positioning of child elements */
+    min-width: 300px;                         /* Minimum width to prevent too narrow box */
+    max-width: 400px;                         /* Maximum width for better appearance */
+    color: var(--text-secondary);             /* Text color */
 }
 
 /* Style for the "Create Account" title inside the modal */
@@ -29,20 +29,20 @@
     margin-top: 0;              /* Remove default top margin */
     margin-bottom: 1.5rem;      /* Space below title */
     text-align: center;         /* Center the title text */
-    color: #333;                /* Text color */
+    color: var(--text-primary); /* Text color */
     font-size: 1.5rem;          /* Font size */
 }
 
 /* Error message styling */
 .registration-error-message {
-    background-color: #f8d7da;  /* Background color */
-    color: #721c24;             /* Text color */
-    padding: 0.75rem;           /* Padding inside the error box */
-    border-radius: 5px;         /* Rounded corners */
-    margin-bottom: 1rem;        /* Space below error message */
-    border: 1px solid #f5c6cb;  /* Border color */
-    font-size: 0.9rem;          /* Font size */
-    text-align: center;         /* Center the error text */
+    background-color: var(--bg-error);      /* Background color */
+    color: var(--color-danger);             /* Text color */
+    padding: 0.75rem;                       /* Padding inside the error box */
+    border-radius: 5px;                     /* Rounded corners */
+    margin-bottom: 1rem;                    /* Space below error message */
+    border: 1px solid var(--border-error);  /* Border color */
+    font-size: 0.9rem;                      /* Font size */
+    text-align: center;                     /* Center the error text */
 }
 
 /* Checkbox container styling */
@@ -59,35 +59,37 @@
 }
 
 .checkbox-container label {
-    cursor: pointer;            /* Show hand cursor */
-    color: #666;                /* Text color */
+    cursor: pointer;                /* Show hand cursor */
+    color: var(--text-tertiary);    /* Text color */
 }
 
 /* Style for email, password, and confirm password input fields */
 .registration-input-field {
-    width: 100%;                /* Take full width of container */
-    padding: 0.7rem;            /* Space inside the input */
-    margin: 0.5rem 0;           /* Space above and below */
-    border: 1px solid #ddd;     /* Border color */
-    border-radius: 5px;         /* Rounded corners */
-    font-size: 1rem;            /* Text size */
-    box-sizing: border-box;     /* Include padding in width calculation */
-    transition: border-color 0.2s; /* Smooth border color change */
+    width: 100%;                        /* Take full width of container */
+    padding: 0.7rem;                    /* Space inside the input */
+    margin: 0.5rem 0;                   /* Space above and below */
+    border: 1px solid var(--border-light); /* Border color */
+    border-radius: 5px;                 /* Rounded corners */
+    font-size: 1rem;                    /* Text size */
+    box-sizing: border-box;             /* Include padding in width calculation */
+    background-color: var(--bg-input);  /* Input background */
+    color: var(--text-secondary);       /* Text color */
+    transition: border-color 0.2s;      /* Smooth border color change */
 }
 
 /* Style when user clicks/focuses on input field */
 .registration-input-field:focus {
     outline: none;                                    /* Remove default browser focus outline */
-    border-color: #28a745;                          /* Border color on focus */
-    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);  /* Glow effect */
+    border-color: var(--color-success);               /* Border color on focus */
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);    /* Glow effect */
 }
 
 /* Style for the "Create Account" submit button */
 .registration-submit-button {
     width: 100%;                        /* Take full container width */
     padding: 0.7rem;                    /* Space inside button */
-    background-color: #28a745;          /* Background color */
-    color: white;                       /* Text color */
+    background-color: var(--color-success); /* Background color */
+    color: var(--text-light);           /* Text color */
     border: none;                       /* Remove default button border */
     border-radius: 5px;                 /* Rounded corners */
     font-size: 1rem;                    /* Text size */
@@ -99,7 +101,7 @@
 
 /* Button color change when mouse hovers over it */
 .registration-submit-button:hover {
-    background-color: #218838; /* Background color on hover */
+    background-color: var(--color-success-dark); /* Background color on hover */
 }
 
 /* Container for "Already have an account?" text and sign in link */
@@ -107,42 +109,42 @@
     text-align: center;         /* Center the text */
     margin-top: 1.5rem;         /* Space above the section */
     font-size: 0.9rem;          /* Font size */
-    color: #666;                /* Text color */
+    color: var(--text-tertiary); /* Text color */
 }
 
 /* Style for "Sign In" link */
 .registration-link {
-    color: #28a745;             /* Text color */
-    text-decoration: none;      /* Remove default underline */
-    font-weight: 500;           /* Font weight */
-    margin-left: 0.3rem;        /* Small space from the preceding text */
+    color: var(--color-success); /* Text color */
+    text-decoration: none;       /* Remove default underline */
+    font-weight: 500;            /* Font weight */
+    margin-left: 0.3rem;         /* Small space from the preceding text */
 }
 
 /* Link appearance when mouse hovers over it */
 .registration-link:hover {
-    text-decoration: underline; /* Add underline on hover */
-    color: #218838;             /* Text color on hover */
+    text-decoration: underline;           /* Add underline on hover */
+    color: var(--color-success-dark);     /* Text color on hover */
 }
 
 /* X button positioned in top-right corner of registration modal */
 .registration-close-button {
-    position: absolute;         /* Position relative to registration-content */
-    top: 10px;                  /* Distance from top edge */
-    right: 15px;                /* Distance from right edge */
-    background-color: transparent; /* Background color */
-    border: none;               /* Remove default button border */
-    font-size: 1.5rem;          /* Font size */
-    cursor: pointer;            /* Show hand cursor when hovering */
-    color: #666;                /* Text color */
-    transition: color 0.2s;     /* Smooth color change on hover */
-    width: 30px;                /* Fixed width for better click area */
-    height: 30px;               /* Fixed height for better click area */
-    display: flex;              /* Flex for centering */
-    align-items: center;        /* Center vertically */
-    justify-content: center;    /* Center horizontally */
+    position: absolute;                /* Position relative to registration-content */
+    top: 10px;                         /* Distance from top edge */
+    right: 15px;                       /* Distance from right edge */
+    background-color: transparent;     /* Background color */
+    border: none;                      /* Remove default button border */
+    font-size: 1.5rem;                 /* Font size */
+    cursor: pointer;                   /* Show hand cursor when hovering */
+    color: var(--text-tertiary);       /* Text color */
+    transition: color 0.2s;            /* Smooth color change on hover */
+    width: 30px;                       /* Fixed width for better click area */
+    height: 30px;                      /* Fixed height for better click area */
+    display: flex;                     /* Flex for centering */
+    align-items: center;               /* Center vertically */
+    justify-content: center;           /* Center horizontally */
 }
 
 /* X button color change when mouse hovers over it */
 .registration-close-button:hover {
-    color: #333;                /* Text color on hover */
+    color: var(--text-secondary);      /* Text color on hover */
 }
