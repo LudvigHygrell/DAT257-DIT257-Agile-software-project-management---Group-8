@@ -161,119 +161,107 @@ export const UserAPI = {
 };
 
 // ==================== CHARITY ENDPOINTS ====================
-
+/**
+ * CharityAPI — Wrapper for /api/charities endpoints
+ * 
+ * Axios automatically handles JSON serialization (for requests) 
+ * and parsing (for responses).
+ */
 export const CharityAPI = {
 
   /**
-   * Fetch a list of charities with optional filters and sorting. 
-   * Must at least send an empty JSON object.
-   * 
+   * Fetch a list of charities with optional filters and sorting.
+   *
    * @param {Object} query - Pagination, filtering, and sorting options.
-   * @returns {Promise<Object>} JSON object containing:
-   * ```json
-   * {
-   *   "message": "success",
-   *   "value": [
-   *     {
-   *       "charity": "1089464",
-   *       "humanName": "Cancer research UK",
-   *       "homePageUrl": "https://www.cancerresearchuk.org/",
-   *       "charityDescritpionFile": "cancer-research-uk.txt",
-   *       "charityImageFile": "cancer-research-uk.jpg",
-   *       "positiveScore": 0,
-   *       "negativeScore": 1,
-   *       "totalScore": -1
-   *     }
-   *     // ...more charities
-   *   ]
-   * }
-   * ```
+   * @param {number} [query.first] - Starting index for pagination.
+   * @param {number} [query.max_count] - Maximum number of results to fetch.
+   * @param {Array<{field: string, value: any, filter: string}>} [query.filters] - List of field filters.
+   * @param {{field: string, ordering: "ascending"|"descending"}} [query.sorting] - Sorting criteria.
+   * @returns {Promise<{message: string, value: Array<{
+   *   charity: string,
+   *   humanName: string,
+   *   homePageUrl: string,
+   *   charityDescriptionFile: string,
+   *   charityImageFile: string,
+   *   positiveScore: number,
+   *   negativeScore: number,
+   *   totalScore: number
+   * }>>}> Response data containing charities.
+   * 
    * @example
-   * CharityAPI.listCharities({
+   * const res = await CharityAPI.listCharities({
    *   first: 0,
    *   max_count: 10,
-   *   filters: [
-   *     { field: "humanName", value: "Cancer research UK", filter: "like" }
-   *   ],
+   *   filters: [{ field: "humanName", value: "Cancer", filter: "like" }],
    *   sorting: { field: "totalScore", ordering: "descending" }
    * });
+   * console.log(res.data.value);
    */
   listCharities: (query) => api.post("/charities/list", query),
 
   /**
    * Retrieve detailed information about a specific charity by its organization ID.
+   *
+   * @param {string} charity - The organization ID of the charity.
+   * @returns {Promise<{message: string, value: {
+   *   charity: string,
+   *   humanName: string,
+   *   homePageUrl: string,
+   *   charityDescriptionFile: string,
+   *   charityImageFile: string,
+   *   positiveScore: number,
+   *   negativeScore: number,
+   *   totalScore: number
+   * } }>} Detailed charity data.
    * 
-   * @param {string} charityId - The organization ID of the charity.
-   * @returns {Promise<Object>} JSON object containing:
-   * ```json
-   * {
-   *   "message": "success",
-   *   "value": {
-   *     "charity": "1089464",
-   *     "humanName": "Cancer research UK",
-   *     "homePageUrl": "https://www.cancerresearchuk.org/",
-   *     "charityDescritpionFile": "cancer-research-uk.txt",
-   *     "charityImageFile": "cancer-research-uk.jpg",
-   *     "positiveScore": 0,
-   *     "negativeScore": 1,
-   *     "totalScore": -1
-   *   }
-   * }
-   * ```
    * @example
-   * CharityAPI.getCharity("1089464");
+   * const res = await CharityAPI.getCharity("1089464");
+   * console.log(res.data.value.humanName);
    */
-  getCharity: (charityId) => api.get("/charities/get", { params: { charity: charityId } }),
+  getCharity: (charity) => api.get("/charities/get", { params: { charity } }),
 
   /**
    * Submit a vote for a charity (requires authentication).
+   *
+   * @param {{charity: string, up: boolean}} voteData - The charity ID and vote direction.
+   * @returns {Promise<string>} Confirmation message, e.g. `"Vote posted successfully"`.
    * 
-   * @param {Object} voteData - Contains the charity ID and the vote direction.
-   * @param {string} voteData.charityId - The ID of the charity being voted on.
-   * @param {boolean} voteData.upvote - `true` for upvote, `false` for downvote.
-   * @returns {Promise<string>} Status message, e.g., "Vote posted successfully"
    * @example
-   * CharityAPI.vote({
-   *   charityId: "1089464",
-   *   upvote: true
-   * });
+   * const res = await CharityAPI.vote({ charity: "1089464", up: true });
+   * console.log(res.data); // "Vote posted successfully"
    */
   vote: (voteData) => api.post("/charities/vote", {
-    charity: voteData.charityId,
-    up: voteData.upvote
+    charity: voteData.charity,
+    up: voteData.up
   }),
 
   /**
    * Edit a previously made vote for a charity.
+   *
+   * @param {{charity: string, up: boolean}} editVoteData - The charity ID and new vote direction.
+   * @returns {Promise<string>} Confirmation message, e.g. `"Vote registered successfully."`.
    * 
-   * @param {Object} editVoteData - Contains the charity ID and new vote direction.
-   * @param {string} editVoteData.charityId
-   * @param {boolean} editVoteData.upvote
-   * @returns {Promise<string>} Status message, e.g., "Vote registered successfully."
    * @example
-   * CharityAPI.editVote({
-   *   charityId: "1089464",
-   *   upvote: false
-   * });
+   * const res = await CharityAPI.editVote({ charity: "1089464", up: false });
+   * console.log(res.data); // "Vote registered successfully."
    */
   editVote: (editVoteData) => api.put("/charities/edit_vote", {
-    charity: editVoteData.charityId,
-    up: editVoteData.upvote
+    charity: editVoteData.charity,
+    up: editVoteData.up
   }),
 
   /**
    * Remove an existing vote for a specific charity.
+   *
+   * @param {{charity: string}} removeVoteData - The charity ID to remove the vote from.
+   * @returns {Promise<string>} Confirmation message, e.g. `"Vote edited successfully"`.
    * 
-   * @param {Object} removeVoteData - Contains the charity ID to remove the vote from.
-   * @param {string} removeVoteData.charityId
-   * @returns {Promise<string>} Status message, e.g., "Vote edited successfully"
    * @example
-   * CharityAPI.removeVote({
-   *   charityId: "1089464"
-   * });
+   * const res = await CharityAPI.removeVote({ charity: "1089464" });
+   * console.log(res.data); // "Vote edited successfully"
    */
   removeVote: (removeVoteData) => api.delete("/charities/remove_vote", {
-    data: { charity: removeVoteData.charityId }
+    data: { charity: removeVoteData.charity }
   }),
 };
 
