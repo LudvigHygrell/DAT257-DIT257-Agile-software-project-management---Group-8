@@ -26,7 +26,7 @@ public class FileController {
     private ApplicationProperties properties;
     
     @ExceptionHandler(Exception.class)
-    public ResponseEntity loadFileFailedExceptionHandler() {
+    public ResponseEntity<String> loadFileFailedExceptionHandler() {
         return ResponseEntity.status(404).body("Failed to load resource.");
     }
 
