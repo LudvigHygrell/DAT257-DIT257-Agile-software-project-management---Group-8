@@ -13,8 +13,18 @@ function CharityList() {
     const fetchCharities = async () => {
       setLoading(true);
       try {
-        const query = {}; 
+        const query = {
+          first: 0,
+          max_count: 100
+        };
+        console.log('Fetching charities with query:', query);
         const response = await CharityAPI.listCharities(query);
+        console.log('Charity API response:', response);
+
+        if (!response.data || !response.data.value) {
+          throw new Error('Invalid response format');
+        }
+
         const mapped = response.data.value.map(c => ({
           orgId: c.charity,
           name: c.humanName,
@@ -22,11 +32,13 @@ function CharityList() {
           descriptionFile: c.charityDescritpionFile,
           homepage: c.homePageUrl,
           score: c.totalScore,
-          category: '' 
+          category: ''
         }));
+        console.log('Mapped charities:', mapped);
         setCharities(mapped);
       } catch (err) {
-        console.error(err);
+        console.error('Error loading charities:', err);
+        console.error('Error details:', err.response || err.message);
         setError('Failed to load charities');
       } finally {
         setLoading(false);

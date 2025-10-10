@@ -317,10 +317,12 @@ public class UserController {
      * Deletes a user.
      *
      * @param json The input object for this REST controller. Must contain
-     * "username".
+     * "username" and "password".
      * @return One of the following HTTP-packets:
      * <p>
      * 400 If there was some parameter missing (specified in the body) </p>
+     * <p>
+     * 401 If the password is incorrect</p>
      * <p>
      * 200 If all went well, and the user was deleted</p>
      * <p>
@@ -331,8 +333,21 @@ public class UserController {
         if (!json.has("username")) {
             return ResponseEntity.status(400).body("The username parameter was not set");
         }
+        if (!json.has("password")) {
+            return ResponseEntity.status(400).body("The password parameter was not set");
+        }
+
+        String username = json.get("username").asText();
+        String password = json.get("password").asText();
+
+        // Verify password before deletion
+        if (!userAdapter.getPassword(username)
+                .map((pw) -> encoder.passwordMatches(pw, password))
+                .orElse(false)) {
+            return ResponseEntity.status(401).body("Invalid password");
+        }
+
         return ControllerHelper.orElseResponse(() -> {
-            String username = json.get("username").asText();
             userAdapter.deleteUser(username);
             return "The user was successfully deleted";
         }, "There was an internal server error with the database communication");

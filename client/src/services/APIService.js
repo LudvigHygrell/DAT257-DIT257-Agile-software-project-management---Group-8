@@ -36,15 +36,21 @@ api.interceptors.response.use(
 
       // Handle expired/invalid JWT tokens
       if (error.response.status === 401 || error.response.status === 403) {
-        // Check if error is related to JWT
         const errorMessage = error.response.data?.message || error.response.data || "";
+
+        // If 403 with empty response, it's likely an invalid JWT token
+        // Clear token and retry without authentication
+        if (error.response.status === 403 && errorMessage === "") {
+          console.warn("403 Forbidden with empty response - likely invalid JWT token");
+          localStorage.removeItem("token");
+          console.log("Cleared invalid token from localStorage - please refresh the page");
+        }
+
+        // Check if error message explicitly mentions JWT/token
         if (typeof errorMessage === "string" &&
             (errorMessage.includes("JWT") || errorMessage.includes("token") || errorMessage.includes("expired"))) {
           console.warn("JWT token expired or invalid - clearing token from localStorage");
           localStorage.removeItem("token");
-
-          // Optionally reload the page to reset the app state
-          // window.location.reload();
         }
       }
     } else if (error.request) {

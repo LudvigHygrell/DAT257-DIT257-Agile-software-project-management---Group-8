@@ -12,8 +12,14 @@ function TopCharities() {
     const fetchCharities = async () => {
       setLoading(true);
       try {
-        const query = {}; 
+        // Fetch all charities without sorting (backend sorting may not be supported yet)
+        const query = {
+          first: 0,
+          max_count: 100
+        };
+        console.log('TopCharities - Fetching with query:', query);
         const response = await CharityAPI.listCharities(query);
+        console.log('TopCharities - Response:', response);
 
         const mapped = response.data.value.map(c => ({
           orgId: c.charity,

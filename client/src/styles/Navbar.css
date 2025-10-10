@@ -8,7 +8,7 @@
     color: #000000;                           /* text-color*/
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);    /* Subtle shadow color below navbar */
     border-radius: 10px;                        /* Rounded corners */
-    margin: 10px 16px;                          /* Space around navbar */
+    margin: 5px 16px;                          /* Space around navbar - reduced top margin from 10px to 5px */
     width: calc(100% - 34px);                   /* Full width minus left/right margins */
     max-width: none;                            /* No maximum width limit */
     position: fixed;                            /* Stay in same position when scrolling */

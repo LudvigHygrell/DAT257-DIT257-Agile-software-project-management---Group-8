@@ -26,6 +26,7 @@ function AccountSettings({ username, onLogout }) {
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   // State for delete account
+  const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -103,13 +104,17 @@ function AccountSettings({ username, onLogout }) {
   };
 
   // Handle account deletion
-  const handleDeleteAccount = async () => {
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
     setDeleteError('');
     setDeleteLoading(true);
 
     try {
-      // Delete account (backend will handle auth check via JWT)
-      await UserAPI.remove({ username });
+      // Delete account with password verification
+      await UserAPI.remove({
+        username,
+        password: deletePassword
+      });
 
       // Logout and redirect
       alert('Your account has been deleted successfully.');
@@ -223,16 +228,19 @@ function AccountSettings({ username, onLogout }) {
           <h2 className="section-title">Delete Account</h2>
           <div className="settings-card">
             {deleteError && <div className="error-message">{deleteError}</div>}
-            <p style={{ marginBottom: '1rem', color: '#666', fontSize: '0.9rem' }}>
-              This action cannot be undone. All your data will be permanently deleted.
-            </p>
-            <button
-              onClick={handleDeleteAccount}
-              className="btn btn-danger"
-              disabled={deleteLoading}
-            >
-              {deleteLoading ? 'Deleting...' : 'Delete Account'}
-            </button>
+
+            <form onSubmit={handleDeleteAccount} className="settings-form">
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="Current password"
+                required
+              />
+              <button type="submit" className="btn btn-danger" disabled={deleteLoading}>
+                {deleteLoading ? 'Deleting...' : 'Delete Account'}
+              </button>
+            </form>
           </div>
         </section>
       </div>

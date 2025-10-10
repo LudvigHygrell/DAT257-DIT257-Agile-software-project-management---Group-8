@@ -21,8 +21,8 @@ function App() {
   // Handle logout
   const handleLogout = () => {
     logout();
-    // Optionally reload the page to reset state
-    window.location.reload();
+    // Redirect to homepage and reload to reset state
+    window.location.href = '/';
   };
 
   // Use custom hook to manage all modal state and handlers
@@ -45,8 +45,7 @@ function App() {
         <Route
           path="/"
           element={
-            <div className="main-content" style={{ display: "flex", gap: "1rem", padding: "1rem" }}>
-
+            <div className="main-content">
               { /* Left column: shows top rated charities (1/3 of page width) */}
               <div className="panel" style={{ flex: 1 }}>
                 <TopCharities charities={fake_charities} />
