@@ -223,7 +223,7 @@ export const CharityAPI = {
   /**
    * Submit a vote for a charity (requires authentication).
    *
-   * @param {{charity: string, up: boolean}} voteData - The charity ID and vote direction.
+   * @param {{charity: string, up: boolean}} voteData - The charity and vote direction.
    * @returns {Promise<string>} Confirmation message, e.g. `"Vote posted successfully"`.
    * 
    * @example

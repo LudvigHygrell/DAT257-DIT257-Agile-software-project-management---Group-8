@@ -96,3 +96,44 @@
   border-radius: 8px;
   object-fit: cover;
 }
+
+/* Vote buttons container */
+.vote-buttons {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  align-items: center;
+}
+
+/* Vote button */
+.vote-btn {
+  background: #ffffff;
+  border: 1px solid #cfd8d6;
+  padding: 0.45rem;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.vote-btn img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* Delete Vote button */
+.delete-vote-btn {
+  background: transparent;
+  border: 1px solid #d9534f;
+  color: #d9534f;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 0.4rem;
+}
