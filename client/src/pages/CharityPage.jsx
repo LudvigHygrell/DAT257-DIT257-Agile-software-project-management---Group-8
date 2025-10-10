@@ -7,9 +7,7 @@ import thumbsDown from "../assets/thumbs-down.png";
 
 function CharityPage() {
   const { orgId } = useParams();
-  const [charity, setCharity] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const charity = fake_charities.find((c) => c.orgId === orgId);
 
   const [comments, setComments] = useState([
     { name: "Mari", text: "Wonderful initiative!", date: "2025-09-24", vote: "like" },

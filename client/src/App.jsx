@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from './components/Navbar.jsx';
 import CharityList from './components/CharityList.jsx';
 import TopCharities from './components/TopCharities.jsx';
-import CharityPage from './pages/CharityPage.jsx';
+import CharityPage from './pages/NewCharityPage.jsx';
 import AccountSettings from './pages/AccountSettings.jsx';
 import Modals from './components/Modals.jsx';
 import { fake_charities } from './Dummydata.jsx';
@@ -59,10 +59,7 @@ function App() {
           }
         />
         {/* Charity detail page */}
-        <Route
-          path="/:orgId"
-          element={<CharityPage />}
-        />
+        <Route path="/:orgId" element={<CharityPage />} />
         {/* Account Settings page */}
         <Route
           path="/settings"
