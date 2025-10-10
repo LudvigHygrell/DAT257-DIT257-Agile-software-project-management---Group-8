@@ -98,7 +98,8 @@ _call_endpoint() {
   local AUTHORIZATION=()
 
   if [[ $BENESPHERE_JWT ]] && [[ $BENESPHERE_JWT != 'null' ]]; then
-    AUTHORIZATION="-H \"Authorization: Bearer $BENESPHERE_JWT\""
+    AUTHORIZATION+=( "-H" )
+    AUTHORIZATION+=( "Authorization: Bearer $BENESPHERE_JWT" )
   fi
 
   local HTTP_CODE
@@ -106,11 +107,11 @@ _call_endpoint() {
   local REQBODY="$JSON"
 
   if [[ $METHOD != 'GET' ]]; then
-    CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{response_code}" -H "$CONTENT_TYPE" $AUTHORIZATION -d "$JSON" &>/dev/stdout)
+    CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{response_code}" -H "$CONTENT_TYPE" "${AUTHORIZATION[@]}" -d "$JSON" &>/dev/stdout)
   else
     JSON=$(echo "$JSON" | basenc --base64url)
     URL="$URL?query=$JSON"
-    CONTENTS=$(curl "$URL" -s -w "\n%{response_code}" -X "$METHOD" -H "$CONTENT_TYPE" $AUTHORIZATION &>/dev/stdout)
+    CONTENTS=$(curl "$URL" -s -w "\n%{response_code}" -X "$METHOD" -H "$CONTENT_TYPE" "${AUTHORIZATION[@]}" &>/dev/stdout)
   fi
 
 

@@ -156,14 +156,118 @@ export const UserAPI = {
 // ==================== CHARITY ENDPOINTS ====================
 
 export const CharityAPI = {
+
+  /**
+   * Fetch a list of charities with optional filters and sorting. 
+   * Must at least send an empty JSON object.
+   * 
+   * @param {Object} query - Pagination, filtering, and sorting options.
+   * @returns {Promise<Object>} JSON object containing:
+   * ```json
+   * {
+   *   "message": "success",
+   *   "value": [
+   *     {
+   *       "charity": "1089464",
+   *       "humanName": "Cancer research UK",
+   *       "homePageUrl": "https://www.cancerresearchuk.org/",
+   *       "charityDescritpionFile": "cancer-research-uk.txt",
+   *       "charityImageFile": "cancer-research-uk.jpg",
+   *       "positiveScore": 0,
+   *       "negativeScore": 1,
+   *       "totalScore": -1
+   *     }
+   *     // ...more charities
+   *   ]
+   * }
+   * ```
+   * @example
+   * CharityAPI.listCharities({
+   *   first: 0,
+   *   max_count: 10,
+   *   filters: [
+   *     { field: "humanName", value: "Cancer research UK", filter: "like" }
+   *   ],
+   *   sorting: { field: "totalScore", ordering: "descending" }
+   * });
+   */
   listCharities: (query) => api.post("/charities/list", query),
-  getCharity: (orgId) => api.get("/charities/get", { params: { charity: orgId } }),
-  vote: (data) => api.post("/charities/vote", data),
-  editVote: (data) => api.put("/charities/edit_vote", data),
-  removeVote: (data) => api.delete("/charities/remove_vote", { data }),
-  pauseCharity: (data) => api.post("/charities/pause", data),
-  resumeCharity: (data) => api.post("/charities/resume", data),
-  getPaused: () => api.get("/charities/get_paused"),
+
+  /**
+   * Retrieve detailed information about a specific charity by its organization ID.
+   * 
+   * @param {string} charityId - The organization ID of the charity.
+   * @returns {Promise<Object>} JSON object containing:
+   * ```json
+   * {
+   *   "message": "success",
+   *   "value": {
+   *     "charity": "1089464",
+   *     "humanName": "Cancer research UK",
+   *     "homePageUrl": "https://www.cancerresearchuk.org/",
+   *     "charityDescritpionFile": "cancer-research-uk.txt",
+   *     "charityImageFile": "cancer-research-uk.jpg",
+   *     "positiveScore": 0,
+   *     "negativeScore": 1,
+   *     "totalScore": -1
+   *   }
+   * }
+   * ```
+   * @example
+   * CharityAPI.getCharity("1089464");
+   */
+  getCharity: (charityId) => api.get("/charities/get", { params: { charity: charityId } }),
+
+  /**
+   * Submit a vote for a charity (requires authentication).
+   * 
+   * @param {Object} voteData - Contains the charity ID and the vote direction.
+   * @param {string} voteData.charityId - The ID of the charity being voted on.
+   * @param {boolean} voteData.upvote - `true` for upvote, `false` for downvote.
+   * @returns {Promise<string>} Status message, e.g., "Vote posted successfully"
+   * @example
+   * CharityAPI.vote({
+   *   charityId: "1089464",
+   *   upvote: true
+   * });
+   */
+  vote: (voteData) => api.post("/charities/vote", {
+    charity: voteData.charityId,
+    up: voteData.upvote
+  }),
+
+  /**
+   * Edit a previously made vote for a charity.
+   * 
+   * @param {Object} editVoteData - Contains the charity ID and new vote direction.
+   * @param {string} editVoteData.charityId
+   * @param {boolean} editVoteData.upvote
+   * @returns {Promise<string>} Status message, e.g., "Vote registered successfully."
+   * @example
+   * CharityAPI.editVote({
+   *   charityId: "1089464",
+   *   upvote: false
+   * });
+   */
+  editVote: (editVoteData) => api.put("/charities/edit_vote", {
+    charity: editVoteData.charityId,
+    up: editVoteData.upvote
+  }),
+
+  /**
+   * Remove an existing vote for a specific charity.
+   * 
+   * @param {Object} removeVoteData - Contains the charity ID to remove the vote from.
+   * @param {string} removeVoteData.charityId
+   * @returns {Promise<string>} Status message, e.g., "Vote edited successfully"
+   * @example
+   * CharityAPI.removeVote({
+   *   charityId: "1089464"
+   * });
+   */
+  removeVote: (removeVoteData) => api.delete("/charities/remove_vote", {
+    data: { charity: removeVoteData.charityId }
+  }),
 };
 
 // ==================== COMMENT ENDPOINTS ====================

@@ -164,5 +164,5 @@ public abstract class ControllerHelper {
      */
     public static ResponseEntity<JsonNode> valueJsonResponse(String message, JsonNode value) {
         return ResponseEntity.ok().body(
-            messageJson(message).put("value", value));
+            messageJson(message).set("value", value));
     }}
