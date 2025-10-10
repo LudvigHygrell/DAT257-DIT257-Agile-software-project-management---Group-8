@@ -8,8 +8,17 @@ function UserMenu({ username, onLogout }) {
 
     // State to control dropdown visibility
     const [isOpen, setIsOpen] = useState(false);
+    // State to track dark mode
+    const [isDarkMode, setIsDarkMode] = useState(false);
     // Ref to detect clicks outside the menu
     const menuRef = useRef(null);
+
+    // Load saved theme on component mount
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setIsDarkMode(savedTheme === 'dark');
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    }, []);
 
     // Toggle dropdown open/closed
     const toggleMenu = () => {
@@ -47,6 +56,14 @@ function UserMenu({ username, onLogout }) {
         onLogout();
     };
 
+    // Handle dark mode toggle
+    const handleDarkModeToggle = () => {
+        const newTheme = isDarkMode ? 'light' : 'dark';
+        setIsDarkMode(!isDarkMode);
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    };
+
     return (
         <div className="user-menu-container" ref={menuRef}>
             {/* User button that shows username and avatar */}
@@ -80,16 +97,22 @@ function UserMenu({ username, onLogout }) {
                             <span>Account Settings</span>
                         </button>
 
-                        <button className="dropdown-item" onClick={() => console.log('Dark Mode')}>
+                        <div className="dropdown-item">
                             <svg className="dropdown-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10 2C5.03 2 1 6.03 1 11C1 15.97 5.03 20 10 20C11.83 20 13.5 19.4 14.87 18.4C12.1 18.4 9.85 16.15 9.85 13.38C9.85 10.61 12.1 8.36 14.87 8.36C15.41 8.36 15.93 8.43 16.43 8.56C15.4 4.85 13 2 10 2Z" />
                             </svg>
                             <span>Dark Mode</span>
                             <div className="toggle-switch">
-                                <input type="checkbox" id="dark-mode-toggle" />
-                                <label htmlFor="dark-mode-toggle"></label>
+                                <input
+                                    type="checkbox"
+                                    id="dark-mode-toggle"
+                                    checked={isDarkMode}
+                                    onChange={handleDarkModeToggle}
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                                <label htmlFor="dark-mode-toggle" onClick={(e) => e.stopPropagation()}></label>
                             </div>
-                        </button>
+                        </div>
                     </div>
 
                     <div className="dropdown-divider"></div>

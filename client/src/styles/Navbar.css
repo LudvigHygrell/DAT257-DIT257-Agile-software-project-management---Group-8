@@ -47,17 +47,18 @@
 
 /* Styling for the "Login" button on right side of navbar */
 .login-button {
-    background-color: var(--btn-success-bg);  /* background-color */
-    border: 1px solid var(--text-light);      /* border color around button */
-    color: var(--btn-success-text);           /* text color */
+    background-color: var(--color-primary-light);  /* background-color - lighter blue */
+    border: 1px solid var(--border-light);         /* border color around button */
+    color: var(--text-light);                      /* text color */
     padding: 0.5rem 1rem;           /* Space inside button (top/bottom), (left/right) */
     border-radius: 10px;            /* rounded corners */
     cursor: pointer;                /* Show hand cursor when hovering */
     font-size: 1rem;                /* text-size */
     font-weight: bold;              /* text-bold */
+    transition: all 0.2s ease;      /* Smooth transition */
 }
 
 .login-button:hover {
-    background-color: var(--btn-success-hover);  /* color difference on hover */
-    border-color: var(--text-light);             /* Keep border color on hover */
+    background-color: var(--color-primary);  /* color difference on hover - darker blue */
+    border-color: var(--border-color);       /* Keep border color on hover */
 }

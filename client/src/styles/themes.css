@@ -5,19 +5,20 @@
 
 :root {
   /* ==================== PRIMARY BRAND COLORS ==================== */
-  --color-primary: #538AF7;              /* Main blue - navbar, buttons, accents */
-  --color-primary-hover: #4a7cd9;        /* Darker blue for hover states */
-  --color-primary-light: #7AB4E8;        /* Light blue for hover effects */
+  /* Color Palette: Blue Professional Theme */
+  --color-primary: #3F72AF;              /* Medium blue - navbar, buttons, accents */
+  --color-primary-hover: #2e5a8f;        /* Darker blue for hover states */
+  --color-primary-light: #5a8bc9;        /* Light blue for hover effects */
 
-  --color-secondary: #81D5C4;            /* Teal/turquoise accent */
-  --color-secondary-light: #eaf6f3;      /* Very light teal background */
+  --color-secondary: #DBE2EF;            /* Light blue accent */
+  --color-secondary-light: #F9F7F7;      /* Very light gray background */
 
-  --color-success: #28a745;              /* Green for success states */
-  --color-success-dark: #218838;         /* Darker green for hover */
-  --color-success-light: #d4f8e8;        /* Light green background */
-  --color-success-bg: #d4edda;           /* Success message background */
-  --color-success-border: #c3e6cb;       /* Success message border */
-  --color-success-text: #155724;         /* Success message text */
+  --color-success: #3F72AF;              /* Blue for success states */
+  --color-success-dark: #2e5a8f;         /* Darker blue for hover */
+  --color-success-light: #d0e0f5;        /* Light blue background */
+  --color-success-bg: #d0e0f5;           /* Success message background */
+  --color-success-border: #DBE2EF;       /* Success message border */
+  --color-success-text: #112D4E;         /* Success message text */
 
   --color-danger: #dc3545;               /* Red for danger/delete */
   --color-danger-dark: #c82333;          /* Darker red for hover */
@@ -29,56 +30,58 @@
   --bg-error: #f8d7da;                   /* Error message background */
   --border-error: #f5c6cb;               /* Error message border */
 
-  --color-accent-purple: #667eea;        /* Purple accent (profile avatars, buttons) */
-  --color-accent-purple-dark: #5568d3;   /* Darker purple for hover */
-  --color-accent-purple-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-accent-purple: #3F72AF;        /* Blue accent (profile avatars, buttons) */
+  --color-accent-purple-dark: #112D4E;   /* Darker blue for hover */
+  --color-accent-purple-gradient: linear-gradient(135deg, #3F72AF 0%, #112D4E 100%);
 
   /* ==================== BACKGROUND COLORS ==================== */
-  --bg-app: #f5f6fa;                     /* Main app background */
-  --bg-panel: #D9F0E7;                   /* Panel/card container background (light green) */
+  --bg-app: #F9F7F7;                     /* Main app background - very light gray */
+  --bg-panel: #DBE2EF;                   /* Panel/card container background - light blue */
   --bg-card: #ffffff;                    /* White card background */
-  --bg-card-alt: #f9f9f9;                /* Alternative card background (slightly gray) */
-  --bg-hover: #f5f5f5;                   /* Hover state background */
-  --bg-input: #eaf6f3;                   /* Input field background */
+  --bg-card-alt: #F9F7F7;                /* Alternative card background - light gray */
+  --bg-hover: #eff3f8;                   /* Hover state background */
+  --bg-input: #F9F7F7;                   /* Input field background */
+  --bg-overlay: rgba(17, 45, 78, 0.5);   /* Modal overlay background */
 
   /* ==================== TEXT COLORS ==================== */
-  --text-primary: #1a1a1a;               /* Primary text (headings, important text) */
-  --text-secondary: #333;                /* Secondary text (body text) */
-  --text-tertiary: #666;                 /* Tertiary text (muted, less important) */
+  --text-primary: #112D4E;               /* Primary text - dark blue (headings, important text) */
+  --text-secondary: #112D4E;             /* Secondary text - dark blue (body text) */
+  --text-tertiary: #3F72AF;              /* Tertiary text - medium blue (muted, less important) */
   --text-light: #ffffff;                 /* White text */
   --text-black: #000000;                 /* Pure black text */
 
   /* ==================== BORDER COLORS ==================== */
-  --border-color: #ccc;                  /* Standard border */
-  --border-light: #ddd;                  /* Light border */
-  --border-lighter: #e0e0e0;             /* Even lighter border */
+  --border-color: #DBE2EF;               /* Standard border - light blue */
+  --border-light: #e8eef6;               /* Light border */
+  --border-lighter: #F9F7F7;             /* Even lighter border */
 
   /* ==================== SHADOW DEFINITIONS ==================== */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.06);
-  --shadow-xl: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-2xl: 0 4px 24px rgba(0, 0, 0, 0.10);
+  --shadow-xs: 0 1px 2px rgba(17, 45, 78, 0.05);
+  --shadow-sm: 0 1px 3px rgba(17, 45, 78, 0.1);
+  --shadow-md: 0 2px 6px rgba(17, 45, 78, 0.08);
+  --shadow-lg: 0 2px 12px rgba(17, 45, 78, 0.06);
+  --shadow-xl: 0 4px 12px rgba(17, 45, 78, 0.15);
+  --shadow-2xl: 0 4px 24px rgba(17, 45, 78, 0.10);
 
   /* Colored shadows for specific elements */
-  --shadow-primary: 0 4px 12px rgba(102, 126, 234, 0.3);
-  --shadow-success: 0 1px 4px rgba(40, 167, 69, 0.08);
+  --shadow-primary: 0 4px 12px rgba(63, 114, 175, 0.3);
+  --shadow-success: 0 1px 4px rgba(63, 114, 175, 0.08);
   --shadow-danger: 0 4px 12px rgba(220, 53, 69, 0.3);
-  --shadow-navbar: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-text: 2px 2px 8px rgba(37, 99, 235, 0.15);
+  --shadow-navbar: 0 2px 4px rgba(17, 45, 78, 0.1);
+  --shadow-text: 2px 2px 8px rgba(63, 114, 175, 0.15);
+  --shadow-focus: 0 0 0 3px rgba(63, 114, 175, 0.2);
 
   /* ==================== BUTTON COLORS ==================== */
-  --btn-primary-bg: #538AF7;
-  --btn-primary-hover: #0056b3;
+  --btn-primary-bg: #3F72AF;
+  --btn-primary-hover: #2e5a8f;
   --btn-primary-text: #ffffff;
 
-  --btn-secondary-bg: #007bff;
-  --btn-secondary-hover: #0056b3;
-  --btn-secondary-text: #ffffff;
+  --btn-secondary-bg: #DBE2EF;
+  --btn-secondary-hover: #c8d4e8;
+  --btn-secondary-text: #112D4E;
 
-  --btn-success-bg: #28a745;
-  --btn-success-hover: #218838;
+  --btn-success-bg: #3F72AF;
+  --btn-success-hover: #2e5a8f;
   --btn-success-text: #ffffff;
 
   --btn-danger-bg: #dc3545;
@@ -94,80 +97,82 @@
 /* ==================== DARK MODE THEME ==================== */
 [data-theme="dark"] {
   /* Primary brand colors - adjusted for dark mode */
-  --color-primary: #6b9fff;
-  --color-primary-hover: #5a8eff;
-  --color-primary-light: #8ab4ff;
+  --color-primary: #5a8bc9;              /* Lighter blue for dark mode */
+  --color-primary-hover: #7aa3d6;        /* Even lighter for hover */
+  --color-primary-light: #94b5dd;        /* Lightest blue */
 
-  --color-secondary: #90dfcc;
-  --color-secondary-light: #2d4a45;
+  --color-secondary: #DBE2EF;            /* Light blue accent */
+  --color-secondary-light: #112D4E;      /* Dark blue background */
 
-  --color-success: #3dcc5a;
-  --color-success-dark: #32b84b;
-  --color-success-light: #2d4a35;
-  --color-success-bg: #1e3a26;
-  --color-success-border: #2d4a35;
-  --color-success-text: #7aff94;
+  --color-success: #5a8bc9;              /* Lighter blue for success */
+  --color-success-dark: #7aa3d6;         /* Lighter blue for hover */
+  --color-success-light: #1a3a5c;        /* Dark blue background */
+  --color-success-bg: #1a3456;           /* Success message background */
+  --color-success-border: #2a4a6e;       /* Success message border */
+  --color-success-text: #DBE2EF;         /* Success message text */
 
-  --color-danger: #ff5566;
-  --color-danger-dark: #ee4455;
-  --color-danger-bg: #4a2d30;
-  --color-danger-border: #6b3d42;
-  --color-danger-text: #ffb3bd;
+  --color-danger: #ff5566;               /* Red for danger/delete */
+  --color-danger-dark: #ee4455;          /* Darker red for hover */
+  --color-danger-bg: #4a2d30;            /* Error message background */
+  --color-danger-border: #6b3d42;        /* Error message border */
+  --color-danger-text: #ffb3bd;          /* Error message text */
 
-  --color-accent-purple: #8a9bff;
-  --color-accent-purple-dark: #7a8bef;
-  --color-accent-purple-gradient: linear-gradient(135deg, #8a9bff 0%, #9a6bc2 100%);
+  --color-accent-purple: #5a8bc9;        /* Blue accent (profile avatars, buttons) */
+  --color-accent-purple-dark: #7aa3d6;   /* Lighter blue for hover */
+  --color-accent-purple-gradient: linear-gradient(135deg, #5a8bc9 0%, #3F72AF 100%);
 
   /* Background colors for dark mode */
-  --bg-app: #121212;
-  --bg-panel: #1e1e1e;
-  --bg-card: #2d2d2d;
-  --bg-card-alt: #252525;
-  --bg-hover: #333333;
-  --bg-input: #2a2a2a;
+  --bg-app: #0d1a2d;                     /* Very dark blue background */
+  --bg-panel: #1a2f4a;                   /* Dark blue panel */
+  --bg-card: #112D4E;                    /* Dark blue card background */
+  --bg-card-alt: #1a3a5c;                /* Alternative dark card */
+  --bg-hover: #1f3d61;                   /* Hover state background */
+  --bg-input: #1a2f4a;                   /* Input field background */
+  --bg-overlay: rgba(13, 26, 45, 0.8);   /* Modal overlay background */
 
   /* Text colors for dark mode */
-  --text-primary: #ffffff;
-  --text-secondary: #e0e0e0;
-  --text-tertiary: #b0b0b0;
-  --text-light: #ffffff;
-  --text-black: #ffffff;
+  --text-primary: #F9F7F7;               /* Light gray text */
+  --text-secondary: #DBE2EF;             /* Light blue-tinted text */
+  --text-tertiary: #5a8bc9;              /* Light blue text */
+  --text-light: #F9F7F7;                 /* Light gray text */
+  --text-black: #F9F7F7;                 /* Light gray text */
 
   /* Border colors for dark mode */
-  --border-color: #404040;
-  --border-light: #353535;
-  --border-lighter: #2a2a2a;
+  --border-color: #2a4a6e;               /* Medium blue border */
+  --border-light: #1a3a5c;               /* Dark blue border */
+  --border-lighter: #1a2f4a;             /* Darker border */
 
   /* Shadows adjusted for dark mode */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.6);
-  --shadow-xl: 0 4px 12px rgba(0, 0, 0, 0.7);
-  --shadow-2xl: 0 4px 24px rgba(0, 0, 0, 0.8);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.8);
+  --shadow-xl: 0 4px 12px rgba(0, 0, 0, 0.85);
+  --shadow-2xl: 0 4px 24px rgba(0, 0, 0, 0.9);
 
-  --shadow-primary: 0 4px 12px rgba(107, 159, 255, 0.3);
-  --shadow-success: 0 1px 4px rgba(61, 204, 90, 0.3);
+  --shadow-primary: 0 4px 12px rgba(90, 139, 201, 0.3);
+  --shadow-success: 0 1px 4px rgba(90, 139, 201, 0.3);
   --shadow-danger: 0 4px 12px rgba(255, 85, 102, 0.3);
-  --shadow-navbar: 0 2px 4px rgba(0, 0, 0, 0.5);
-  --shadow-text: 2px 2px 8px rgba(107, 159, 255, 0.2);
+  --shadow-navbar: 0 2px 4px rgba(0, 0, 0, 0.7);
+  --shadow-text: 2px 2px 8px rgba(90, 139, 201, 0.2);
+  --shadow-focus: 0 0 0 3px rgba(90, 139, 201, 0.3);
 
   /* Button colors for dark mode */
-  --btn-primary-bg: #6b9fff;
-  --btn-primary-hover: #5a8eff;
-  --btn-primary-text: #000000;
+  --btn-primary-bg: #3F72AF;
+  --btn-primary-hover: #5a8bc9;
+  --btn-primary-text: #F9F7F7;
 
-  --btn-secondary-bg: #5a8eff;
-  --btn-secondary-hover: #4a7eef;
-  --btn-secondary-text: #000000;
+  --btn-secondary-bg: #1a3a5c;
+  --btn-secondary-hover: #2a4a6e;
+  --btn-secondary-text: #F9F7F7;
 
-  --btn-success-bg: #3dcc5a;
-  --btn-success-hover: #32b84b;
-  --btn-success-text: #000000;
+  --btn-success-bg: #3F72AF;
+  --btn-success-hover: #5a8bc9;
+  --btn-success-text: #F9F7F7;
 
   --btn-danger-bg: #ff5566;
   --btn-danger-hover: #ee4455;
-  --btn-danger-text: #000000;
+  --btn-danger-text: #F9F7F7;
 }
 
 /* ==================== SMOOTH THEME TRANSITIONS ==================== */

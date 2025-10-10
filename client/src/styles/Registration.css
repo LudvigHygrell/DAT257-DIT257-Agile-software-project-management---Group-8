@@ -5,7 +5,7 @@
     left: 0;                                    /* Cover from left edge */
     right: 0;                                   /* Cover to right edge */
     bottom: 0;                                  /* Cover to bottom edge */
-    background-color: rgba(0, 0, 0, 0.5);     /* Semi-transparent dark background */
+    background-color: var(--bg-overlay);        /* Semi-transparent dark background */
     display: flex;                              /* Use flexible box layout */
     align-items: center;                        /* Center content vertically */
     justify-content: center;                    /* Center content horizontally */
@@ -81,7 +81,7 @@
 .registration-input-field:focus {
     outline: none;                                    /* Remove default browser focus outline */
     border-color: var(--color-success);               /* Border color on focus */
-    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);    /* Glow effect */
+    box-shadow: var(--shadow-focus);                  /* Glow effect */
 }
 
 /* Style for the "Create Account" submit button */

@@ -6,7 +6,7 @@
   gap: 2rem;
   width: 90%;
   height: 85vh;
-  margin: 2rem auto;
+  margin: 6rem auto 2rem auto;
   padding: 2rem;
   background: var(--bg-panel);
   border-radius: 12px;
@@ -107,8 +107,8 @@
 
 /* Vote button */
 .vote-btn {
-  background: #ffffff;
-  border: 1px solid #cfd8d6;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   padding: 0.45rem;
   border-radius: 10px;
   cursor: pointer;
@@ -129,8 +129,8 @@
 /* Delete Vote button */
 .delete-vote-btn {
   background: transparent;
-  border: 1px solid #d9534f;
-  color: #d9534f;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
   padding: 10px 12px;
   border-radius: 10px;
   cursor: pointer;

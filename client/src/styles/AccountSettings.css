@@ -87,7 +87,7 @@
 .settings-form input:focus {
   outline: none;
   border-color: var(--color-accent-purple);
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: var(--shadow-focus);
 }
 
 /* Buttons */

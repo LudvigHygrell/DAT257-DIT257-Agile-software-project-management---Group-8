@@ -5,7 +5,7 @@
     left: 0;                                    /* Cover from left edge */
     right: 0;                                   /* Cover to right edge */
     bottom: 0;                                  /* Cover to bottom edge */
-    background-color: rgba(0, 0, 0, 0.5);     /* Background color */
+    background-color: var(--bg-overlay);        /* Background color */
     display: flex;                              /* Use flexible box layout, auto rows or columns */
     align-items: center;                        /* Center content vertically */
     justify-content: center;                    /* Center content horizontally */
@@ -62,7 +62,7 @@
 .input-field:focus {
     outline: none;                                             /* Remove default browser focus outline */
     border-color: var(--color-success);                        /* Border color on focus */
-    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);              /* Glow effect */
+    box-shadow: var(--shadow-focus);                           /* Glow effect */
 }
 
 /* Style for the "Sign In" submit button */
