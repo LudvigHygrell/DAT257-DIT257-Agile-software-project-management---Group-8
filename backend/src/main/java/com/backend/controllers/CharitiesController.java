@@ -77,16 +77,28 @@ public class CharitiesController {
     public ResponseEntity<JsonNode> get(@RequestParam(defaultValue = "", name = "charity") String orgId) {
 
         try {
-            Charity charity = charitiesAdapter.get(orgId);
-            charitiesAdapter.addSearchEntry(charity);
+            // Try to get charity data directly from charityData repository
+            CharityData charityDataEntity = charityData.findById(orgId)
+                .orElseThrow(() -> new Exception("Charity not found"));
+
+            // If user is authenticated, add search entry
+            if (UserUtil.isAuthenticated()) {
+                try {
+                    Charity charity = charitiesAdapter.get(orgId);
+                    charitiesAdapter.addSearchEntry(charity);
+                } catch (Exception e) {
+                    // Charity doesn't exist in charities table yet, create it
+                    charitiesAdapter.addSearchEntry(new Charity(orgId));
+                }
+            }
+
             return ResponseEntity.ok()
                 .body(jb.objectNode()
                     .put("message", "success")
-                    .set("value", 
-                        charityData.getReferenceById(charity.getOrgID()).toJson()));
+                    .set("value", charityDataEntity.toJson()));
         } catch (Exception ex) {
             return ResponseEntity.status(500)
-                .body(jb.objectNode().put("message", "Error fetching charity."));
+                .body(jb.objectNode().put("message", "Error fetching charity: " + ex.getMessage()));
         }
     }
 

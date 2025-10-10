@@ -1,11 +1,6 @@
 /**
  * BeneSphere Theme System
  *
- * This file contains all color definitions for the application.
- * To change the color scheme, simply update the values in :root.
- * For dark mode support, update the [data-theme="dark"] section.
- *
- * Usage: var(--color-primary) in any CSS file
  */
 
 :root {
