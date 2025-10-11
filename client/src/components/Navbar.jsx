@@ -20,7 +20,7 @@ function Navbar({ onLoginClick, isAuthenticated, username, onLogout }) {
             {/* Left side: Logo section containing title and image */}
             <div className="logo-section">
                 {/* Main website title - clickable to navigate to homepage */}
-                <h1 className="title" onClick={handleTitleClick} style={{ cursor: 'pointer' }}>BeneSphere</h1>
+                <h1 className="title" onClick={handleTitleClick}>BeneSphere</h1>
                 {/* Logo image  */}
                 <img src={logo} className="logo-image" />
             </div>

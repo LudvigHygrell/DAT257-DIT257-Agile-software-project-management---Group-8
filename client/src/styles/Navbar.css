@@ -37,12 +37,12 @@
     color: var(--bg-panel);            /* text color */
     font-size: 2.5rem;                  /* text-size */
     margin: 0;                       /* Remove default heading margins */
+    cursor: pointer;                 /* Show hand cursor - title is clickable */
     transition: color var(--transition-normal);  /* Smooth color change on hover */
 }
 
 .title:hover {
     color: var(--color-primary-light);  /* different color on hover */
-    cursor: pointer;                 /* Show hand cursor when hovering */
 }
 
 /* Styling for the "Login" button on right side of navbar */

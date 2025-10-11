@@ -47,12 +47,12 @@ function App() {
           element={
             <div className="main-content">
               { /* Left column: shows top rated charities (1/3 of page width) */}
-              <div className="panel" style={{ flex: 1 }}>
+              <div className="panel panel-small">
                 <TopCharities charities={fake_charities} />
               </div>
 
               {/* Right column: shows searchable charity lists (2/3 of page width) */}
-              <div className="panel" style={{ flex: 2 }}>
+              <div className="panel panel-large">
                 <CharityList charities={fake_charities} />
               </div>
             </div>

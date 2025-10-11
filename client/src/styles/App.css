@@ -47,6 +47,16 @@ html, body, #root {
   height: 100%;
 }
 
+/* Panel with 1/3 width (left column) */
+.panel-small {
+  flex: 1;
+}
+
+/* Panel with 2/3 width (right column) */
+.panel-large {
+  flex: 2;
+}
+
 
 /* Optional: Add a subtle hover effect */
 .panel:hover, .left-panel:hover {
