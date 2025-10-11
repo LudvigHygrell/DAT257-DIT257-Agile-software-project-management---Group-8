@@ -76,16 +76,28 @@ public class MockCommentTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.format("{ \"comment_id\": %s, \"charity\": \"%s\" }", 
                                 comment, charity)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
                 
         JsonNode listResponse = new ObjectMapper().readTree(
                 mockMvc.perform(post("/api/comments/list")
                                 .header("Authorization", "Bearer " + jwtToken)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(String.format(
-                                        "{ \"filters\": [ { \"filter\":" 
-                                        + " \"equals\", \"field\": \"commentId\"," 
-                                        + " \"value\": %s } ] }", comment)))
+                                .content(String.format("""
+                                        {
+                                            "filters": [
+                                                {
+                                                    "field": "charity",
+                                                    "filter": "equals",
+                                                    "value": "%s"
+                                                },
+                                                {
+                                                    "field": "commentId",
+                                                    "filter": "equals",
+                                                    "value": %s
+                                                }
+                                            ]
+                                        }""", charity, comment)))
                         .andExpect(status().isOk())
                         .andReturn().getResponse().getContentAsString());
 
