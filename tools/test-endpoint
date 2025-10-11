@@ -109,8 +109,6 @@ _call_endpoint() {
   if [[ $METHOD != 'GET' ]]; then
     CONTENTS=$(curl "$URL" -X "$METHOD" -s -w "\n%{response_code}" -H "$CONTENT_TYPE" "${AUTHORIZATION[@]}" -d "$JSON" &>/dev/stdout)
   else
-    JSON=$(echo "$JSON" | basenc --base64url)
-    URL="$URL?query=$JSON"
     CONTENTS=$(curl "$URL" -s -w "\n%{response_code}" -X "$METHOD" -H "$CONTENT_TYPE" "${AUTHORIZATION[@]}" &>/dev/stdout)
   fi
 
