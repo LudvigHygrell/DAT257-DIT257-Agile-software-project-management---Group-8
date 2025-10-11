@@ -1,94 +1,92 @@
 package com.backend.tests.controllers;
 
-import com.backend.tests.ResourceLoader;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static com.backend.tests.BenesphereTestUtilities.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @Transactional
-
+@TestInstance(Lifecycle.PER_CLASS)
 public class MockCommentTest {
+    
     @Autowired
     private MockMvc mockMvc;
 
     private String jwtToken;
 
+    private String charity;
 
-    @BeforeEach
+    private int comment = -1;
+
+    @BeforeAll
     public void setUp() throws Exception {
-        //TODO We need to be able to create a charity for the database to run tests on
-
-        //Register a user
-        mockMvc.perform(post("/api/users/create")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("register-user-mock.json")
-                                .toPrettyString()))
-                .andExpect(status().isOk());
-
-        //Log in as a user
-        MvcResult logInResult = mockMvc.perform(get("/api/users/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("login-user-mock.json")
-                                .toPrettyString()))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        //Store the authorization token
-        jwtToken = new ObjectMapper()
-                .readTree(logInResult.getResponse()
-                        .getContentAsString())
-                .get("token").asText();
-
-        // Create a mock comment before each test
-        MvcResult result = mockMvc.perform(post("/api/comments/add")
-                        .header("Authorization", "Bearer " + jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("add-comment-mock.json").toPrettyString()))
-                .andExpect(status().isOk())
-                .andReturn();
+        jwtToken = logInAsMock(mockMvc);
+        charity = getRandomCharity(mockMvc);
     }
+
     @Test
+    @Order(1)
     public void addCommentTest() throws Exception {
         mockMvc.perform(post("/api/comments/add")
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("add-comment-mock.json")
-                                .toPrettyString()))
+                        .content(String.format("{ \"charity\": \"%s\"," 
+                        + " \"comment\": { \"contents\": \"This is a comment.\" } }", charity)))
                 .andExpect(status().isOk());
-
     }
+    
     @Test
+    @Order(2)
+    public void blameCommentTest() throws Exception {
+        comment = getLatestComment(mockMvc, charity);
+        mockMvc.perform(post("/api/comments/blame")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.format("{ \"charity\": \"%s\", \"comment_id\": %s, \"reason\": \"none\" }", 
+                                charity, comment)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @Order(3)
     public void removeCommentTest() throws Exception {
         mockMvc.perform(delete("/api/comments/remove")
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("remove-comment-mock.json")
-                                .toPrettyString()))
+                        .content(String.format("{ \"comment_id\": %s, \"charity\": \"%s\" }", 
+                                comment, charity)))
                 .andExpect(status().isOk());
-    }
+                
+        JsonNode listResponse = new ObjectMapper().readTree(
+                mockMvc.perform(post("/api/comments/list")
+                                .header("Authorization", "Bearer " + jwtToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(String.format(
+                                        "{ \"filters\": [ { \"filter\":" 
+                                        + " \"equals\", \"field\": \"commentId\"," 
+                                        + " \"value\": %s } ] }", comment)))
+                        .andExpect(status().isOk())
+                        .andReturn().getResponse().getContentAsString());
 
-    @Test
-    public void blameCommentTest() throws Exception {
-        mockMvc.perform(post("/api/comments/blame")
-                        .header("Authorization", "Bearer " + jwtToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(ResourceLoader.loadJson("blame-comment-mock.json")
-                                .toPrettyString()))
-                .andExpect(status().isOk());
+        // Assert that the comment did not exist after delete.
+        assertEquals(listResponse.get("value").size(), 0);
     }
-
 }

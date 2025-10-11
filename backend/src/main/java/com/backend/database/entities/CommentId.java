@@ -13,7 +13,7 @@ public class CommentId {
     @Column(name="charity")
     private String charity;
 
-    @Column(name="commentid")
+    @Column(name="nextid")
     private int id;
 
     protected CommentId() {}

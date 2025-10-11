@@ -1,4 +1,4 @@
-\set ON_ERROR_STOP ON
+-- \set ON_ERROR_STOP ON
 
 INSERT INTO Users VALUES
     ('<deleted>', 'benesphere@blackhole.mx', '2bh1jkb34334'),

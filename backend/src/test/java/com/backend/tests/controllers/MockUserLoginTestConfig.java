@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.lang.NonNull;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,22 +18,22 @@ public class MockUserLoginTestConfig {
     private final JavaMailSender mailSender = new JavaMailSender() {
 
         @Override
-        public void send(SimpleMailMessage... simpleMessages) throws MailException {
+        public void send(@NonNull SimpleMailMessage... simpleMessages) throws MailException {
             return;
         }
 
         @Override
-        public MimeMessage createMimeMessage() {
+        public @NonNull MimeMessage createMimeMessage() {
             return new MimeMessage((Session)null);
         }
 
         @Override
-        public MimeMessage createMimeMessage(InputStream contentStream) throws MailException {
+        public @NonNull MimeMessage createMimeMessage(@NonNull InputStream contentStream) throws MailException {
             return new MimeMessage((Session)null);
         }
 
         @Override
-        public void send(MimeMessage... mimeMessages) throws MailException {
+        public void send(@NonNull MimeMessage... mimeMessages) throws MailException {
             return;
         }
         

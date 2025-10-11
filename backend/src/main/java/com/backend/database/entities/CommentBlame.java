@@ -24,7 +24,7 @@ public class CommentBlame implements GetMappedEntity {
     public static final String USER_COLUMN_NAME = "reporter";
 
     @Id
-    @Column(name="commentid")
+    @Column(name="comment")
     private int commentId;
 
     @Id
