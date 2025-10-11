@@ -1,17 +1,12 @@
 package com.backend.controllers;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,21 +20,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.backend.ApplicationProperties;
-import com.backend.jwt.user.UserUtil;
+import com.backend.filesystem.PrivateFilesystem;
+import com.backend.filesystem.PublicFilesystem;
 
+/**
+ * Controller for uploading or downloading media to/from the server.
+ * <p>
+ * Benesphere utilizes a "filesystem" abstraction for media storage. There are two kinds of "filesystems",
+ * public and private. A public filesystem is available for everyone that can access the site, but is typically
+ * read-only, unless you have administrator access.
+ * 
+ * Private filesystems are filesystems that are entirely separate for each user, and every user has the authority
+ * to download, upload or delete any file they wish to within their own system.
+ */
 @RestController
 @RequestMapping("/api/files")
 public class FileController {
+    
+    @Autowired
+    private PrivateFilesystem privateFilesystem;
 
     @Autowired
-    private ApplicationProperties properties;
-    
-    private final ResourceLoader loader;
-
-    public FileController(ResourceLoader loader) {
-        this.loader = loader;
-    }
+    private PublicFilesystem publicFilesystem;
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> loadFileFailedExceptionHandler(Exception ex) {
@@ -49,9 +51,7 @@ public class FileController {
     @GetMapping("/public/{filename:.+}")
     public ResponseEntity<Resource> publicDownload(@PathVariable String filename) throws Exception {
         
-        final String root = properties.getFileProperties().getPublicDirectories().getReadDirectory();
-
-        Resource resource = loader.getResource(String.format("classpath:%s/%s", root, filename));
+        Resource resource = publicFilesystem.load(filename);
 
         if (!resource.exists() || !resource.isReadable())
             return ResponseEntity.notFound().build();
@@ -65,11 +65,8 @@ public class FileController {
 
     @GetMapping("/private/{filename:.+}")
     public ResponseEntity<Resource> privateDownload(@PathVariable String filename) throws IOException {
-        
-        final String root = properties.getFileProperties().getPrivateDirectories().getReadDirectory();
 
-        Resource resource = loader.getResource(String.format("classpath:%s/%s/%s", 
-            root, URLEncoder.encode(UserUtil.getUsername(), StandardCharsets.UTF_8), filename));
+        Resource resource = privateFilesystem.load(filename);
 
         if (!resource.exists() || !resource.isReadable())
             return ResponseEntity.notFound().build();
@@ -84,31 +81,14 @@ public class FileController {
     @PostMapping("/private")
     public ResponseEntity<String> privateUpload(@RequestParam("file") MultipartFile file) throws IOException {
         
-        final String root = loader.getResource(String.format("classpath:%s", 
-            properties.getFileProperties().getPrivateDirectories().getWriteDirectory()))
-            .getURI().getPath();
-
-        Path path = Paths.get(root, 
-            URLEncoder.encode(UserUtil.getUsername(), StandardCharsets.UTF_8), 
-            file.getOriginalFilename());
-        Files.createDirectories(path.getParent());
-        try (OutputStream fout = Files.newOutputStream(path, 
-            StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            file.getInputStream().transferTo(fout);
-        }
+        Path path = privateFilesystem.save(file);
         return ResponseEntity.created(path.toUri()).body("success");
     }
 
     @DeleteMapping("/private/{filename:.+}")
     public ResponseEntity<String> privateDelete(@PathVariable String filename) throws IOException {
-        
-        final String root = loader.getResource(String.format("classpath:%s", 
-            properties.getFileProperties().getPrivateDirectories().getWriteDirectory()))
-            .getURI().getPath();
-
-        Path path = Paths.get(root, URLEncoder.encode(UserUtil.getUsername(), StandardCharsets.UTF_8), filename); 
-        Files.delete(path);
-        
+    
+        privateFilesystem.delete(filename);
         return ResponseEntity.ok().body("success");
     }
 }

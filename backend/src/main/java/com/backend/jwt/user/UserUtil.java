@@ -32,6 +32,9 @@ public abstract class UserUtil {
         throw new RuntimeException("Failed to get named user authentication.");
     }
 
+    /**
+     * Checks whether the current request included a valid Authorization header.
+     */
     public static boolean isAuthenticated() {
 
         RequestAttributes  attrs = RequestContextHolder.getRequestAttributes();

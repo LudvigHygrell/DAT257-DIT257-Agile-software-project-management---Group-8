@@ -29,6 +29,9 @@ public class UserAdapter {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private AuthorityInfo authInfo;
+
     /**
      * Construct a new adapter.
      * @param repo Repository of users to view.
@@ -95,6 +98,12 @@ public class UserAdapter {
      */
     @Transactional
     public void deleteUser(String user) {
+
+        // Proceed only if this is the current user, or if a higher admin
+        //
+        if (!authInfo.hasModifyPermissionOnUser(user))
+            throw new RuntimeException("Permission denied.");
+
         // Ensure the <deleted> placeholder user exists
         // This user is required for foreign key references
         entityManager.createNativeQuery(
@@ -157,6 +166,10 @@ public class UserAdapter {
      */
     @Transactional
     public void changePassword(String username, String newPassword) {
+
+        if (!authInfo.hasModifyPermissionOnUser(username))
+            throw new RuntimeException("Permission denied.");
+
         Optional<User> user = userRepository.findById(username);
         if (user.isEmpty())
             throw new RuntimeException(String.format("%s does not exist.", username));
@@ -180,6 +193,10 @@ public class UserAdapter {
      */
     @Transactional
     public void changeEmail(String username, String email) {
+
+        if (!authInfo.hasModifyPermissionOnUser(username))
+            throw new RuntimeException("Permission denied.");
+
         User user = userRepository.getReferenceById(username);
         user.setEmail(email);
         userRepository.saveAndFlush(user);
