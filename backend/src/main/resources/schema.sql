@@ -1,5 +1,8 @@
 -- PostgresSQL
 
+DROP OWNED BY benesphere_mast;
+
+
 CREATE TABLE IF NOT EXISTS Users(
     username TEXT
         CHECK (NOT (username LIKE '%@%'))
@@ -209,6 +212,13 @@ CREATE OR REPLACE VIEW CharityData AS SELECT DISTINCT
     LEFT JOIN
         CharityNegativeScores cns
         ON (ci.charity=cns.charity);
-CREATE OR REPLACE VIEW NextCommendId(charity) AS SELECT MAX(commentId)+1
-    FROM Comments
-    WHERE Comments.charity=charity;
+
+CREATE OR REPLACE VIEW NextCommendId AS SELECT
+        ca.orgId AS charity,
+        COALESCE(MAX(com.commentId), 0) + 1 AS nextId
+    FROM
+        Charities ca
+    LEFT JOIN
+        Comments com
+    ON (ca.orgId = com.charity)
+    GROUP BY ca.orgId;
