@@ -6,6 +6,7 @@ import { CharityAPI } from '../services/APIService.js';
 function CharityList() {
   const [charities, setCharities] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('score-desc');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -13,9 +14,17 @@ function CharityList() {
     const fetchCharities = async () => {
       setLoading(true);
       try {
+        // Parse sort option to build backend sorting query
+        const [field, ordering] = sortOption.split('-');
+        const sortingConfig = {
+          'score': { field: 'totalScore', ordering: ordering === 'desc' ? 'descending' : 'ascending' },
+          'name': { field: 'humanName', ordering: ordering === 'desc' ? 'descending' : 'ascending' }
+        };
+
         const query = {
           first: 0,
-          max_count: 100
+          max_count: 100,
+          sorting: sortingConfig[field]
         };
         console.log('Fetching charities with query:', query);
         const response = await CharityAPI.listCharities(query);
@@ -46,7 +55,7 @@ function CharityList() {
     };
 
     fetchCharities();
-  }, []);
+  }, [sortOption]);
 
   const filteredCharities = charities.filter(c =>
     c.name.toLowerCase().startsWith(searchTerm.toLowerCase())
@@ -58,13 +67,25 @@ function CharityList() {
   return (
     <div className="panel">
       <h2>All Charities</h2>
-      <input     
-        type="text"
-        placeholder="Search charities..."
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-        className="search-bar"
-      />
+      <div className="charity-controls">
+        <select
+          value={sortOption}
+          onChange={e => setSortOption(e.target.value)}
+          className="sort-dropdown"
+        >
+          <option value="score-desc">Highest Score</option>
+          <option value="score-asc">Lowest Score</option>
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Search charities..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          className="search-bar"
+        />
+      </div>
       <div className="charity-list">
         {filteredCharities.length > 0 ? (
           filteredCharities.map((c) => (
