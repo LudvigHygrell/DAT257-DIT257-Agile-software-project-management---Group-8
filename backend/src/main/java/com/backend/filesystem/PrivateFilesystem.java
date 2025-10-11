@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.ApplicationProperties;
@@ -79,5 +80,19 @@ public class PrivateFilesystem implements Filesystem {
         return loader.getResource(String.format("classpath:%s", 
             properties.getFileProperties().getPrivateDirectories().getWriteDirectory()))
             .getURI().getPath();
+    }
+
+    /**
+     * Deletes the local user's filesystem.
+     * @throws IOException
+     */
+    public void scram() {
+        try {
+            FileSystemUtils.deleteRecursively(Paths.get(
+                getWriteRoot(), 
+                URLEncoder.encode(UserUtil.getUsername(), StandardCharsets.UTF_8)));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

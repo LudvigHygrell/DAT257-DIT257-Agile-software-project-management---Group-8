@@ -3,6 +3,7 @@ package com.backend.database.adapters;
 import com.backend.database.PasswordHashUtility;
 import com.backend.database.entities.User;
 import com.backend.database.repositories.UserRepository;
+import com.backend.filesystem.PrivateFilesystem;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -31,6 +32,9 @@ public class UserAdapter {
 
     @Autowired
     private AuthorityInfo authInfo;
+
+    @Autowired
+    private PrivateFilesystem userFilesystem;
 
     /**
      * Construct a new adapter.
@@ -157,6 +161,9 @@ public class UserAdapter {
 
         // Now delete the user - all foreign key references have been updated
         userRepository.deleteById(user);
+
+        // Delete the user's local filesystem
+        userFilesystem.scram();
     }
 
     /**
