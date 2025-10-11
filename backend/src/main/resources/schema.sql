@@ -195,7 +195,17 @@ CREATE OR REPLACE VIEW CharityNegativeScores AS SELECT
         CharityScores c2 ON (c1.orgId=c2.charity)
     GROUP BY c1.orgId;
 
-CREATE OR REPLACE VIEW CharityData AS SELECT DISTINCT
+CREATE OR REPLACE VIEW CharityClassificationJson AS SELECT
+    c.orgId AS charity,
+    COALESCE(JSON_AGG(cc.class), JSON('[]')) AS classes
+    FROM
+        Charities c
+    LEFT JOIN
+        CharityClassifications cc
+    ON (c.orgId=cc.charity)
+    GROUP BY c.orgId;
+
+CREATE OR REPLACE VIEW CharityData AS SELECT
         ci.charity AS charity,
         humanName,
         homePageUrl,
@@ -203,7 +213,8 @@ CREATE OR REPLACE VIEW CharityData AS SELECT DISTINCT
         charityImageFile,
         cps.score AS positiveScore,
         cns.score AS negativeScore,
-        (cps.score - cns.score) AS totalScore
+        (cps.score - cns.score) AS totalScore,
+        ccjs.classes AS classes
     FROM
         CharityInfo ci
     LEFT JOIN
@@ -211,7 +222,10 @@ CREATE OR REPLACE VIEW CharityData AS SELECT DISTINCT
         ON (ci.charity=cps.charity) 
     LEFT JOIN
         CharityNegativeScores cns
-        ON (ci.charity=cns.charity);
+        ON (ci.charity=cns.charity)
+    LEFT JOIN
+        CharityClassificationJson ccjs
+        ON (ci.charity=ccjs.charity);
 
 CREATE OR REPLACE VIEW NextCommentId AS SELECT
         ca.orgId AS charity,
