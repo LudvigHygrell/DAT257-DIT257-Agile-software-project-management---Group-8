@@ -17,8 +17,7 @@ INSERT INTO Users VALUES
     ('Alice Cooper', 'alice.cooper@gmail.com', '2rn23tgb3h4'),
     ('Lisa Simpson', 'lisa.simpson@springfield-elementary.com', '2124fgg354'),
     ('Bart Simpson', 'bart.simpson@'', ''hahaha''); DROP TABLE Users CASCADE; --', 'as3344h5rni'),
-    ('682', 'scp-682@scp.net', '214h3t3tbuj3'),
-    ('mockingjay', 'mockingjay@test.benesphere.org', 'test_password_123');
+    ('682', 'scp-682@scp.net', '214h3t3tbuj3');
 
 INSERT INTO CharityClasses VALUES
     ('Medicine'),
