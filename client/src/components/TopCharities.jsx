@@ -12,10 +12,14 @@ function TopCharities() {
     const fetchCharities = async () => {
       setLoading(true);
       try {
-        // Fetch all charities without sorting (backend sorting may not be supported yet)
+        // Use backend sorting to get top 3 charities directly
         const query = {
           first: 0,
-          max_count: 100
+          max_count: 3,
+          sorting: {
+            field: "totalScore",
+            ordering: "descending"
+          }
         };
         console.log('TopCharities - Fetching with query:', query);
         const response = await CharityAPI.listCharities(query);
@@ -28,7 +32,7 @@ function TopCharities() {
           descriptionFile: c.charityDescritpionFile,
           homepage: c.homePageUrl,
           score: c.totalScore,
-          category: '' 
+          category: ''
         }));
 
         setCharities(mapped);
@@ -46,9 +50,8 @@ function TopCharities() {
   if (loading) return <p>Loading top charities...</p>;
   if (error) return <p>{error}</p>;
 
-  const topCharities = [...charities]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+  // No need to sort client-side anymore - backend already sorted and limited to top 3
+  const topCharities = charities;
 
   return (
     <div className="panel">

@@ -33,8 +33,7 @@ function Registration({ isVisible, onClose, onSwitchToLogin }) {
             const response = await UserAPI.create({
                 username,
                 email,
-                password,
-                signed: true
+                password
             });
 
             console.log('Registration successful:', response);

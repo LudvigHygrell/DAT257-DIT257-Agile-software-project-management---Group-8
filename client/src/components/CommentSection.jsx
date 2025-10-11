@@ -16,15 +16,24 @@ function CommentSection({ orgId }) {
   const [comments, setComments] = useState([]);  
   const [newComment, setNewComment] = useState("");  
 
-  // Fetch comments from backend based on charity orgID and sort order 
+  // Fetch comments from backend based on charity orgID and sort order
   useEffect(() => {
-    const fetchComments = async () => { 
+    const fetchComments = async () => {
       try {
         // "descending" = newest first, "ascending" = oldest first
         const ordering = sortOrder === "newest" ? "descending" : "ascending";
         const query = QueryHelpers.getCommentsByCharity(orgId, 20, ordering); // get query object from helper with sorting
         const res = await APIService.CommentAPI.listComments(query);  // fetch comments from backend
-        setComments(res.comments || []); // update state with fetched comments
+
+        // Map backend format to frontend format
+        const mappedComments = (res.data.value || []).map(c => ({
+          name: c.author,  // Backend: author, Frontend: name
+          date: c.insertTime,  // Backend: insertTime, Frontend: date
+          text: c.comment?.contents || c.comment || "",  // Backend: comment.contents, Frontend: text
+          vote: null  // TODO: Implement comment voting
+        }));
+
+        setComments(mappedComments); // update state with mapped comments
       } catch (err) {
         console.error("Error fetching comments:", err);
         setComments([]);
@@ -41,13 +50,13 @@ function CommentSection({ orgId }) {
 
     // Build new comment object
     const newCommentObj = {
-      name: "Anonymus", // TODO:  Fetch username from logged-in user
-      text: newComment    // Comment text from input field
+      comment: {  contents: newComment }, 
+      charity: orgId 
     };
 
     try {
       // Send new comment to backend
-      await APIService.CommentAPI.addComment(newCommentObj, orgId);
+      await APIService.CommentAPI.addComment(newCommentObj);
 
       setNewComment(""); // Clear the input field after submission
 
@@ -55,7 +64,16 @@ function CommentSection({ orgId }) {
       const ordering = sortOrder === "newest" ? "descending" : "ascending";
       const query = QueryHelpers.getCommentsByCharity(orgId, 20, ordering);
       const res = await APIService.CommentAPI.listComments(query);
-      setComments(res.comments || []);
+
+      // Map backend format to frontend format
+      const mappedComments = (res.data.value || []).map(c => ({
+        name: c.author,
+        date: c.insertTime,
+        text: c.comment?.contents || c.comment || "",
+        vote: null
+      }));
+
+      setComments(mappedComments);
     } catch (err) {
       console.error("Error adding comment:", err);
     }

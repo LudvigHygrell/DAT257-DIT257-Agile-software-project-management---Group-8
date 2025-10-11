@@ -31,7 +31,7 @@ function CharityPage() {
   // Handle upvote/downvote/delete
   const handleVote = async (up) => {
     try {
-      await CharityAPI.vote({ charityId: orgId, upvote: up });
+      await CharityAPI.vote({ charity: orgId, up: up });
       // Optionally refetch to update score immediately
       const updated = await CharityAPI.getCharity(orgId);
       setCharity(updated.data.value);
@@ -43,7 +43,7 @@ function CharityPage() {
 
   const handleDeleteVote = async () => {
     try {
-      await CharityAPI.removeVote({ charityId: orgId });
+      await CharityAPI.removeVote({ charity: orgId });
       const updated = await CharityAPI.getCharity(orgId);
       setCharity(updated.data.value);
     } catch (err) {

@@ -51,7 +51,7 @@ export const QueryHelpers = {
   getCommentsByCharity: (charityId, limit = 20, sortby) => {
     const filters = [
       createFilter({
-        filter: "equal",
+        filter: "equals",
         field: "charity",
         value: charityId,
       }),
