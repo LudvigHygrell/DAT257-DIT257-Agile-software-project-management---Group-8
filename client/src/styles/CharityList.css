@@ -33,6 +33,7 @@
   margin-bottom: 1rem;
   flex-shrink: 0;
   align-items: center;
+  padding-right: 0.5rem;  /* Match charity-list padding for scrollbar alignment */
 }
 
 /* Search bar */
@@ -44,6 +45,11 @@
   font-size: 1rem;
   background-color: var(--bg-card);
   color: var(--text-secondary);
+  transition: border-color var(--transition-normal);
+}
+
+.search-bar:hover {
+  border-color: var(--color-primary-light);
 }
 
 .search-bar:focus {
