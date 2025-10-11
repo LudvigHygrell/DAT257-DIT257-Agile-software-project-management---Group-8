@@ -1,9 +1,5 @@
 package com.backend.tests.controllers;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,13 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.backend.ApplicationProperties;
-import com.backend.email.EmailConfirmations;
 import com.backend.tests.ResourceLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,12 +33,6 @@ public class MockUserLoginTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  private ApplicationProperties properties;
-
-  @Autowired
-  private ObjectMapper objectMapper;
-
   /**
    * Validate that we can register, log in and delete a user.
    */
@@ -55,35 +41,19 @@ public class MockUserLoginTest {
 
     // Create user.
     //
-    MvcResult createResult = mockMvc.perform(post("/api/users/create")
+    mockMvc.perform(post("/api/users/create")
         .contentType(MediaType.APPLICATION_JSON)
         .content(ResourceLoader.loadJson("register-user-mock.json")
             .toPrettyString()))
-        .andExpect(request().asyncStarted())
+        .andExpect(status().isOk())
         .andReturn();
-
-    // Manual confirmation override
-    //
-    if (properties.getEmailProperties().isVerified()) {
-        StringBuilder confirmation = new StringBuilder("/api/email/confirm/");
-        confirmation
-            .append(new String(Base64.getUrlEncoder().encode("mock.user99@localhost".getBytes())))
-            .append("/")
-            .append(EmailConfirmations.getInstance().getCodeOfPending("mock.user99@localhost"));
-
-        mockMvc.perform(post(confirmation.toString()))
-            .andExpect(status().isOk());
-    }
-
-    {
-        Object result = createResult.getAsyncResult(5000);
-        System.err.println("Result " + result.toString());
-    }
 
     // Log in with new user (and keep auth info).
     //
-    MvcResult result = mockMvc.perform(get("/api/users/login")
-        .param("query", ResourceLoader.loadBase64urlJson("login-user-mock.json")))
+    MvcResult result = mockMvc.perform(post("/api/users/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(ResourceLoader.loadJson("login-user-mock.json")
+                .toPrettyString()))
         .andExpect(status().isOk())
         .andReturn();
 
@@ -100,22 +70,5 @@ public class MockUserLoginTest {
         .content(ResourceLoader.loadJson("delete-user-mock.json")
             .toPrettyString()))
         .andExpect(status().isOk());
-  }
-    @Test
-    public void testLoginWithValidUsernameAndPassword() throws Exception {
-        // Create login JSON
-        Map<String, String> loginData = new HashMap<>();
-        loginData.put("username", "testuser");
-        loginData.put("password", "testpassword");
-
-        // Encode to Base64
-        String jsonString = objectMapper.writeValueAsString(loginData);
-        String base64Query = Base64.getUrlEncoder().encodeToString(jsonString.getBytes());
-
-        // Perform GET request to /login?query=<base64>
-        mockMvc.perform(get("/login")
-                        .param("query", base64Query)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
     }
 }

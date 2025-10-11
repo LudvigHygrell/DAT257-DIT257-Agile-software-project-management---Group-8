@@ -73,8 +73,8 @@ public class FilteredQuery<Entity> {
             .where(filter.getPredicate());
         if (ordering.isOrdered()) {
             q = q.orderBy(ordering.isDescending() ?
-                criteriaBuilder.desc(root.get(ordering.field().toLowerCase()))
-                : criteriaBuilder.asc(root.get(ordering.field().toLowerCase())));
+                criteriaBuilder.desc(root.get(ordering.field()))
+                : criteriaBuilder.asc(root.get(ordering.field())));
         }
         return manager.createQuery(q)
             .setMaxResults(limits.maxResults())
@@ -95,8 +95,8 @@ public class FilteredQuery<Entity> {
         CriteriaQuery<Entity> q = query.select(root);
         if (ordering.isOrdered()) {
             q = q.orderBy(ordering.isDescending() ?
-                criteriaBuilder.desc(root.get(ordering.field().toLowerCase()))
-                : criteriaBuilder.asc(root.get(ordering.field().toLowerCase())));
+                criteriaBuilder.desc(root.get(ordering.field()))
+                : criteriaBuilder.asc(root.get(ordering.field())));
         }
         return manager.createQuery(q)
             .setMaxResults(limits.maxResults())

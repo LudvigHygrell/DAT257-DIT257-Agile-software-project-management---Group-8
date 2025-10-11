@@ -213,7 +213,7 @@ CREATE OR REPLACE VIEW CharityData AS SELECT DISTINCT
         CharityNegativeScores cns
         ON (ci.charity=cns.charity);
 
-CREATE OR REPLACE VIEW NextCommendId AS SELECT
+CREATE OR REPLACE VIEW NextCommentId AS SELECT
         ca.orgId AS charity,
         COALESCE(MAX(com.commentId), 0) + 1 AS nextId
     FROM

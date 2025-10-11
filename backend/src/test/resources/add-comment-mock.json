@@ -1,4 +1,4 @@
 {
-  "comment": {"message": "Mock comment body text"},
-  "charity": "mockOrgID"
+  "comment": { "contents": "Mock comment body text" },
+  "charity": ""
 }
