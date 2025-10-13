@@ -92,7 +92,7 @@ public class CharityData {
             .put("charity", getCharity())
             . <ObjectNode> set("humanName", JsonNodeFactory.instance.textNode(getHumanName()))
             . <ObjectNode> set("homePageUrl", JsonNodeFactory.instance.textNode(getHomePageUrl()))
-            . <ObjectNode> set("charityDescritpionFile", JsonNodeFactory.instance.textNode(getCharityDescriptionFile()))
+            . <ObjectNode> set("charityDescriptionFile", JsonNodeFactory.instance.textNode(getCharityDescriptionFile()))
             . <ObjectNode> set("charityImageFile", JsonNodeFactory.instance.textNode(getCharityImageFile()))
             . <ObjectNode> set("positiveScore", JsonNodeFactory.instance.numberNode(getPositiveScore()))
             . <ObjectNode> set("negativeScore", JsonNodeFactory.instance.numberNode(getNegativeScore()))
