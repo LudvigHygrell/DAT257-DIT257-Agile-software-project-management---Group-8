@@ -258,6 +258,15 @@ export const CharityAPI = {
   }),
 };
 
+// ==================== File API ====================
+
+export const FileAPI = {
+  getPublicFile: (fileName) => api.get(`/files/public/${fileName}`), // BASE_URL/files/public/fileName
+
+  getPrivateFile: (fileName) => api.get(`/files/private/${fileName}`), // requires authentication
+};
+
+
 // ==================== COMMENT ENDPOINTS ====================
 
 export const CommentAPI = {
@@ -276,6 +285,7 @@ const API = {
   UserAPI,
   CharityAPI,
   CommentAPI,
+  FileAPI,
   buildQuery,
   createFilter,
 };

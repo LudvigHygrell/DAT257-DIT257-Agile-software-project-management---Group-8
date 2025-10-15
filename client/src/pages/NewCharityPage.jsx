@@ -1,16 +1,17 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import "../styles/NewCharityPage.css";
-import thumbsUp from "../assets/thumbs-up.png";
-import thumbsDown from "../assets/thumbs-down.png";
 import CommentSection from "../components/CommentSection.jsx";
 import { CharityAPI } from "../services/APIService.js";
+import { FileAPI } from "../services/APIService.js";
 
 function CharityPage() {
   const { orgId } = useParams();
   const [charity, setCharity] = useState(null);
+  const [charityDescription, setCharityDescription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
 
   useEffect(() => {
     const fetchCharity = async () => {
@@ -19,7 +20,7 @@ function CharityPage() {
         const res = await CharityAPI.getCharity(orgId);
         setCharity(res.data.value);
       } catch (err) {
-        console.error("Error fetching charity:", err);
+        console.error("Error fetching charity:" + err);
         setError("Failed to load charity data.");
       } finally {
         setLoading(false);
@@ -27,6 +28,24 @@ function CharityPage() {
     };
     fetchCharity();
   }, [orgId]);
+  
+  useEffect(() => {
+    if (!charity) return;
+    
+    const fetchCharityDescription = async () => {
+      try {
+        if (charity.charityDescriptionFile) {
+          const res = await FileAPI.getPublicFile(charity.charityDescriptionFile);
+          console.log("Fetched charity description:", res);
+          setCharityDescription(res.data);
+        }
+      } catch (err) {
+        console.error("There is no description available", err);
+      }
+    };
+    fetchCharityDescription();
+  }, [charity]);
+   
 
   // Handle upvote/downvote/delete
   const handleVote = async (up) => {
@@ -61,7 +80,7 @@ function CharityPage() {
       <div className="charity-page-info">
         <div className="charity-header">
           <img
-            src={charity.charityImageFile ? `/${charity.charityImageFile}` : `https://via.placeholder.com/100?text=${charity.humanName?.[0]}`}
+            src={`http://localhost:8080/api/files/public/${charity.charityImageFile || 'default_charity_logo.png'}`}
             alt={`${charity.humanName} logo`}
             className="charity-logo-large"
           />
@@ -76,7 +95,7 @@ function CharityPage() {
                 aria-label="Like"
                 title="Like"
               >
-                <img src={thumbsUp} alt="Thumbs up" />
+                <img src={'http://localhost:8080/api/files/public/thumbs_up.png'} alt="Thumbs up" />
               </button>
 
               <button
@@ -85,7 +104,7 @@ function CharityPage() {
                 aria-label="Dislike"
                 title="Dislike"
               >
-                <img src={thumbsDown} alt="Thumbs down" />
+                <img src={'http://localhost:8080/api/files/public/thumbs_down.png'} alt="Thumbs down" />
               </button>
 
               <button
@@ -101,9 +120,9 @@ function CharityPage() {
         </div>
 
         <div className="charity-description-section">
-          <h3>Who are we?</h3>
+          <h3>Charity Description</h3>
           <p className="charity-description">
-            {charity.charityDescriptionFile || "No description available."}
+            {charityDescription || "No description available."}
           </p>
         </div>
 

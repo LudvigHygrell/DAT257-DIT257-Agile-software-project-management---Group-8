@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import UserMenu from './UserMenu';
 import '../styles/Navbar.css';
-import logo from '../assets/sample_logo.png';
+
 
 // onLoginClick: function to call when user clicks the login button
 // isAuthenticated: boolean to check if user is logged in
@@ -22,7 +22,7 @@ function Navbar({ onLoginClick, isAuthenticated, username, onLogout }) {
                 {/* Main website title - clickable to navigate to homepage */}
                 <h1 className="title" onClick={handleTitleClick}>BeneSphere</h1>
                 {/* Logo image  */}
-                <img src={logo} className="logo-image" />
+                <img src={`http://localhost:8080/api/files/public/sample_logo.png`} className="logo-image" />
             </div>
             {/* Right side: Show user menu if authenticated, otherwise show login button */}
             {isAuthenticated ? (

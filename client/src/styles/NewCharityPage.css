@@ -35,9 +35,7 @@
 
 .charity-logo-large {
   width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 3px solid var(--color-success);
+  height: auto;
   object-fit: cover;
 }
 

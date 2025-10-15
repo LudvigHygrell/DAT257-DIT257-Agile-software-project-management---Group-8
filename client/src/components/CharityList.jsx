@@ -46,8 +46,8 @@ function CharityList() {
         console.log('Mapped charities:', mapped);
         setCharities(mapped);
       } catch (err) {
-        console.error('Error loading charities:', err);
-        console.error('Error details:', err.response || err.message);
+        console.error('Error loading charities:' + err);
+        console.error('Error details:' + (err.response || err.message));
         setError('Failed to load charities');
       } finally {
         setLoading(false);
