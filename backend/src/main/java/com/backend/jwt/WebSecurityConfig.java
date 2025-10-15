@@ -54,7 +54,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/create").permitAll()
                         .requestMatchers("/api/charities/**").permitAll()
-                        .requestMatchers("/api/files/public/**").permitAll();
+                        .requestMatchers("/api/files/public/**").permitAll()
+                        .requestMatchers("/api/comments/list").permitAll();
                     
                     if (properties.getEmailProperties().isVerified()) {
                         authorize.requestMatchers("/api/email/confirm/**").permitAll();

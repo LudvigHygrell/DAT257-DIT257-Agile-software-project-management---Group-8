@@ -4,10 +4,9 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 import com.backend.database.entities.keys.CommentKey;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,7 +38,7 @@ public class Comment implements GetMappedEntity {
     private int commentId;
 
     @Column(name="comment")
-    private String comment;
+    private JsonNode comment;
 
     @Column(name="commentuser")
     private String commentUser;
@@ -63,7 +62,7 @@ public class Comment implements GetMappedEntity {
         assert null != commentUser;
         this.commentId = commentId;
         this.charity = charity;
-        this.comment = comment.toString();
+        this.comment = comment;
         this.commentUser = commentUser;
     }
 
@@ -76,11 +75,7 @@ public class Comment implements GetMappedEntity {
     }
 
     public JsonNode getComment() {
-        try {
-            return new ObjectMapper().readTree(comment);
-        } catch (JsonProcessingException ex) {
-            throw new RuntimeException("Unexpected processing error in validated JSON.");
-        }
+        return comment;
     }
 
     public String getCommentUser() {
@@ -102,7 +97,7 @@ public class Comment implements GetMappedEntity {
 
     public void setComment(JsonNode comment) {
         assert null != comment;
-        this.comment = comment.toString();
+        this.comment = comment;
     }
 
     public void setCommentUser(String user) {
@@ -114,10 +109,10 @@ public class Comment implements GetMappedEntity {
     public JsonNode toJson() {
         return JsonNodeFactory.instance.objectNode()
             .put("charity", charity)
-            .put("commentId", commentId)
-            .put("comment", comment)
-            .put("user", commentUser)
-            .put("insertTime", insertTime.getTime());
+            .<ObjectNode> set("commentId", JsonNodeFactory.instance.numberNode(commentId))
+            .<ObjectNode> set("comment", comment)
+            .<ObjectNode> set("user", JsonNodeFactory.instance.textNode(commentUser))
+            .<ObjectNode> set("insertTime", JsonNodeFactory.instance.numberNode(insertTime.getTime()));
     }
 
     @Override
