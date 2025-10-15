@@ -9,6 +9,36 @@ function CommentSection({ orgId }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
+
+  // === Add this helper ===
+  const getCommentText = (raw) => {
+    if (raw == null) return "";
+
+    // If backend already returned an object (JsonNode parsed by axios)
+    if (typeof raw === "object") {
+      return raw.contents ?? raw.text ?? JSON.stringify(raw);
+    }
+
+    // If backend returned a string: might be JSON string or plain string
+    if (typeof raw === "string") {
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed == null) return "";
+        if (typeof parsed === "object") {
+          return parsed.contents ?? parsed.text ?? JSON.stringify(parsed);
+        }
+        return String(parsed);
+      } catch {
+        // not JSON — treat as plain string
+        return raw;
+      }
+    }
+
+    // fallback for numbers/booleans/etc.
+    return String(raw);
+  };
+  // === end helper ===
+
   useEffect(() => {
     const fetchComments = async () => {
       const query = {
@@ -23,17 +53,9 @@ function CommentSection({ orgId }) {
         const mappedComments = (res.data.value || []).map(c => ({
           name: c.user,
           date: c.insertTime,
-          text: (() => {
-            try {
-              const parsed = JSON.parse(c.comment); // parse the JSON string
-              return parsed.contents || "";
-            } catch {
-              return c.comment || ""; // fallback if parsing fails
-            }
-          })(),
+          text: getCommentText(c.comment),
           vote: null
         }));
-
         setComments(mappedComments);
 
       } catch (err) {
