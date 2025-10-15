@@ -95,7 +95,7 @@ function CharityPage() {
                 aria-label="Like"
                 title="Like"
               >
-                <img src={'http://localhost:8080/api/files/public/thumbs_up.png'} alt="Thumbs up" />
+                <img src={'http://localhost:8080/api/files/public/thumbs-up.png'} alt="Thumbs up" />
               </button>
 
               <button
@@ -104,7 +104,7 @@ function CharityPage() {
                 aria-label="Dislike"
                 title="Dislike"
               >
-                <img src={'http://localhost:8080/api/files/public/thumbs_down.png'} alt="Thumbs down" />
+                <img src={'http://localhost:8080/api/files/public/thumbs-down.png'} alt="Thumbs down" />
               </button>
 
               <button
