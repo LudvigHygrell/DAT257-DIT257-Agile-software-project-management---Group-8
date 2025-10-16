@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.backend.exceptions.IllegalFilenameSequenceException;
 import com.backend.filesystem.PrivateFilesystem;
 import com.backend.filesystem.PublicFilesystem;
 
@@ -48,9 +49,47 @@ public class FileController {
         return ResponseEntity.status(500).body("File operation failed");
     }
 
+    @ExceptionHandler(IllegalFilenameSequenceException.class)
+    public ResponseEntity<String> illegalFilename() {
+        return ResponseEntity.badRequest().body("Filepath attack attempt detected - This incident will be reported.");
+    }
+
+    /**
+     * Performs validation on the given path and throws if it contains unexpected directory traversal
+     * or suspicious elements.
+     */
+    private void ensureLegalFilepath(String filename) throws IllegalFilenameSequenceException {
+        final String[] ILLEGAL_SEQUENCES = {
+            "..",          // Attempt to traverse in reverse
+            "~",           // Attempt to access HOME
+            ":",           // Separator in some environment variables
+            "//",          // Potential attempt to switch protocols
+            "/etc/passwd", // Obvious
+            "boot.ini",    // Windows boot script
+            "\\\\\\\\",    // Windows live desktop
+            "\0",          // String escape
+            "$",           // Environment variable evaluation or arbitrary code
+            ";",           // Attempt to end statement prematurely
+            "%",           // Environment variable evaluation on windows
+        };
+
+        for (int codepoint : filename.codePoints().toArray()) {
+            if (Character.isISOControl(codepoint)) // Control character
+                throw new IllegalFilenameSequenceException();
+            if (codepoint == '\r' || codepoint == '\n') // Dobious whitespace (attempt to hide a file duplication)
+                throw new IllegalFilenameSequenceException();
+        }
+
+        for (String sequence : ILLEGAL_SEQUENCES) {
+            if (filename.contains(sequence))
+                throw new IllegalFilenameSequenceException();
+        }
+    }
+
     @GetMapping("/public/{filename:.+}")
     public ResponseEntity<Resource> publicDownload(@PathVariable String filename) throws Exception {
-        
+        ensureLegalFilepath(filename);
+
         Resource resource = publicFilesystem.load(filename);
 
         if (!resource.exists() || !resource.isReadable())
@@ -64,7 +103,8 @@ public class FileController {
     }
 
     @GetMapping("/private/{filename:.+}")
-    public ResponseEntity<Resource> privateDownload(@PathVariable String filename) throws IOException {
+    public ResponseEntity<Resource> privateDownload(@PathVariable String filename) throws IOException, IllegalFilenameSequenceException {
+        ensureLegalFilepath(filename);
 
         Resource resource = privateFilesystem.load(filename);
 
@@ -79,15 +119,17 @@ public class FileController {
     }
 
     @PostMapping("/private")
-    public ResponseEntity<String> privateUpload(@RequestParam("file") MultipartFile file) throws IOException {
-        
+    public ResponseEntity<String> privateUpload(@RequestParam("file") MultipartFile file) throws IOException, IllegalFilenameSequenceException {
+        ensureLegalFilepath(file.getOriginalFilename());
+
         Path path = privateFilesystem.save(file);
         return ResponseEntity.created(path.toUri()).body("success");
     }
 
     @DeleteMapping("/private/{filename:.+}")
-    public ResponseEntity<String> privateDelete(@PathVariable String filename) throws IOException {
-    
+    public ResponseEntity<String> privateDelete(@PathVariable String filename) throws IOException, IllegalFilenameSequenceException {
+        ensureLegalFilepath(filename);
+
         privateFilesystem.delete(filename);
         return ResponseEntity.ok().body("success");
     }

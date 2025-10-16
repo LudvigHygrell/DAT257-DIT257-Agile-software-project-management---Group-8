@@ -39,31 +39,40 @@ function CommentSection({ orgId }) {
   };
   // === end helper ===
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      const query = {
-        charity: orgId,
-        limit: 20,
-        order: sortOrder === "newest" ? "descending" : "ascending"
-      };
-
-      try {
-        const res = await CommentAPI.listComments(query);
-
-        const mappedComments = (res.data.value || []).map(c => ({
-          name: c.user,
-          date: c.insertTime,
-          text: getCommentText(c.comment),
-          vote: null
-        }));
-        setComments(mappedComments);
-
-      } catch (err) {
-        console.error("Error fetching comments:", err);
-        setComments([]);
+  const fetchComments = async () => {
+    const query = {
+      filters: [
+        {
+          filter: "equals",
+          field: "charity",
+          value: orgId
+        }
+      ],
+      max_count: 20,
+      sorting: {
+        ordering: sortOrder === "newest" ? "descending" : "ascending",
+        field: "insertTime"
       }
     };
 
+    try {
+      const res = await CommentAPI.listComments(query);
+
+      const mappedComments = (res.data.value || []).map(c => ({
+        name: c.user,
+        date: c.insertTime,
+        text: getCommentText(c.comment),
+        vote: null
+      }));
+      setComments(mappedComments);
+
+    } catch (err) {
+      console.error("Error fetching comments:", err);
+      setComments([]);
+    }
+  };
+
+  useEffect(() => {
     fetchComments();
   }, [orgId, sortOrder]);
 
@@ -80,22 +89,7 @@ function CommentSection({ orgId }) {
       await CommentAPI.addComment(newCommentObj);
       setNewComment("");
 
-      // Refresh comments
-      const query = {
-        charity: orgId,
-        limit: 20,
-        order: sortOrder === "newest" ? "descending" : "ascending"
-      };
-      const res = await CommentAPI.listComments(query);
-
-      const mappedComments = (res.data.value || []).map(c => ({
-        name: c.author,
-        date: c.insertTime,
-        text: getCommentText(c.comment),
-        vote: null
-      }));
-
-      setComments(mappedComments);
+      await fetchComments()
     } catch (err) {
       console.error("Error adding comment:", err);
     }
@@ -110,7 +104,10 @@ function CommentSection({ orgId }) {
           <button
             key={order}
             className={`sort-${order} ${sortOrder === order ? "active" : ""}`}
-            onClick={() => setSortOrder(order)}
+            onClick={async () => {
+              setSortOrder(order);
+              await fetchComments();
+            }}
           >
             {order.charAt(0).toUpperCase() + order.slice(1)}
           </button>
