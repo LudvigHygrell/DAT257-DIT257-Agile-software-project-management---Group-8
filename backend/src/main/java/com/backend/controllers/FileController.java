@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.backend.exceptions.IllegalFilenameSequenceException;
 import com.backend.filesystem.PrivateFilesystem;
 import com.backend.filesystem.PublicFilesystem;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Controller for uploading or downloading media to/from the server.
@@ -86,9 +87,17 @@ public class FileController {
         }
     }
 
-    @GetMapping("/public/{filename:.+}")
-    public ResponseEntity<Resource> publicDownload(@PathVariable String filename) throws Exception {
+    private String getFilename(HttpServletRequest request, String base) throws IllegalFilenameSequenceException {
+        String full = request.getRequestURI();
+        String filename = full.substring(base.length());
+
         ensureLegalFilepath(filename);
+        return filename;
+    }
+
+    @GetMapping("/public/**")
+    public ResponseEntity<Resource> publicDownload(HttpServletRequest request) throws Exception {
+        String filename = getFilename(request, "/api/files/public/");
 
         Resource resource = publicFilesystem.load(filename);
 
@@ -102,9 +111,9 @@ public class FileController {
             .body(resource);
     }
 
-    @GetMapping("/private/{filename:.+}")
-    public ResponseEntity<Resource> privateDownload(@PathVariable String filename) throws IOException, IllegalFilenameSequenceException {
-        ensureLegalFilepath(filename);
+    @GetMapping("/private/**")
+    public ResponseEntity<Resource> privateDownload(HttpServletRequest request) throws IOException, IllegalFilenameSequenceException {
+        String filename = getFilename(request, "/api/files/private/");
 
         Resource resource = privateFilesystem.load(filename);
 
@@ -126,9 +135,9 @@ public class FileController {
         return ResponseEntity.created(path.toUri()).body("success");
     }
 
-    @DeleteMapping("/private/{filename:.+}")
-    public ResponseEntity<String> privateDelete(@PathVariable String filename) throws IOException, IllegalFilenameSequenceException {
-        ensureLegalFilepath(filename);
+    @DeleteMapping("/private/**")
+    public ResponseEntity<String> privateDelete(HttpServletRequest request) throws IOException, IllegalFilenameSequenceException {
+        String filename = getFilename(request, "/api/files/private/");
 
         privateFilesystem.delete(filename);
         return ResponseEntity.ok().body("success");

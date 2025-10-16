@@ -1,6 +1,7 @@
 package com.backend.jwt;
 
-import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.backend.ApplicationProperties;
 
-import java.util.Arrays;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Security configuration for incoming requests.
@@ -55,7 +56,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/create").permitAll()
                         .requestMatchers("/api/charities/**").permitAll()
                         .requestMatchers("/api/files/public/**").permitAll()
-                        .requestMatchers("/api/comments/list").permitAll();
+                        .requestMatchers("/api/comments/list").permitAll()
+                        .requestMatchers("/error").permitAll();
                     
                     if (properties.getEmailProperties().isVerified()) {
                         authorize.requestMatchers("/api/email/confirm/**").permitAll();

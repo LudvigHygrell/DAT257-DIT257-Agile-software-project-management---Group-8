@@ -34,9 +34,9 @@ INSERT INTO Charities VALUES
     ('1136547');
 
 INSERT INTO CharityInfo VALUES
-    ('1089464', 'Cancer research UK', 'https://www.cancerresearchuk.org/', 'cancer-research-uk.txt', 'cancer-research-uk.png'),
-    ('1097940', 'Action for children', 'https://www.actionforchildren.org/', 'action-for-children.txt', 'action-for-children.svg'),
-    ('1136547', 'The Big Give', 'https://www.thebiggivesa.org/', 'the-big-give.txt', 'the-big-give.svg');
+    ('1089464', 'Cancer research UK', 'https://www.cancerresearchuk.org/', 'charities/cancer-research-uk/cancer-research-uk.txt', 'charities/cancer-research-uk/cancer-research-uk.png'),
+    ('1097940', 'Action for children', 'https://www.actionforchildren.org/', 'charities/action-for-children/action-for-children.txt', 'charities/action-for-children/action-for-children.svg'),
+    ('1136547', 'The Big Give', 'https://www.thebiggivesa.org/', 'charities/the-big-give/the-big-give.txt', 'charities/the-big-give/the-big-give.svg');
 
 INSERT INTO CharityClassifications VALUES
     ('1089464', 'Medicine'),
