@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-@Converter(autoApply=true)
+@Converter(autoApply=false)
 public class JpaToJsonConverter implements AttributeConverter<JsonNode, String> {
     
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -25,7 +25,7 @@ public class JpaToJsonConverter implements AttributeConverter<JsonNode, String> 
     public JsonNode convertToEntityAttribute(String dbData) {
         try {
             return objectMapper.readTree(dbData);
-        } catch (Exception ex) {
+        } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex);
         }
     }

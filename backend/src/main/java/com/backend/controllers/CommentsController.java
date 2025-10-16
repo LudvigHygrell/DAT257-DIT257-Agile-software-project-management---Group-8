@@ -76,7 +76,7 @@ public class CommentsController {
             .put("message", "success")
             .set("value", jb.arrayNode()
                 .addAll(results.stream()
-                    .map(c -> c.toJson()).toList())));
+                    .map(Comment::toJson).toList())));
     }
 
     @DeleteMapping("/remove")

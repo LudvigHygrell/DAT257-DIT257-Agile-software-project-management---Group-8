@@ -91,14 +91,7 @@ function CommentSection({ orgId }) {
       const mappedComments = (res.data.value || []).map(c => ({
         name: c.author,
         date: c.insertTime,
-        text: (() => {
-          try {
-            const parsed = JSON.parse(c.comment);
-            return parsed.contents || "";
-          } catch {
-            return c.comment || "";
-          }
-        })(),
+        text: getCommentText(c.comment),
         vote: null
       }));
 
