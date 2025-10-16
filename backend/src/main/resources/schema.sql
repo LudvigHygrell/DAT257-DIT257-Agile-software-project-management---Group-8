@@ -174,6 +174,8 @@ CREATE TABLE IF NOT EXISTS CharityInfo(
     charityDescriptionFile TEXT
         NOT NULL,
     charityImageFile TEXT
+        NOT NULL,
+    activitiesDirectory TEXT
         NOT NULL
 );
 
@@ -211,6 +213,7 @@ CREATE OR REPLACE VIEW CharityData AS SELECT
         homePageUrl,
         charityDescriptionFile,
         charityImageFile,
+        activitiesDirectory,
         cps.score AS positiveScore,
         cns.score AS negativeScore,
         (cps.score - cns.score) AS totalScore,

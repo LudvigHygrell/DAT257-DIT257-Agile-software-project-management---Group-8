@@ -5,39 +5,42 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 @Entity
-@Table(name = "CharityInfo")
+@Table(name = "charityinfo")
 public class CharityInfo {
     @Id
     @Column(name="charity", nullable = false)
     private String charity;
 
-    @Id
-    @Column(name="humanName", nullable = false)
+    @Column(name="humanname", nullable = false)
     private String humanName;
 
-    @Id
     @Column(name="class", nullable = false)
     private String charityClass;
 
-    @Id
-    @Column(name="homePageUrl", nullable = false)
+    @Column(name="homepageurl", nullable = false)
     private String homePageUrl;
 
-    @Id
-    @Column(name="charityDescriptionFile", nullable = false)
+    @Column(name="charitydescriptionfile", nullable = false)
     private String charityDescriptionFile;
 
-    public CharityInfo(String charity, String humanName, String charityClass, String homePageUrl, String charityDescriptionFile) {
+    @Column(name="activitiesdirectory")
+    private String activitiesDirectory;
+
+    protected CharityInfo() {}
+
+    public CharityInfo(String charity, String humanName, String charityClass, String homePageUrl, String charityDescriptionFile, String activitiesDirectory) {
         assert null != charity;
         assert null != humanName;
         assert null != charityClass;
         assert null != homePageUrl;
         assert null != charityDescriptionFile;
+        assert null != activitiesDirectory;
         this.charity = charity;
         this.humanName = humanName;
         this.charityClass = charityClass;
         this.homePageUrl = homePageUrl;
         this.charityDescriptionFile = charityDescriptionFile;
+        this.activitiesDirectory = activitiesDirectory;
     }
 
     public String getCharity() {
@@ -78,5 +81,13 @@ public class CharityInfo {
 
     public void setCharityDescriptionFile(String charityDescriptionFile) {
         this.charityDescriptionFile = charityDescriptionFile;
+    }
+
+    public String getActivitiesDirectory() {
+        return activitiesDirectory;
+    }
+
+    public void setActivitiesDirectory(String activitiesDirectory) {
+        this.activitiesDirectory = activitiesDirectory;
     }
 }

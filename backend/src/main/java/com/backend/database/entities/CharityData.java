@@ -32,6 +32,9 @@ public class CharityData {
     @Column(name="charityimagefile")
     private String charityImageFile;
 
+    @Column(name="activitiesdirectory")
+    private String activitiesDirectory;
+
     @Column(name="positivescore")
     private long positiveScore;
 
@@ -67,6 +70,14 @@ public class CharityData {
         return charityImageFile;
     }
 
+    public String getActivitiesDirectory() {
+        return activitiesDirectory;
+    }
+
+    public void setActivitiesDirectory(String activitiesDirectory) {
+        this.activitiesDirectory = activitiesDirectory;
+    }
+
     public long getPositiveScore() {
         return positiveScore;
     }
@@ -94,6 +105,7 @@ public class CharityData {
             . <ObjectNode> set("homePageUrl", JsonNodeFactory.instance.textNode(getHomePageUrl()))
             . <ObjectNode> set("charityDescriptionFile", JsonNodeFactory.instance.textNode(getCharityDescriptionFile()))
             . <ObjectNode> set("charityImageFile", JsonNodeFactory.instance.textNode(getCharityImageFile()))
+            . <ObjectNode> set("activitiesDirectory", JsonNodeFactory.instance.textNode(getActivitiesDirectory()))
             . <ObjectNode> set("positiveScore", JsonNodeFactory.instance.numberNode(getPositiveScore()))
             . <ObjectNode> set("negativeScore", JsonNodeFactory.instance.numberNode(getNegativeScore()))
             . <ObjectNode> set("totalScore", JsonNodeFactory.instance.numberNode(getTotalScore()))
