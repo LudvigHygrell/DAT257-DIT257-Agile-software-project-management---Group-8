@@ -92,7 +92,7 @@ function CharityList() {
             <div key={c.orgId} className="charity-card">
               <div className="charity-info">
                 <img
-                  src={c.logo ? `/${c.logo}` : `https://via.placeholder.com/50?text=${c.name.charAt(0)}`}
+                  src={`http://localhost:8080/api/files/public/${c.logo}`}
                   alt={`${c.name} logo`}
                   className="charity-logo"
                 />
