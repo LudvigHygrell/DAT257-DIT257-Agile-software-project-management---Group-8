@@ -63,3 +63,35 @@ html, body, #root {
   box-shadow: var(--shadow-2xl);
   transition: box-shadow var(--transition-normal);
 }
+
+
+/* =========================================
+    RESPONSIVE DESIGN FIXES
+   ========================================= */
+
+@media (max-width: 1100px) {
+  .main-content {
+    flex-direction: column;
+    padding: 1rem;
+    margin-top: 70px;
+  }
+
+  .panel-small,
+  .panel-large {
+    width: 100%;
+    flex: 1;
+  }
+
+  .panel {
+    padding: 1rem;
+  }
+
+  html, body {
+    font-size: 14px;
+  }
+
+  .panel h2 {
+    font-size: 1.6rem;
+  }
+
+}
