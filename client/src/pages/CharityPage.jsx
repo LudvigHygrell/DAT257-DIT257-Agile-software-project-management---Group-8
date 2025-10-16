@@ -12,6 +12,19 @@ function CharityPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Fetch charity data from API
   useEffect(() => {
     const fetchCharity = async () => {
@@ -102,7 +115,7 @@ function CharityPage() {
       </div>
 
       {/* RIGHT PANEL - Comment Section */}
-      <CommentSection orgId={orgId} />
+      {windowWidth > 1200 && <CommentSection orgId={orgId} />}
     </div>
   );
 }
