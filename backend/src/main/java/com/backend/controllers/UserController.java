@@ -3,7 +3,9 @@ package com.backend.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +44,16 @@ public class UserController {
 
     @Autowired
     private PasswordHashUtility encoder;
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<String> userNotFound() {
+        return ResponseEntity.badRequest().body("Authentication rejected.");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> randomException() {
+        return ResponseEntity.internalServerError().body("An unexpected internal server error occured.");
+    }
 
     /**
      * A basic method for logging into a user. Varifies that the username and

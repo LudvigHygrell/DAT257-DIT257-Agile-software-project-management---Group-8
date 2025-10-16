@@ -38,19 +38,28 @@ api.interceptors.response.use(
       if (error.response.status === 401 || error.response.status === 403) {
         const errorMessage = error.response.data?.message || error.response.data || "";
 
+        const reloadWithoutToken = () => {
+
+          if (localStorage.getItem("token") === null) {
+            return;
+          }
+
+          localStorage.removeItem("token");
+          console.log("Cleared invalid token from localstorage - refreshing page");
+          window.location.reload();
+        }
+
         // If 403 with empty response, it's likely an invalid JWT token
         // Clear token and retry without authentication
         if (error.response.status === 403 && errorMessage === "") {
           console.warn("403 Forbidden with empty response - likely invalid JWT token");
-          localStorage.removeItem("token");
-          console.log("Cleared invalid token from localStorage - please refresh the page");
+          reloadWithoutToken();
         }
 
         // Check if error message explicitly mentions JWT/token
         if (typeof errorMessage === "string" &&
             (errorMessage.includes("JWT") || errorMessage.includes("token") || errorMessage.includes("expired"))) {
-          console.warn("JWT token expired or invalid - clearing token from localStorage");
-          localStorage.removeItem("token");
+          reloadWithoutToken();
         }
       }
     } else if (error.request) {

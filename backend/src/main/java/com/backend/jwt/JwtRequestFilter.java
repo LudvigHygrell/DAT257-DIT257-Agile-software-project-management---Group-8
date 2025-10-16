@@ -7,6 +7,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -44,7 +45,15 @@ public class JwtRequestFilter extends OncePerRequestFilter{
             username = jwtUtil.extractUsername(jwt);
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);       
+            UserDetails userDetails;
+            try {
+                userDetails = userDetailsService.loadUserByUsername(username);
+            } catch (UsernameNotFoundException ex) { // Tsk, tks, tks... no login for you!
+                response.setStatus(403);
+                response.setContentType("application/json");
+                response.getWriter().write("{ \"message\": \"Access denied - JWT\" }");
+                return;
+            }
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken auth = 
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
