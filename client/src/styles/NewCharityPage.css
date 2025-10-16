@@ -90,7 +90,7 @@
 
 .charity-photos img {
   flex: 1 1 calc(50% - 0.5rem);
-  max-width: 100%;
+  max-width: 45%;
   border-radius: 8px;
   object-fit: cover;
 }

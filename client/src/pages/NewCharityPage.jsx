@@ -11,6 +11,7 @@ function CharityPage() {
   const [charityDescription, setCharityDescription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [images, setImages] = useState([]);
   
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -56,9 +57,17 @@ function CharityPage() {
         console.error("There is no description available", err);
       }
     };
+
+    const fetchActivities = async () => {
+      const index = await FileAPI.getPublicFile(`${charity.activitiesDirectory}/index.json`)
+        .then((r) => r.data);
+      setImages(index.map((v) => `${charity.activitiesDirectory}/${v}`))
+    };
+
     fetchCharityDescription();
+    fetchActivities();
   }, [charity]);
-   
+  
 
   // Handle upvote/downvote/delete
   const handleVote = async (up) => {
@@ -142,14 +151,11 @@ function CharityPage() {
         <div className="charity-photos-section">
           <h3>Our activities</h3>
           <div className="charity-photos">
-            <img
-              src={`https://via.placeholder.com/400x250?text=${charity.humanName}+1`}
-              alt={`${charity.humanName} activity 1`}
-            />
-            <img
-              src={`https://via.placeholder.com/400x250?text=${charity.humanName}+2`}
-              alt={`${charity.humanName} activity 2`}
-            />
+            {images.map((image) => (
+              <img
+                src={`http://localhost:8080/api/files/public/${image}`}
+                key={image}/>
+            ))}
           </div>
         </div>
       </div>
