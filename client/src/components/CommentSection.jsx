@@ -3,13 +3,12 @@ import "../styles/CommentSection.css";
 
 import { CommentAPI } from "../services/APIService.js";
 
-function CommentSection({ orgId, isAuthenticated, onRequireLogin }) {
+function CommentSection({ orgId, isAuthenticated, onRequireLogin, setBlameInfo, setBlameModalVisible }) {
 
   const [sortOrder, setSortOrder] = useState("newest");
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
-  
 
 
   // === Add this helper ===
@@ -60,11 +59,14 @@ function CommentSection({ orgId, isAuthenticated, onRequireLogin }) {
 
     try {
       const res = await CommentAPI.listComments(query);
+      console.log("Fetched comments:", res.data.value);
 
       const mappedComments = (res.data.value || []).map(c => ({
-        name: c.user,
+        user: c.user,
         date: c.insertTime,
-        text: getCommentText(c.comment)
+        text: getCommentText(c.comment),
+        comment_id: c.commentId,
+        vote: "like"
       }));
       setComments(mappedComments);
 
@@ -80,6 +82,15 @@ function CommentSection({ orgId, isAuthenticated, onRequireLogin }) {
     fetchComments();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orgId, sortOrder]);
+
+  const openBlameModal = (user, text, comment_id) => {
+  if (!isAuthenticated) {
+    onRequireLogin();
+    return;
+  }
+  setBlameInfo({comment_id: comment_id, user: user, text: text}); // send info to CharityPage
+  setBlameModalVisible(true);     // open the BlameModal
+  };
 
   const handleSubmit = async (event) => { 
     event.preventDefault();
@@ -109,6 +120,7 @@ function CommentSection({ orgId, isAuthenticated, onRequireLogin }) {
     }
   };
 
+
   return (
     <div className="charity-comments-section">
       <h3>Comments</h3>
@@ -131,11 +143,19 @@ function CommentSection({ orgId, isAuthenticated, onRequireLogin }) {
           <div key={idx} className="comment-card">
             <div className="comment-header">
               <div className="comment-meta">
-                <strong>{c.name}</strong>
+                <strong>{c.user}</strong>
                 <span className="comment-date">{c.date ? new Date(c.date).toLocaleString() : ''}</span>
               </div>
               {c.vote === "like" && <img src={'http://localhost:8080/api/files/public/thumbs-up.png'} alt="like" className="vote-icon" />}
               {c.vote === "dislike" && <img src={'http://localhost:8080/api/files/public/thumbs-down.png'} alt="dislike" className="vote-icon" />}
+              <button
+                className="vote-btn"
+                onClick={() => openBlameModal(c.user, c.text, c.comment_id)}
+                aria-label="Report"
+                title="Report comment"
+              >
+                <img src={'http://localhost:8080/api/files/public/blame-icon.png'} alt="Report comment" />
+              </button>
             </div>
             <p>{c.text}</p>
           </div>

@@ -1,0 +1,100 @@
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal content box */
+.popup-content {
+    background-color: var(--bg-card);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    min-width: 300px;
+    max-width: 450px;
+    width: 90%;
+    color: var(--text-secondary);
+}
+
+/* Modal title */
+.popup-content h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+/* Textarea for reason input - matches login input fields */
+.popup-content textarea.input-field {
+    width: 100%;
+    padding: 0.7rem;
+    margin: 0.5rem 0;
+    border: 1px solid var(--border-light);
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: var(--bg-input);
+    color: var(--text-secondary);
+    resize: none;           /* Prevent resizing */
+    min-height: 120px;      /* Make it taller */
+    font-family: inherit;
+}
+
+/* Focus state for textarea */
+.popup-content textarea.input-field:focus {
+    outline: none;
+    border-color: var(--color-success);
+    box-shadow: var(--shadow-focus);
+}
+
+/* Submit button */
+.submit-button {
+    width: 100%;
+    padding: 0.7rem;
+    background-color: var(--color-success);
+    color: var(--text-light);
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+    background-color: var(--color-success-dark);
+}
+
+/* Close button in top-right corner */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: var(--text-secondary);
+}
+
+/* Optional error message */
+.error-message {
+    background-color: var(--bg-error);
+    color: var(--color-danger);
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-error);
+    font-size: 0.9rem;
+    text-align: center;
+}

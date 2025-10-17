@@ -2,8 +2,11 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "../styles/CharityPage.css";
 import CommentSection from "../components/CommentSection.jsx";
+import BlameModal from "../components/BlameModal.jsx";
 import { CharityAPI } from "../services/APIService.js";
+import { CommentAPI } from "../services/APIService.js";
 import { FileAPI } from "../services/APIService.js";
+
 
 function CharityPage({ isAuthenticated, onRequireLogin }) {
   const { orgId } = useParams();
@@ -12,6 +15,18 @@ function CharityPage({ isAuthenticated, onRequireLogin }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
+  const [blameModalVisible, setBlameModalVisible] = useState(false);
+  const [blameInfo, setBlameInfo] = useState({ comment_id: null, user: "", text: "" });
+
+  const handleBlame = async (comment_id, orgId, reason) => {
+    try {
+      const res = await CommentAPI.blameComment({ comment_id: comment_id, charity: orgId, reason: reason });
+      console.log("Blame report submitted:", res.data);
+      alert("" + res.data);
+    } catch (err) {
+      console.error("Failed to submit report:", err);
+    }
+  };
   
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -172,9 +187,29 @@ function CharityPage({ isAuthenticated, onRequireLogin }) {
         </div>
       </div>
 
-      {windowWidth > 850 && <CommentSection orgId={orgId} isAuthenticated={isAuthenticated} onRequireLogin={onRequireLogin} />}
+      {windowWidth > 850 && 
+      <CommentSection 
+      orgId={orgId} 
+      isAuthenticated={isAuthenticated} 
+      onRequireLogin={onRequireLogin}
+      setBlameInfo={setBlameInfo}
+      setBlameModalVisible={setBlameModalVisible}
+      />  }
+      <BlameModal
+      isVisible={blameModalVisible}
+      onClose={() => {
+      setBlameModalVisible(false);
+      setBlameInfo({ comment_id: null, user: "", text: "" });
+    }}
+      blameInfo={blameInfo}
+      onSubmit={async (reason) => {
+        await handleBlame(blameInfo.comment_id, orgId, reason);
+        setBlameModalVisible(false);
+        setBlameInfo({ comment_id: null, user: "", text: "" });
+      }}
+      />
     </div>
-  );
-}
+    );
+  }
 
 export default CharityPage;
