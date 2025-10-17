@@ -1,5 +1,4 @@
 import axios from "axios";
-import { buildQuery, createFilter } from "./QueryHelpers.js";
 
 const API_BASE_URL = "http://localhost:8080/api";
 
@@ -295,8 +294,6 @@ const API = {
   CharityAPI,
   CommentAPI,
   FileAPI,
-  buildQuery,
-  createFilter,
 };
 
 export default API;
