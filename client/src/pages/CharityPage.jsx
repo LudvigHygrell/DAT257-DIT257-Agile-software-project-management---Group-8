@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/CharityPage.css";
 import CommentSection from "../components/CommentSection.jsx";
 import { CharityAPI } from "../services/APIService.js";
