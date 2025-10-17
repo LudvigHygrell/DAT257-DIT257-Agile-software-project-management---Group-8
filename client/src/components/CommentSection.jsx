@@ -61,8 +61,7 @@ function CommentSection({ orgId }) {
       const mappedComments = (res.data.value || []).map(c => ({
         name: c.user,
         date: c.insertTime,
-        text: getCommentText(c.comment),
-        vote: null
+        text: getCommentText(c.comment)
       }));
       setComments(mappedComments);
 
@@ -74,6 +73,7 @@ function CommentSection({ orgId }) {
 
   useEffect(() => {
     fetchComments();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orgId, sortOrder]);
 
   const handleSubmit = async (event) => { 
@@ -120,11 +120,9 @@ function CommentSection({ orgId }) {
           <div key={idx} className="comment-card">
             <div className="comment-header">
               <div className="comment-meta">
-                <strong>{c.name}</strong>   
-                <span className="comment-date">{c.date}</span>  
+                <strong>{c.name}</strong>
+                <span className="comment-date">{c.date ? new Date(c.date).toLocaleString() : ''}</span>
               </div>
-              {c.vote === "like" && <img src={thumbsUp} alt="like" className="vote-icon" />}
-              {c.vote === "dislike" && <img src={thumbsDown} alt="dislike" className="vote-icon" />}
             </div>
             <p>{c.text}</p>
           </div>

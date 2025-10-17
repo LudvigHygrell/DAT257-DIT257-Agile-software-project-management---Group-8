@@ -113,12 +113,20 @@ public class Comment implements GetMappedEntity {
 
     @Override
     public JsonNode toJson() {
-        return JsonNodeFactory.instance.objectNode()
+        ObjectNode node = JsonNodeFactory.instance.objectNode()
             .put("charity", charity)
             .<ObjectNode> set("commentId", JsonNodeFactory.instance.numberNode(commentId))
             .<ObjectNode> set("comment", getComment())
-            .<ObjectNode> set("user", JsonNodeFactory.instance.textNode(commentUser))
-            .<ObjectNode> set("insertTime", JsonNodeFactory.instance.numberNode(insertTime.getTime()));
+            .<ObjectNode> set("user", JsonNodeFactory.instance.textNode(commentUser));
+
+        // Add insertTime only if it's not null
+        if (insertTime != null) {
+            node.set("insertTime", JsonNodeFactory.instance.numberNode(insertTime.getTime()));
+        } else {
+            node.set("insertTime", JsonNodeFactory.instance.nullNode());
+        }
+
+        return node;
     }
 
     @Override
