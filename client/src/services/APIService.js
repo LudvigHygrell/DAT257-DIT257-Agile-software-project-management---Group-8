@@ -37,29 +37,41 @@ api.interceptors.response.use(
       // Handle expired/invalid JWT tokens
       if (error.response.status === 401 || error.response.status === 403) {
         const errorMessage = error.response.data?.message || error.response.data || "";
+        const hasToken = localStorage.getItem("token") !== null;
 
-        const reloadWithoutToken = () => {
-
-          if (localStorage.getItem("token") === null) {
-            return;
+        const clearTokenWithoutReload = () => {
+          if (!hasToken) {
+            return false;
           }
 
+          console.warn("Clearing invalid token from localStorage");
           localStorage.removeItem("token");
-          console.log("Cleared invalid token from localstorage - refreshing page");
-          window.location.reload();
+          localStorage.removeItem("username");
+          return true;
         }
 
         // If 403 with empty response, it's likely an invalid JWT token
-        // Clear token and retry without authentication
         if (error.response.status === 403 && errorMessage === "") {
           console.warn("403 Forbidden with empty response - likely invalid JWT token");
-          reloadWithoutToken();
+          const wasCleared = clearTokenWithoutReload();
+
+          // Only reload if we actually had to clear a token
+          // This prevents infinite reload loops
+          if (wasCleared) {
+            console.log("Reloading page to reset authentication state");
+            window.location.reload();
+          }
         }
 
         // Check if error message explicitly mentions JWT/token
         if (typeof errorMessage === "string" &&
             (errorMessage.includes("JWT") || errorMessage.includes("token") || errorMessage.includes("expired"))) {
-          reloadWithoutToken();
+          const wasCleared = clearTokenWithoutReload();
+
+          if (wasCleared) {
+            console.log("Reloading page to reset authentication state");
+            window.location.reload();
+          }
         }
       }
     } else if (error.request) {

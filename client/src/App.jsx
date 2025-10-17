@@ -6,7 +6,6 @@ import TopCharities from './components/TopCharities.jsx';
 import CharityPage from './pages/NewCharityPage.jsx';
 import AccountSettings from './pages/AccountSettings.jsx';
 import Modals from './components/Modals.jsx';
-import { fake_charities } from './Dummydata.jsx';
 import { useModals } from './hooks/useModals.js';
 import { useAuth } from './hooks/useAuth.js';
 
@@ -16,7 +15,7 @@ import './styles/App.css';
 // Main App component that contains all other components
 function App() {
   // Use custom hook to manage authentication state
-  const { isAuthenticated, username, login, logout } = useAuth();
+  const { isAuthenticated, username, login, logout, isValidating } = useAuth();
 
   // Handle logout
   const handleLogout = () => {
@@ -28,6 +27,15 @@ function App() {
   // Use custom hook to manage all modal state and handlers
   // Pass login function to modals so LoginModal can update auth state
   const modalProps = useModals(login);
+
+  // Show loading state while validating token
+  if (isValidating) {
+    return (
+      <div className="app-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     // main cointainer with padding
@@ -48,12 +56,12 @@ function App() {
             <div className="main-content">
               { /* Left column: shows top rated charities (1/3 of page width) */}
               <div className="panel panel-small">
-                <TopCharities charities={fake_charities} />
+                <TopCharities />
               </div>
 
               {/* Right column: shows searchable charity lists (2/3 of page width) */}
               <div className="panel panel-large">
-                <CharityList charities={fake_charities} />
+                <CharityList />
               </div>
             </div>
           }
