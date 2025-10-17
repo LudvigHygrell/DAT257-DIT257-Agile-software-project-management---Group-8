@@ -1,17 +1,18 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { CharityAPI } from "../services/APIService.js";
-import CommentSection from "../components/CommentSection.jsx";
+import { use, useEffect, useState } from "react";
 import "../styles/CharityPage.css";
+import CommentSection from "../components/CommentSection.jsx";
+import { CharityAPI } from "../services/APIService.js";
+import { FileAPI } from "../services/APIService.js";
 
-function CharityPage() {
+function CharityPage({ isAuthenticated, onRequireLogin }) {
   const { orgId } = useParams();
-
-  // State variables for charity data
   const [charity, setCharity] = useState(null);
+  const [charityDescription, setCharityDescription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [images, setImages] = useState([]);
+  
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -25,97 +26,153 @@ function CharityPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Fetch charity data from API
+
   useEffect(() => {
     const fetchCharity = async () => {
-      setLoading(true);
-      setError(null);
       try {
-        console.log('Fetching charity with orgId:', orgId);
-        const response = await CharityAPI.getCharity(orgId);
-        console.log('Charity API response:', response);
-        console.log('Response data:', response.data);
-
-        if (!response.data || !response.data.value) {
-          console.error('Invalid response format - response.data:', response.data);
-          throw new Error('Invalid response format');
-        }
-
-        const charityData = response.data.value;
-        console.log('Charity data:', charityData);
-
-        const mappedCharity = {
-          orgId: charityData.charity,
-          name: charityData.humanName,
-          logo: charityData.charityImageFile,
-          description: charityData.charityDescritpionFile || "No description available.",
-          homepage: charityData.homePageUrl,
-          score: charityData.totalScore,
-          category: charityData.category || "General"
-        };
-        console.log('Mapped charity:', mappedCharity);
-        setCharity(mappedCharity);
+        setLoading(true);
+        const res = await CharityAPI.getCharity(orgId);
+        setCharity(res.data.value);
       } catch (err) {
-        console.error('Error loading charity:', err);
-        console.error('Error details:', err.response);
-        setError('Failed to load charity details: ' + (err.message || 'Unknown error'));
+        console.error("Error fetching charity:" + err);
+        setError("Failed to load charity data.");
       } finally {
         setLoading(false);
       }
     };
-
-    if (orgId) {
-      fetchCharity();
-    }
+    fetchCharity();
   }, [orgId]);
+  
+  useEffect(() => {
+    if (!charity) return;
+    
+    const fetchCharityDescription = async () => {
+      try {
+        if (charity.charityDescriptionFile) {
+          const res = await FileAPI.getPublicFile(charity.charityDescriptionFile);
+          console.log("Fetched charity description:", res);
+          setCharityDescription(res.data);
+        }
+      } catch (err) {
+        console.error("There is no description available", err);
+      }
+    };
 
-  if (loading) {
-    return <div className="charity-not-found">Loading charity details...</div>;
-  }
+    const fetchActivities = async () => {
+      const index = await FileAPI.getPublicFile(`${charity.activitiesDirectory}/index.json`)
+        .then((r) => r.data);
+      setImages(index.map((v) => `${charity.activitiesDirectory}/${v}`))
+    };
 
-  if (error || !charity) {
-    return <div className="charity-not-found">{error || "Charity not found"}</div>;
-  }
+    fetchCharityDescription();
+    fetchActivities();
+  }, [charity]);
+  
+
+  // Handle upvote/downvote/delete
+  const handleVote = async (up) => {
+    if (!isAuthenticated) {
+      onRequireLogin();
+      return;
+    }
+    try {
+      await CharityAPI.vote({ charity: orgId, up: up });
+      // Optionally refetch to update score immediately
+      const updated = await CharityAPI.getCharity(orgId);
+      setCharity(updated.data.value);
+    } catch (err) {
+      console.error("Vote error:", err);
+      alert("Could not submit your vote. Please try again.");
+    }finally {
+      alert("Vote submitted successfully.");
+    }
+  };
+
+  const handleDeleteVote = async () => {
+    try {
+      if (!isAuthenticated) {
+        onRequireLogin();
+        return;
+      }
+      await CharityAPI.removeVote({ charity: orgId });
+      const updated = await CharityAPI.getCharity(orgId);
+      setCharity(updated.data.value);
+    } catch (err) {
+      console.error("Remove vote error:", err);
+      alert("Could not delete your vote. Please try again.");
+    }finally {
+      alert("Vote deleted successfully.");
+    }
+  };
+
+  if (loading) return <p>Loading charity...</p>;
+  if (error) return <p>{error}</p>;
+  if (!charity) return <p>Charity not found.</p>;
 
   return (
     <div className="charity-page">
-      {/* LEFT PANEL */}
       <div className="charity-page-info">
         <div className="charity-header">
           <img
-            src={charity.logo ? `/${charity.logo}` : `/${charity.photo}`}
-            alt={`${charity.name} logo`}
+            src={`http://localhost:8080/api/files/public/${charity.charityImageFile || 'default_charity_logo.png'}`}
+            alt={`${charity.humanName} logo`}
             className="charity-logo-large"
           />
           <div className="charity-title">
-            <h2>{charity.name}</h2>
-            <p className="charity-page-category">{charity.category}</p>
-            <p className="charity-page-score">Score: {charity.score}</p>
+            <h2>{charity.humanName}</h2>
+            <p className="charity-page-score">Score: {charity.totalScore}</p>
+
+            <div className="vote-buttons" role="group" aria-label="Vote">
+              <button
+                className="vote-btn"
+                onClick={() => handleVote(true)}
+                aria-label="Like"
+                title="Like"
+              >
+                <img src={'http://localhost:8080/api/files/public/thumbs-up.png'} alt="Thumbs up" />
+              </button>
+
+              <button
+                className="vote-btn"
+                onClick={() => handleVote(false)}
+                aria-label="Dislike"
+                title="Dislike"
+              >
+                <img src={'http://localhost:8080/api/files/public/thumbs-down.png'} alt="Thumbs down" />
+              </button>
+
+              <button
+                className="delete-vote-btn"
+                onClick={handleDeleteVote}
+                aria-label="Delete vote"
+                title="Delete Vote"
+              >
+                Delete Vote
+              </button>
+            </div>
           </div>
         </div>
 
         <div className="charity-description-section">
-          <h3>Who are we?</h3>
-          <p className="charity-description">{charity.description}</p>
+          <h3>Charity Description</h3>
+          <p className="charity-description">
+            {charityDescription || "No description available."}
+          </p>
         </div>
 
         <div className="charity-photos-section">
           <h3>Our activities</h3>
           <div className="charity-photos">
-            <img
-              src={`https://via.placeholder.com/400x250?text=${charity.category}+1`}
-              alt={`${charity.name} activity 1`}
-            />
-            <img
-              src={`https://via.placeholder.com/400x250?text=${charity.category}+2`}
-              alt={`${charity.name} activity 2`}
-            />
+            {images.map((image) => (
+              <img
+                src={`http://localhost:8080/api/files/public/${image}`}
+                key={image}/>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* RIGHT PANEL - Comment Section */}
-      {windowWidth > 1200 && <CommentSection orgId={orgId} />}
+      {windowWidth > 850 && <CommentSection orgId={orgId} isAuthenticated={isAuthenticated} onRequireLogin={onRequireLogin} />}
     </div>
   );
 }

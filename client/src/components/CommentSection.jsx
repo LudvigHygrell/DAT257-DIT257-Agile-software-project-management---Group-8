@@ -3,11 +3,13 @@ import "../styles/CommentSection.css";
 
 import { CommentAPI } from "../services/APIService.js";
 
-function CommentSection({ orgId }) {
+function CommentSection({ orgId, isAuthenticated, onRequireLogin }) {
 
   const [sortOrder, setSortOrder] = useState("newest");
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  
 
 
   // === Add this helper ===
@@ -40,6 +42,7 @@ function CommentSection({ orgId }) {
   // === end helper ===
 
   const fetchComments = async () => {
+    setLoading(true);
     const query = {
       filters: [
         {
@@ -68,6 +71,8 @@ function CommentSection({ orgId }) {
     } catch (err) {
       console.error("Error fetching comments:", err);
       setComments([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,7 +83,15 @@ function CommentSection({ orgId }) {
 
   const handleSubmit = async (event) => { 
     event.preventDefault();
-    if (!newComment.trim()) return;
+    if (!newComment.trim()) {
+      alert("Comment cannot be empty.");
+      return;
+    }
+
+    if (!isAuthenticated) {
+      onRequireLogin();
+      return;
+    }
 
     const newCommentObj = {
       comment: { contents: newComment },
@@ -88,10 +101,11 @@ function CommentSection({ orgId }) {
     try {
       await CommentAPI.addComment(newCommentObj);
       setNewComment("");
-
       await fetchComments()
     } catch (err) {
       console.error("Error adding comment:", err);
+    }finally {
+      alert("Comment submitted successfully.");
     }
   };
 
@@ -104,10 +118,7 @@ function CommentSection({ orgId }) {
           <button
             key={order}
             className={`sort-${order} ${sortOrder === order ? "active" : ""}`}
-            onClick={async () => {
-              setSortOrder(order);
-              await fetchComments();
-            }}
+            onClick={() => setSortOrder(order)}
           >
             {order.charAt(0).toUpperCase() + order.slice(1)}
           </button>
@@ -123,6 +134,8 @@ function CommentSection({ orgId }) {
                 <strong>{c.name}</strong>
                 <span className="comment-date">{c.date ? new Date(c.date).toLocaleString() : ''}</span>
               </div>
+              {c.vote === "like" && <img src={'http://localhost:8080/api/files/public/thumbs-up.png'} alt="like" className="vote-icon" />}
+              {c.vote === "dislike" && <img src={'http://localhost:8080/api/files/public/thumbs-down.png'} alt="dislike" className="vote-icon" />}
             </div>
             <p>{c.text}</p>
           </div>
