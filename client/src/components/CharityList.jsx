@@ -18,7 +18,8 @@ function CharityList() {
         const [field, ordering] = sortOption.split('-');
         const sortingConfig = {
           'score': { field: 'totalScore', ordering: ordering === 'desc' ? 'descending' : 'ascending' },
-          'name': { field: 'humanName', ordering: ordering === 'desc' ? 'descending' : 'ascending' }
+          'name': { field: 'humanName', ordering: ordering === 'desc' ? 'descending' : 'ascending' },
+          'date': { field: 'insertTime', ordering: ordering === 'desc' ? 'descending' : 'ascending' }
         };
 
         const query = {
@@ -77,6 +78,8 @@ function CharityList() {
           <option value="score-asc">Lowest Score</option>
           <option value="name-asc">Name (A-Z)</option>
           <option value="name-desc">Name (Z-A)</option>
+          <option value="date-desc">Recently Added</option>
+          <option value="date-asc">Oldest First</option>
         </select>
         <input
           type="text"

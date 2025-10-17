@@ -1,5 +1,7 @@
 package com.backend.database.entities;
 
+import java.sql.Timestamp;
+
 import com.backend.database.JpaToJsonConverter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -11,11 +13,13 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name="charitydata")
 public class CharityData {
-    
+
     @Id
     @Column(name="charity")
     private String charity;
@@ -47,6 +51,10 @@ public class CharityData {
     @Column(name="classes")
     @Convert(converter=JpaToJsonConverter.class)
     private JsonNode classes;
+
+    @Column(name="inserttime")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp insertTime;
 
     protected CharityData() {}
 
@@ -98,6 +106,10 @@ public class CharityData {
         this.classes = classes;
     }
 
+    public Timestamp getInsertTime() {
+        return insertTime;
+    }
+
     public JsonNode toJson() {
         return JsonNodeFactory.instance.objectNode()
             .put("charity", getCharity())
@@ -109,6 +121,7 @@ public class CharityData {
             . <ObjectNode> set("positiveScore", JsonNodeFactory.instance.numberNode(getPositiveScore()))
             . <ObjectNode> set("negativeScore", JsonNodeFactory.instance.numberNode(getNegativeScore()))
             . <ObjectNode> set("totalScore", JsonNodeFactory.instance.numberNode(getTotalScore()))
-            . <ObjectNode> set("classes", getClasses());
+            . <ObjectNode> set("classes", getClasses())
+            . <ObjectNode> set("insertTime", JsonNodeFactory.instance.numberNode(getInsertTime().getTime()));
     }
 }

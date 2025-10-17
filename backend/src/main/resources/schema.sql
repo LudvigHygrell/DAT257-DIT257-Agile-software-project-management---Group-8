@@ -217,12 +217,16 @@ CREATE OR REPLACE VIEW CharityData AS SELECT
         cps.score AS positiveScore,
         cns.score AS negativeScore,
         (cps.score - cns.score) AS totalScore,
-        ccjs.classes AS classes
+        ccjs.classes AS classes,
+        c.insertTime AS insertTime
     FROM
         CharityInfo ci
     LEFT JOIN
+        Charities c
+        ON (ci.charity=c.orgId)
+    LEFT JOIN
         CharityPositiveScores cps
-        ON (ci.charity=cps.charity) 
+        ON (ci.charity=cps.charity)
     LEFT JOIN
         CharityNegativeScores cns
         ON (ci.charity=cns.charity)
