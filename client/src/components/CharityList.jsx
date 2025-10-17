@@ -38,7 +38,7 @@ function CharityList() {
           orgId: c.charity,
           name: c.humanName,
           logo: c.charityImageFile,
-          descriptionFile: c.charityDescritpionFile,
+          descriptionFile: c.charityDescriptionFile,
           homepage: c.homePageUrl,
           score: c.totalScore,
           category: ''
@@ -92,9 +92,10 @@ function CharityList() {
             <div key={c.orgId} className="charity-card">
               <div className="charity-info">
                 <img
-                  src={`http://localhost:8080/api/files/public/${c.logo}`}
+                  src={`http://localhost:8080/api/files/public/${c.logo || 'default_charity_logo.png'}`}
                   alt={`${c.name} logo`}
                   className="charity-logo"
+                  onError={(e) => { e.target.src = 'http://localhost:8080/api/files/public/default_charity_logo.png'; }}
                 />
                 <div className="charity-text">
                   <h3 className="charity-name">{c.name}</h3>
