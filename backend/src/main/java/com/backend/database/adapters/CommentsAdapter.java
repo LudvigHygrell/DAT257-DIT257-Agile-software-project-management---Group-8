@@ -1,6 +1,7 @@
 package com.backend.database.adapters;
 
 import com.backend.database.repositories.*;
+import com.backend.jwt.user.UserUtil;
 import com.backend.database.entities.*;
 import com.backend.database.entities.keys.*;
 import com.backend.database.filtering.Filter;
@@ -13,6 +14,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,9 @@ public class CommentsAdapter {
 
     @Autowired
     private NextCommentIdRepository nextCommentIdRepository;
+
+    @Autowired
+    private CommentScoreRepository commentScoreRepository;
 
     /**
      * Register a new comment in the DB.
@@ -115,5 +120,38 @@ public class CommentsAdapter {
             fb.and(List.of(
                 fb.equalTo("commentUser", forUser),
                 filter)));
+    }
+
+    public boolean vote(String charity, int commentId, boolean vote) {
+        try {
+            commentScoreRepository.save(new CommentScore(UserUtil.getUsername(), charity, commentId, vote));
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public boolean deleteVote(String charity, int commentId) {
+        try {
+            CommentScore entity = commentScoreRepository.getReferenceById(
+                new CommentBlameKey(commentId, charity, UserUtil.getUsername()));
+            commentScoreRepository.delete(entity);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public Optional<Boolean> getVoteFor(Comment c) {
+        
+        if (!UserUtil.isAuthenticated())
+            return Optional.empty();
+
+        return commentScoreRepository.findById(
+            new CommentBlameKey(
+                c.getCommentId(), 
+                c.getCharity(),
+                UserUtil.getUsername()))
+            .map(v -> v.getUpDown());
     }
 }

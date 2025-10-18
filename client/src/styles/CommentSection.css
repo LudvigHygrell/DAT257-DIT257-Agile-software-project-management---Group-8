@@ -46,44 +46,6 @@
   color: var(--text-light);                 /* white text */
 }
 
-/* Individual comment */
-.comment-card {
-  background: var(--bg-card);
-  border-radius: 16px;
-  padding: 1rem;
-  box-shadow: var(--shadow-md);
-  border: 2px solid var(--color-primary);
-  position: relative;
-  transition: box-shadow 0.2s;
-}
-
-.comment-card:hover {
-  box-shadow: var(--shadow-lg);
-}
-
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.comment-meta {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.comment-date {
-  font-size: 0.85rem;
-  color: var(--color-primary);
-  font-weight: bold;
-}
-
-.vote-icon {
-  width: 20px;
-  height: 20px;
-}
 
 /* ===============================
   COMMENT FORM

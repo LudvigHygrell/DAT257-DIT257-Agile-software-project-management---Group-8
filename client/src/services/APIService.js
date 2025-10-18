@@ -297,6 +297,10 @@ export const CommentAPI = {
   removeComment: (data) => api.delete("/comments/remove", { data }), // data = { comment_id, charity }
 
   blameComment: (data) => api.post("/comments/blame", data),        // data = { comment_id, charity, reason }
+
+  voteOnComment: (data) => api.post("/comments/vote", data),
+
+  deleteCommentVote: (data) => api.delete("/comments/vote", { data })
 };
 
 // ==================== EXPORT ALL ====================
