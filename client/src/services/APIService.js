@@ -308,7 +308,14 @@ export const CommentAPI = {
 export const EmailAPI = {
 
   requestConfirm: (email) => api.post(`/email/confirm/${email}`),
-  needsVerification: () => api.get("/email/confirm").then(x => x.status == 200),
+  needsVerification: async () => {
+    try {
+      const res = await api.get("/email/confirm");
+      return res.data === 'yes';
+    } catch (error) {
+      return false;
+    }
+  },
   waitFor: (email) => api.get(`/email/await/${email}`)
 };
 

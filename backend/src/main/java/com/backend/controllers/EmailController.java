@@ -145,8 +145,8 @@ public class EmailController {
     }
 
     @GetMapping("/confirm")
-    public ResponseEntity<Void> needsConfirm() {
-        return props.getEmailProperties().isVerified() ? ResponseEntity.ok().build() 
-            : ResponseEntity.notFound().build();
+    public ResponseEntity<String> needsConfirm() {
+        return props.getEmailProperties().isVerified() ? ResponseEntity.ok().body("yes") 
+            : ResponseEntity.noContent().build();
     }
 }
