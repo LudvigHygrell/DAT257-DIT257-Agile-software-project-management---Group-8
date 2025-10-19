@@ -1,7 +1,7 @@
 -- \set ON_ERROR_STOP ON
 
 INSERT INTO Users VALUES
-    ('<deleted>', 'benesphere@blackhole.mx', '2bh1jkb34334'),
+    ('<deleted>', 'deleted@benesphere.org', '2bh1jkb34334'),
     ('<moderator>', 'moderator.user@benesphere.org', '23njk3533543'),
     ('<admin>', 'admin.user@benesphere.org', 'nf4i433jrk3'),
     ('<god>', 'god.user@benesphere.org', '2u45j4b5b454');
@@ -12,12 +12,12 @@ INSERT INTO Administrators VALUES
     ('<god>', 3);
 
 INSERT INTO Users VALUES
-    ('John Doe', 'john.doe@mailserver.com', '13r9wkmf3fmk2'),
-    ('Jane Doe', 'jane.doe@mailserver.com', '1934rjnt244t4'),
-    ('Alice Cooper', 'alice.cooper@gmail.com', '2rn23tgb3h4'),
-    ('Lisa Simpson', 'lisa.simpson@springfield-elementary.com', '2124fgg354'),
+    ('John Doe', 'john.doe@benesphere.org', '13r9wkmf3fmk2'),
+    ('Jane Doe', 'jane.doe@benesphere.org', '1934rjnt244t4'),
+    ('Alice Cooper', 'alice.cooper@benesphere.org', '2rn23tgb3h4'),
+    ('Lisa Simpson', 'lisa.simpson@benesphere.org', '2124fgg354'),
     ('Bart Simpson', 'bart.simpson@'', ''hahaha''); DROP TABLE Users CASCADE; --', 'as3344h5rni'),
-    ('682', 'scp-682@scp.net', '214h3t3tbuj3');
+    ('682', 'scp-682@benesphere.org', '214h3t3tbuj3');
 
 INSERT INTO CharityClasses VALUES
     ('Medicine'),

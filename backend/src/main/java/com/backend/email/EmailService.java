@@ -1,7 +1,6 @@
 package com.backend.email;
 
-import java.util.Base64;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class EmailService {
     @Autowired
     private ApplicationProperties properties;
 
-    private String getConfirmationEmailText(String email, long confirmCode) {
+    private String getConfirmationEmailText(String email, UUID confirmCode) {
 
         final String HTML_TEMPLATE = """
         <!doctype HTML>
@@ -43,7 +42,7 @@ public class EmailService {
             </head>
             <body>
                 <p>
-                    <a href="%s/email/confirm/%s/%s">Click to confirm email address.</a>
+                    <a href="%s/api/email/confirm/%s/%s">Click to confirm email address.</a>
                 </p>
             </body>
         </html>""";
@@ -51,8 +50,8 @@ public class EmailService {
         return String.format(HTML_TEMPLATE,
             ServletUriComponentsBuilder.fromCurrentContextPath()
                 .build().toUriString(),
-            new String(Base64.getUrlEncoder().encode(email.getBytes())),
-            Long.toString(confirmCode));
+                email,
+                confirmCode.toString());
     }
 
     /**
@@ -69,14 +68,12 @@ public class EmailService {
      * @param email Email address to send to.
      * @return A future that evaluates to the confirmed email address when it completes.
      */
-    public CompletableFuture<String> sendEmailConfirmation(String email) throws Exception {
+    public void sendEmailConfirmation(String email, UUID uuid) throws Exception {
    
-        EmailConfirmations confirmations = EmailConfirmations.getInstance();
-
         MimeMessage message = sender.createMimeMessage();
         message.setSubject("Benesphere email confirmation");
 
-        String messageBody = getConfirmationEmailText(email, confirmations.addPending(email));
+        String messageBody = getConfirmationEmailText(email, uuid);
 
         MimeBodyPart body = new MimeBodyPart();
         body.setText(messageBody, "UTF-8", "html");
@@ -90,6 +87,5 @@ public class EmailService {
         message.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
 
         sender.send(message);
-        return confirmations.getPending(email);
     }
 }

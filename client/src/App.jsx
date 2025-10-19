@@ -6,6 +6,7 @@ import TopCharities from './components/TopCharities.jsx';
 import CharityPage from './pages/CharityPage.jsx';
 import AccountSettings from './pages/AccountSettings.jsx';
 import Modals from './components/Modals.jsx';
+import EmailConfirmation from "./pages/EmailConfirmation.jsx"
 import { useModals } from './hooks/useModals.js';
 import { useAuth } from './hooks/useAuth.js';
 
@@ -75,6 +76,11 @@ function App() {
           path="/settings"
           element={<AccountSettings username={username} onLogout={handleLogout} />}
         />
+        { /* Email confirmations page */ }
+        <Route
+          path="/email-confirm"
+          element={<EmailConfirmation/>}
+          />
       </Routes>
 
       {/* All modals for the application */}

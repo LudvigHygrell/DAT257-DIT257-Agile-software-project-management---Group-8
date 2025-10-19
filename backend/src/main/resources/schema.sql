@@ -2,7 +2,6 @@
 
 DROP OWNED BY benesphere_mast;
 
-
 CREATE TABLE IF NOT EXISTS Users(
     username TEXT
         CHECK (NOT (username LIKE '%@%'))
@@ -177,6 +176,20 @@ CREATE TABLE IF NOT EXISTS CharityInfo(
         NOT NULL,
     activitiesDirectory TEXT
         NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS PendingEmailConfirmations(
+    email TEXT
+        PRIMARY KEY,
+    confirmed BOOLEAN
+        NOT NULL
+        DEFAULT FALSE,
+    confirmCode UUID
+        NOT NULL
+        DEFAULT GEN_RANDOM_UUID(),
+    expiresAt TIMESTAMP WITH TIME ZONE
+        NOT NULL
+        DEFAULT (NOW() + interval '1 hour')
 );
 
 CREATE OR REPLACE VIEW CharityPositiveScores AS SELECT

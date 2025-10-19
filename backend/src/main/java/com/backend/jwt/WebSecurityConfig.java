@@ -57,11 +57,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/charities/**").permitAll()
                         .requestMatchers("/api/files/public/**").permitAll()
                         .requestMatchers("/api/comments/list").permitAll()
-                        .requestMatchers("/error").permitAll();
-                    
-                    if (properties.getEmailProperties().isVerified()) {
-                        authorize.requestMatchers("/api/email/confirm/**").permitAll();
-                    }
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/email/confirm/**").permitAll()
+                        .requestMatchers("/api/email/await/*").permitAll();
 
                     if (properties.inDebug()) {
                         authorize.requestMatchers("/api/debug/**").permitAll();

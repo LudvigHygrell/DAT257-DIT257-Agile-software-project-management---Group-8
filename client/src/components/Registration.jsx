@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UserAPI } from '../services/APIService.js';
+import { UserAPI, EmailAPI } from '../services/APIService.js';
 import '../styles/Registration.css';
 
 // isVisible: boolean that controls if modal shows or hides
@@ -13,6 +13,7 @@ function Registration({ isVisible, onClose, onSwitchToLogin }) {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
     // Function that runs when user submits the registration form
     const handleSubmit = async (e) => {
@@ -26,6 +27,40 @@ function Registration({ isVisible, onClose, onSwitchToLogin }) {
             return;
         }
 
+        if (await EmailAPI.needsVerification()) {
+            
+            setAwaitingConfirm(true);
+            try {
+                const request = await EmailAPI.requestConfirm(email);
+
+                if (request.status !== 200) {
+                    setError('Failed to send confirmation email.');
+                    setAwaitingConfirm(false);
+                    return;
+                }
+            } catch (error) {
+                console.error(error);
+                setError("Network error. Try again later.");
+                setAwaitingConfirm(false);
+                return;
+            }
+
+            try {
+                const request = await EmailAPI.waitFor(email);
+                if (request.status !== 200) {
+                    setError('Failed to send confirmation email.');
+                    setAwaitingConfirm(false);
+                    return;
+                }
+            } catch (error) {
+                setError("Network error. Try again later.");
+                setAwaitingConfirm(false);
+                return;
+            }
+
+            setAwaitingConfirm(false);
+        }
+        
         setLoading(true); // Set loading state
 
         try {
@@ -128,7 +163,7 @@ function Registration({ isVisible, onClose, onSwitchToLogin }) {
                     />
                     {/* Submit button that triggers handleSubmit function */}
                     <button type="submit" className="registration-submit-button" disabled={loading}>
-                        {loading ? 'Creating Account...' : 'Create Account'}
+                        {awaitingConfirm ? 'Waiting for email confirmation...' : (loading ? 'Creating Account...' : 'Create Account')}
                     </button>
                 </form>
                 {/* Section with link back to login */}

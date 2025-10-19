@@ -13,6 +13,8 @@ public class ApplicationProperties {
 
     private FileProperties file = new FileProperties();
 
+    private String clientHost = "http://localhost:5173";
+
     public static class FileProperties {
 
         private DirectoryProperties publicDirectories = new DirectoryProperties("public");
@@ -129,5 +131,13 @@ public class ApplicationProperties {
 
     public void setFile(FileProperties props) {
         file = props;
+    }
+
+    public String getClientHost() {
+        return clientHost;
+    }
+
+    public void setClientHost(String clientHost) {
+        this.clientHost = clientHost;
     }
 }

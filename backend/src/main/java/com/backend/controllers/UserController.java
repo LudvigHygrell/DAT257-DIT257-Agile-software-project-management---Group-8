@@ -1,5 +1,7 @@
 package com.backend.controllers;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.ApplicationProperties;
 import com.backend.database.PasswordHashUtility;
 import com.backend.database.adapters.UserAdapter;
+import com.backend.database.entities.EmailConfirmation;
+import com.backend.database.repositories.EmailConfirmationRepository;
 import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
@@ -34,6 +39,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class UserController {
 
     @Autowired
+    private ApplicationProperties props;
+
+    @Autowired
     private UserAdapter userAdapter;
 
     @Autowired
@@ -44,6 +52,9 @@ public class UserController {
 
     @Autowired
     private PasswordHashUtility encoder;
+
+    @Autowired
+    private EmailConfirmationRepository emailConfirmRepo;
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<String> userNotFound() {
@@ -146,6 +157,16 @@ public class UserController {
 
         if (userAdapter.isEmail(email)) {
             return ResponseEntity.status(409).body("Email already exists");
+        }
+
+        if (props.getEmailProperties().isVerified()) {
+            Optional<EmailConfirmation> conf = emailConfirmRepo.findById(email);
+
+            if (conf.isEmpty() || !conf.get().getConfirmed())
+                return ResponseEntity.badRequest()
+                    .body("Email wasn't confirmed.");
+            
+            emailConfirmRepo.delete(conf.get());
         }
 
         return ControllerHelper.orElseResponse(() -> {

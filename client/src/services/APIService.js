@@ -303,6 +303,15 @@ export const CommentAPI = {
   deleteCommentVote: (data) => api.delete("/comments/vote", { data })
 };
 
+// ==================== EMAIL ENDPOINTS ======================
+
+export const EmailAPI = {
+
+  requestConfirm: (email) => api.post(`/email/confirm/${email}`),
+  needsVerification: () => api.get("/email/confirm").then(x => x.status == 200),
+  waitFor: (email) => api.get(`/email/await/${email}`)
+};
+
 // ==================== EXPORT ALL ====================
 
 const API = {
