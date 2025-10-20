@@ -93,6 +93,16 @@ public class CharitiesAdapter {
     }
 
     /**
+     * Gets the current user's vote on the given charity.
+     * @param charity Charity to get the vote of.
+     * @return Optional containing the vote (if present).
+     */
+    public Optional<Boolean> getVote(String charity) {
+        return scoresRepository.findById(new CharityVoteKey(UserUtil.getUsername(), charity))
+            .map(v -> v.votedUp());
+    }
+
+    /**
      * Mark a charity as "paused" (only possible if UserUtil is admin).
      * @param charity_id Charity to pause.
      * @return True if successful.

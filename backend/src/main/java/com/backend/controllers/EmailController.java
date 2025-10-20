@@ -3,7 +3,6 @@ package com.backend.controllers;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -19,8 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.ApplicationProperties;
-import com.backend.database.entities.EmailConfirmation;
-import com.backend.database.repositories.EmailConfirmationRepository;
+import com.backend.database.adapters.EmailConfirmationAdapter;
 import com.backend.email.EmailService;
 
 /**
@@ -37,7 +35,7 @@ public class EmailController {
     private ApplicationProperties props;
 
     @Autowired
-    private EmailConfirmationRepository confRepo;
+    private EmailConfirmationAdapter confAdapter;
 
     @Autowired
     private EmailService service;
@@ -60,16 +58,24 @@ public class EmailController {
             return ResponseEntity.badRequest().body("Malformed email.");
 
         try {
-            EmailConfirmation conf = new EmailConfirmation(email);
-            conf = confRepo.save(conf);
-
-            service.sendEmailConfirmation(conf.getEmail(), conf.getConfirmCode());
-        
-            synchronized (pendingOperations) {
-                pendingOperations.put(email, new CompletableFuture<>());
-            }
+            // Add pending verification
+            //
+            confAdapter.addPendingVerification(email, conf -> {
+                // Send verification once it is pending
+                //
+                service.sendEmailConfirmation(conf.getEmail(), conf.getConfirmCode());
+                synchronized (pendingOperations) {
+                    pendingOperations.put(email, new CompletableFuture<>());
+                }
+            });
             return ResponseEntity.ok().body("Confirmation link sent to: " + email);
         } catch (Exception ex) {
+            // Operation failed, should not be awaitable.
+            //
+            synchronized (pendingOperations)  {
+                if (pendingOperations.containsKey(email))
+                    pendingOperations.remove(email);
+            }
             return ResponseEntity.internalServerError()
                 .body("Failed to send link, please try again.");
         }
@@ -108,30 +114,23 @@ public class EmailController {
             if (!EmailValidator.getInstance().isValid(email))
                 throw new Exception();
             
-            Optional<EmailConfirmation> conf = confRepo.findById(email);
+            confAdapter.verify(email, confirmCode);
 
-            if (conf.isEmpty())
-                throw new Exception();
-
-            if (conf.get().expired()) {
-                confRepo.delete(conf.get());
-                throw new Exception();
-            }
-
-            conf.get().setConfirmed(true);
-            confRepo.save(conf.get());
-
+            // Notify waiting client
+            //
             synchronized (pendingOperations) {
                 if (pendingOperations.containsKey(email)) {
                     pendingOperations.get(email).complete(null);
                     pendingOperations.remove(email);
                 }
             }
-
             return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create("http://localhost:5173/email-confirm?status=success"))
                 .build();
         } catch (Exception ex) {
+
+            // Notify client of the error
+            //
             synchronized (pendingOperations) {
                 if (pendingOperations.containsKey(email)) {
                     pendingOperations.get(email).completeExceptionally(ex);
@@ -144,6 +143,9 @@ public class EmailController {
         }
     }
 
+    /**
+     * Returns HTTP OK if email confirmation is enabled, HTTP NO_CONTENT if not.
+     */
     @GetMapping("/confirm")
     public ResponseEntity<String> needsConfirm() {
         return props.getEmailProperties().isVerified() ? ResponseEntity.ok().body("yes") 

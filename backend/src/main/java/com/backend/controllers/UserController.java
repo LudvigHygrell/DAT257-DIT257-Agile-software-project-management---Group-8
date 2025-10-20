@@ -1,7 +1,5 @@
 package com.backend.controllers;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,9 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.ApplicationProperties;
 import com.backend.database.PasswordHashUtility;
+import com.backend.database.adapters.EmailConfirmationAdapter;
 import com.backend.database.adapters.UserAdapter;
-import com.backend.database.entities.EmailConfirmation;
-import com.backend.database.repositories.EmailConfirmationRepository;
 import com.backend.jwt.JwtUtil;
 import com.backend.jwt.user.UserDetail;
 import com.backend.jwt.user.UserDetailService;
@@ -54,7 +51,7 @@ public class UserController {
     private PasswordHashUtility encoder;
 
     @Autowired
-    private EmailConfirmationRepository emailConfirmRepo;
+    private EmailConfirmationAdapter confAdapter;
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<String> userNotFound() {
@@ -159,16 +156,9 @@ public class UserController {
             return ResponseEntity.status(409).body("Email already exists");
         }
 
-        if (props.getEmailProperties().isVerified()) {
-            Optional<EmailConfirmation> conf = emailConfirmRepo.findById(email);
-
-            if (conf.isEmpty() || !conf.get().getConfirmed())
-                return ResponseEntity.badRequest()
-                    .body("Email wasn't confirmed.");
-            
-            emailConfirmRepo.delete(conf.get());
+        if (!confAdapter.isVerified(email)) {
+            return ResponseEntity.badRequest().body("Email wasn't confirmed.");
         }
-
         return ControllerHelper.orElseResponse(() -> {
             userAdapter.register(username, email, password);
             return "User registered successfully";
@@ -220,6 +210,34 @@ public class UserController {
             userAdapter.changePassword(username, new_password);
             return "Password changed successfully";
         }, "Error changing password.");
+    }
+
+    @PutMapping("/reset_password")
+    public ResponseEntity<String> resetPassword(@RequestBody JsonNode json) {
+
+        if (!props.getEmailProperties().isVerified())
+            return ResponseEntity.badRequest().body("Email verification is disabled.");
+
+        if (!json.has("email"))
+            return ResponseEntity.badRequest().body("Missing email");
+
+        if (!json.has("password"))
+            return ResponseEntity.badRequest().body("Missing password");
+
+        String email = json.get("email").asText();
+        String password = json.get("password").asText();
+
+        String username;
+        try {
+            username = userAdapter.getUsernameFromEmail(email).orElseThrow();
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().body("Email is not associated with any user.");
+        }
+        if (!confAdapter.isVerified(email)) {
+            return ResponseEntity.badRequest().body("Email wasn't confirmed.");
+        }
+        userAdapter.changePassword(username, password);
+        return ResponseEntity.ok().body("Password successfully reset.");
     }
 
     /**

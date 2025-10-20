@@ -139,7 +139,7 @@ function CharityPage({ isAuthenticated, onRequireLogin }) {
 
             <div className="vote-buttons" role="group" aria-label="Vote">
               <button
-                className="vote-btn"
+                className={charity.userVote === true ? "selected-vote-btn" : "vote-btn"}
                 onClick={() => handleVote(true)}
                 aria-label="Like"
                 title="Like"
@@ -148,7 +148,7 @@ function CharityPage({ isAuthenticated, onRequireLogin }) {
               </button>
 
               <button
-                className="vote-btn"
+                className={charity.userVote === false ? "selected-vote-btn" : "vote-btn"}
                 onClick={() => handleVote(false)}
                 aria-label="Dislike"
                 title="Dislike"

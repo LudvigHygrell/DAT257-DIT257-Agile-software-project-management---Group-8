@@ -118,6 +118,20 @@
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
+.selected-vote-btn {
+  background: var(--color-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.45rem;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
 .vote-btn img {
   width: 22px;
   height: 22px;

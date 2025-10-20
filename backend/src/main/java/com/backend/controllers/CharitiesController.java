@@ -22,6 +22,7 @@ import com.backend.database.repositories.CharityDataRepository;
 import com.backend.jwt.user.UserUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -81,6 +82,8 @@ public class CharitiesController {
             CharityData charityDataEntity = charityData.findById(orgId)
                 .orElseThrow(() -> new Exception("Charity not found"));
 
+            ObjectNode json = (ObjectNode)charityDataEntity.toJson();
+
             // If user is authenticated, add search entry
             if (UserUtil.isAuthenticated()) {
                 try {
@@ -90,12 +93,14 @@ public class CharitiesController {
                     // Charity doesn't exist in charities table yet, create it
                     charitiesAdapter.addSearchEntry(new Charity(orgId));
                 }
+                json.set("userVote", charitiesAdapter.getVote(orgId)
+                    .map(v -> (JsonNode)JsonNodeFactory.instance.booleanNode(v))
+                    .orElse(JsonNodeFactory.instance.nullNode()));
             }
-
             return ResponseEntity.ok()
                 .body(jb.objectNode()
                     .put("message", "success")
-                    .set("value", charityDataEntity.toJson()));
+                    .set("value", json));
         } catch (Exception ex) {
             return ResponseEntity.status(500)
                 .body(jb.objectNode().put("message", "Error fetching charity: " + ex.getMessage()));
