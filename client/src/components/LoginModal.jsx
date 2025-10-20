@@ -6,7 +6,7 @@ import '../styles/LoginModal.css';
 // onClose: function to call when user wants to close the modal
 // onSwitchToRegister: function to call when user clicks register
 // onLoginSuccess: function to call when login is successful
-function LoginModal({ isVisible, onClose, onSwitchToRegister, onLoginSuccess }) {
+function LoginModal({ isVisible, onClose, onSwitchToRegister, onSwitchToResetPassword, onLoginSuccess }) {
     // Create state variables to store user input for username/email and password
     // useState('') creates a variable with empty string as initial value
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
@@ -117,6 +117,9 @@ function LoginModal({ isVisible, onClose, onSwitchToRegister, onLoginSuccess }) 
                 <div className="link-section">
                     {/* Register link that switches to registration modal */}
                     <a href="#" onClick={(e) => { e.preventDefault(); onSwitchToRegister(); }} className="link">Register</a>
+
+                    { /* Reset password link, switches to password reset modal */ }
+                    <a href="#" onClick={(e) => { e.preventDefault(); onSwitchToResetPassword(); }} className="link">Reset password</a>
                 </div>
                 {/* X button to close modal */}
                 <button className="close-button" onClick={onClose}>X</button>

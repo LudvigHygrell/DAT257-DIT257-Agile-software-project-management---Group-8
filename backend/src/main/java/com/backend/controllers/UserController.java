@@ -236,7 +236,7 @@ public class UserController {
         if (!confAdapter.isVerified(email)) {
             return ResponseEntity.badRequest().body("Email wasn't confirmed.");
         }
-        userAdapter.changePassword(username, password);
+        userAdapter.forcefullyChangePassword(username, password);
         return ResponseEntity.ok().body("Password successfully reset.");
     }
 

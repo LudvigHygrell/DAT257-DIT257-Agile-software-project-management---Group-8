@@ -143,6 +143,8 @@ export const UserAPI = {
    */
   changeEmail: (data) => api.put("/users/change_email", data),
 
+  resetPassword: (data) => api.put("/users/reset_password", data),
+
   /**
    * Get user activity (requires authentication)
    * @param {Object} params - { username, type, query? }

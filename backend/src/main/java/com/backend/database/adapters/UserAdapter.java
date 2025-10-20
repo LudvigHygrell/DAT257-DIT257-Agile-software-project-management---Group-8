@@ -167,21 +167,31 @@ public class UserAdapter {
     }
 
     /**
-     * Changes the password of a user in the db.
+     * Changes the password of a user in the db (and does not verify admin access).
      * @param username Name of the user.
      * @param newPassword Password string (not digest) of the password to set.
      */
     @Transactional
-    public void changePassword(String username, String newPassword) {
-
-        if (!authInfo.hasModifyPermissionOnUser(username))
-            throw new RuntimeException("Permission denied.");
+    public void forcefullyChangePassword(String username, String newPassword) {
 
         Optional<User> user = userRepository.findById(username);
         if (user.isEmpty())
             throw new RuntimeException(String.format("%s does not exist.", username));
         user.get().setPasswordHash(passwordHasher.hashPassword(newPassword));
         userRepository.save(user.get());
+    }
+
+    /**
+     * Changes the password of a user in the db.
+     * @param username Name of the user.
+     * @param newPassword Password string (not digest) of the password to set.
+     */
+    public void changePassword(String username, String newPassword) {
+
+        if (!authInfo.hasModifyPermissionOnUser(username))
+            throw new RuntimeException("Permission denied.");
+
+        forcefullyChangePassword(username, newPassword);
     }
 
     /**

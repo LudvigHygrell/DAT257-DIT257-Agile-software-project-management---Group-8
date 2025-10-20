@@ -59,7 +59,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/comments/list").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/email/confirm/**").permitAll()
-                        .requestMatchers("/api/email/await/*").permitAll();
+                        .requestMatchers("/api/email/await/*").permitAll()
+                        .requestMatchers("/api/users/reset_password").permitAll();
 
                     if (properties.inDebug()) {
                         authorize.requestMatchers("/api/debug/**").permitAll();
